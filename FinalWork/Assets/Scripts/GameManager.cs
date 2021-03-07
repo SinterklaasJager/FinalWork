@@ -12,13 +12,12 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Add class to playerobjects
         foreach (var player in testPlayerList)
         {
             var PlayerManager = player.AddComponent<PlayerManager>();
             players.Add(PlayerManager.GetPlayerClass());
         }
-
-
 
     }
 
@@ -31,13 +30,13 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown("a"))
         {
-            _roleDivider.GivePlayersRoles(testPlayerList);
+            _roleDivider.GivePlayersRoles(players);
 
         }
 
         if (Input.GetKeyDown("z"))
         {
-            _roleDivider.GivePlayersRoles(testPlayerList);
+            _roleDivider.GivePlayersRoles(players);
 
             foreach (var player in players)
             {
@@ -48,11 +47,23 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown("e"))
         {
-            _roleDivider.GivePlayersRoles(testPlayerList);
+            _roleDivider.GivePlayersRoles(players);
 
             foreach (var player in testPlayerList)
             {
                 Debug.Log(player.GetComponent<PlayerManager>().GetPlayerClass().GetRole());
+                if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
+                {
+                    player.GetComponent<MeshRenderer>().material.color = Color.green;
+                }
+                else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 1))
+                {
+                    player.GetComponent<MeshRenderer>().material.color = Color.red;
+                }
+                else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 2))
+                {
+                    player.GetComponent<MeshRenderer>().material.color = Color.blue;
+                }
             }
 
         }

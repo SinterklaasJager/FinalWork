@@ -16,7 +16,7 @@ public class RoleDivider
 
     }
 
-    public void GivePlayersRoles(List<GameObject> playerList)
+    public void GivePlayersRoles(List<Player> playerList)
     {
         playerList = ShufflePlayerList(playerList);
 
@@ -27,22 +27,22 @@ public class RoleDivider
         {
             if (amountOfBadGuys < 1)
             {
-                player.GetComponent<PlayerManager>().GetPlayerClass().SetRole(1);
+                player.SetRole(1);
                 amountOfBadGuys += 1;
             }
             else if (amountOfSaboteurs < 1)
             {
-                player.GetComponent<PlayerManager>().GetPlayerClass().SetRole(2);
+                player.SetRole(2);
                 amountOfSaboteurs += 1;
             }
-            else
+            else if (amountOfSaboteurs > 1 && amountOfBadGuys > 1)
             {
-                player.GetComponent<PlayerManager>().GetPlayerClass().SetRole(0);
+                player.SetRole(0);
             }
         }
     }
 
-    private List<GameObject> ShufflePlayerList(List<GameObject> playerList)
+    private List<Player> ShufflePlayerList(List<Player> playerList)
     {
 
         List<int> randomNumbers = new List<int>();
@@ -62,5 +62,3 @@ public class RoleDivider
         return playerList;
     }
 }
-
-

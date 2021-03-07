@@ -18,4 +18,5 @@ public class PlayerManager : MonoBehaviour
     {
         return playerClass;
     }
+
 }
