@@ -28,23 +28,6 @@ public class GameManager : MonoBehaviour
 
         //Testing
 
-        if (Input.GetKeyDown("a"))
-        {
-            _roleDivider.GivePlayersRoles(players);
-
-        }
-
-        if (Input.GetKeyDown("z"))
-        {
-            _roleDivider.GivePlayersRoles(players);
-
-            foreach (var player in players)
-            {
-                Debug.Log(player.GetRole());
-            }
-
-        }
-
         if (Input.GetKeyDown("e"))
         {
             _roleDivider.GivePlayersRoles(players);

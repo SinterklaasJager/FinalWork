@@ -8,13 +8,12 @@ public class Helper
     {
         List<int> randomNumbers = new List<int>();
 
-        while (randomNumbers.Count < numbers.Count)
+        for (int i = 0; i < numbers.Count; i++)
         {
-            int randomIndex = Random.Range(0, numbers.Count);
-            if (!randomNumbers.Contains(randomIndex))
-            {
-                randomNumbers.Add(randomIndex);
-            }
+            var temp = numbers[i];
+            int randomIndex = Random.Range(i, numbers.Count);
+            numbers[i] = numbers[randomIndex];
+            numbers[randomIndex] = temp;
         }
 
         return randomNumbers;
