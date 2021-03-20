@@ -2,10 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Helper
+public class Helper : MonoBehaviour
 {
-    public List<int> GenerateRandomNumbers(List<int> numbers)
+    public List<int> GenerateRandomNumbers(int count)
     {
+        List<int> numbers = new List<int>();
+
+        for (int i = 0; i < count; i++)
+        {
+            numbers.Add(i);
+        }
+
         List<int> randomNumbers = new List<int>();
 
         for (int i = 0; i < numbers.Count; i++)

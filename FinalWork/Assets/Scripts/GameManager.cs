@@ -6,7 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public List<GameObject> testPlayerList = new List<GameObject>();
     private List<Player> players = new List<Player>();
-    private Helper _helpers = new Helper();
+    public Helper helpers;
+    public Enums enums;
 
     void Start()
     {
