@@ -7,9 +7,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> testPlayerList = new List<GameObject>();
     private List<Player> players = new List<Player>();
     private Helper _helpers = new Helper();
-    private RoleDivider _roleDivider = new RoleDivider();
 
-    // Start is called before the first frame update
     void Start()
     {
         //Add class to playerobjects
@@ -22,33 +20,31 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Update is called once per frame
     void Update()
     {
 
-        //Testing
+    }
 
-        if (Input.GetKeyDown("e"))
+    private void RoleDivider()
+    {
+        RoleDivider _roleDivider = new RoleDivider();
+        _roleDivider.GivePlayersRoles(players);
+
+        foreach (var player in testPlayerList)
         {
-            _roleDivider.GivePlayersRoles(players);
-
-            foreach (var player in testPlayerList)
+            Debug.Log(player.GetComponent<PlayerManager>().GetPlayerClass().GetRole());
+            if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
             {
-                Debug.Log(player.GetComponent<PlayerManager>().GetPlayerClass().GetRole());
-                if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
-                {
-                    player.GetComponent<MeshRenderer>().material.color = Color.green;
-                }
-                else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 1))
-                {
-                    player.GetComponent<MeshRenderer>().material.color = Color.red;
-                }
-                else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 2))
-                {
-                    player.GetComponent<MeshRenderer>().material.color = Color.blue;
-                }
+                player.GetComponent<MeshRenderer>().material.color = Color.green;
             }
-
+            else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 1))
+            {
+                player.GetComponent<MeshRenderer>().material.color = Color.red;
+            }
+            else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 2))
+            {
+                player.GetComponent<MeshRenderer>().material.color = Color.blue;
+            }
         }
     }
 
