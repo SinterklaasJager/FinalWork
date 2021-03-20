@@ -7,10 +7,6 @@ public class RoleDivider
     //0 is goodguy
     //1 is badguy
     //2 is saboteur
-
-    private Helper Helpers = new Helper();
-    // List<Roles> rolesList = new List<Roles>();
-
     void Start()
     {
 
@@ -18,7 +14,7 @@ public class RoleDivider
 
     public void GivePlayersRoles(List<Player> playerList)
     {
-        playerList = GenerateRandomNumbers(playerList);
+        playerList = ShufflePlayerList(playerList);
 
         int amountOfBadGuys = 0;
         int amountOfSaboteurs = 0;
@@ -42,29 +38,7 @@ public class RoleDivider
         }
     }
 
-    private List<Player> ShufflePlayerList(List<Player> playerList)
-    {
-
-        List<int> randomNumbers = new List<int>();
-
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            randomNumbers.Add(i);
-            Debug.Log("random number: " + randomNumbers[i]);
-        }
-
-        randomNumbers = Helpers.GenerateRandomNumbers(randomNumbers);
-
-        for (int i = 0; i < playerList.Count; i++)
-        {
-            playerList[i] = playerList[randomNumbers[i]];
-            Debug.Log("random playerlist: " + playerList[randomNumbers[i]]);
-        }
-
-        return playerList;
-    }
-
-    public List<Player> GenerateRandomNumbers(List<Player> playerList)
+    public List<Player> ShufflePlayerList(List<Player> playerList)
     {
 
         for (int i = 0; i < playerList.Count; i++)
