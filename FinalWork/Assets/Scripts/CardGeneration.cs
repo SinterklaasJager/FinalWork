@@ -40,6 +40,12 @@ public class CardGeneration : MonoBehaviour
     public List<Enums.CardType> GetTopThreeCards()
     {
         List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
+
+        if (cardDeck.Count < 3)
+        {
+            GenerateCardDeck();
+        }
+
         for (int i = 0; i < 3; i++)
         {
             topThreeCards[i] = cardDeck[i];
@@ -50,6 +56,11 @@ public class CardGeneration : MonoBehaviour
 
     public List<Enums.CardType> LookAtTopThreeCards()
     {
+        if (cardDeck.Count < 3)
+        {
+            GenerateCardDeck();
+        }
+
         List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
         for (int i = 0; i < 3; i++)
         {
