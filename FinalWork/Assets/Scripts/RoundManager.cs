@@ -13,6 +13,12 @@ public class RoundManager : MonoBehaviour
         currentPlayer = players[turn];
         currentPlayer.SetIsTeamLeader(true);
         UpdateUI();
+        uIManager.GetComponent<CardDealerUI>().ShowAssistantCards();
+    }
+
+    public void TeamLeaderPickAssistant()
+    {
+
     }
 
     public void EndTurn()
@@ -32,7 +38,6 @@ public class RoundManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        Debug.Log("Update RoundsUI");
         var roundUI = uIManager.RoundUI.GetComponent<RoundUIHandler>();
         roundUI.UpdateRoundText(round);
         roundUI.UpdateCurrentPlayerText(players[turn].GetName());

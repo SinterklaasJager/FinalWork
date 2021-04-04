@@ -27,8 +27,8 @@ public class CardGeneration : MonoBehaviour
         {
             cardDeck.Add(Enums.CardType.good);
         }
-
-        List<int> randomNumbers = helpers.GenerateRandomNumbers(cardDeck.Count);
+        List<int> randomNumbers = new List<int>();
+        randomNumbers = helpers.GenerateRandomNumbers(cardDeck.Count);
 
         for (int i = 0; i < cardDeck.Count; i++)
         {
@@ -41,14 +41,22 @@ public class CardGeneration : MonoBehaviour
     {
         List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
 
-        if (cardDeck.Count < 3)
+        if (cardDeck == null || cardDeck.Count < 3)
         {
             GenerateCardDeck();
+            Debug.Log(cardDeck[0]);
+            Debug.Log(cardDeck[1]);
+            Debug.Log(cardDeck[2]);
         }
 
         for (int i = 0; i < 3; i++)
         {
-            topThreeCards[i] = cardDeck[i];
+            Debug.Log(cardDeck[i]);
+            topThreeCards.Add(cardDeck[i]);
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
             cardDeck.Remove(cardDeck[i]);
         }
         return topThreeCards;
@@ -56,12 +64,13 @@ public class CardGeneration : MonoBehaviour
 
     public List<Enums.CardType> LookAtTopThreeCards()
     {
-        if (cardDeck.Count < 3)
+        List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
+
+        if (cardDeck == null || cardDeck.Count < 3)
         {
             GenerateCardDeck();
         }
 
-        List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
         for (int i = 0; i < 3; i++)
         {
             topThreeCards[i] = cardDeck[i];

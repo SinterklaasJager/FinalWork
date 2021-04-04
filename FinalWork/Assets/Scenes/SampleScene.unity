@@ -154,9 +154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704b54da9a1bf744aaf61236c3c7630c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AssistantCardUI: {fileID: 2713338077266996503, guid: e395869db6b5f5b4f8d9dff26894f331,
+  AssistantCardUI: {fileID: 5644212612963016198, guid: 4a4ad9261339be04a9090771bd3b4c77,
     type: 3}
-  ProjectManagerCardUI: {fileID: 6589235484531982326, guid: e0c518af8321a51469d2553b91fd5b43,
+  ProjectManagerCardUI: {fileID: 5644212612963016198, guid: 223b5431834f8a24d82c950630bcab0e,
     type: 3}
   CardDealerUI: {fileID: 0}
   RoundUI: {fileID: 8576524945781686576, guid: 629468e7e8f6e2d448ff1181e6878392, type: 3}
@@ -228,7 +228,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

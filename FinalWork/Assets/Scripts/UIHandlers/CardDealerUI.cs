@@ -35,16 +35,20 @@ public class CardDealerUI : MonoBehaviour
         assistantCardUI = Instantiate(uIManager.AssistantCardUI, uIManager.gameObject.transform);
         cards = cardGeneration.GetTopThreeCards();
 
+        int i = 1;
+
         foreach (var card in cards)
         {
             if (card == Enums.CardType.good)
             {
-                Instantiate(prefabs.btnGood, assistantCardUI.transform);
+                Instantiate(prefabs.btnGood, assistantCardUI.transform.Find("CardSpot" + i));
             }
             else
             {
-                Instantiate(prefabs.btnBad, assistantCardUI.transform);
+                Instantiate(prefabs.btnBad, assistantCardUI.transform.Find("CardSpot" + i));
             }
+
+            i++;
         }
 
     }
@@ -58,7 +62,6 @@ public class CardDealerUI : MonoBehaviour
         //if player is assistant;
 
         projectManagerCardUI = Instantiate(uIManager.ProjectManagerCardUI, uIManager.gameObject.transform);
-        cards = cardGeneration.GetTopThreeCards();
 
         foreach (var card in cards)
         {
@@ -76,5 +79,6 @@ public class CardDealerUI : MonoBehaviour
     public void HideProjectManagerCards()
     {
         GameObject.Destroy(projectManagerCardUI);
+        cards.Clear();
     }
 }

@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
 
         foreach (var player in testPlayerList)
         {
-            Debug.Log(player.GetComponent<PlayerManager>().GetPlayerClass().GetRole());
             if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
             {
                 player.GetComponent<MeshRenderer>().material.color = Color.green;
