@@ -6,17 +6,20 @@ public class GameManager : MonoBehaviour
 {
     public List<GameObject> testPlayerList = new List<GameObject>();
     private List<Player> players = new List<Player>();
-    private Helper _helpers = new Helper();
+    public Helper helpers;
+    public Enums enums;
+    public RoundManager roundManager;
+    public UIManager uIManager;
 
     void Start()
     {
-        //Add class to playerobjects
-        foreach (var player in testPlayerList)
-        {
-            var PlayerManager = player.AddComponent<PlayerManager>();
-            players.Add(PlayerManager.GetPlayerClass());
-        }
+        LoadPlayers();
 
+        roundManager = gameObject.GetComponent<RoundManager>();
+        uIManager.SetGameManager(gameObject);
+        uIManager.IniateRoundUI();
+
+        OnAllPlayersConnected();
     }
 
 
@@ -25,6 +28,28 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void LoadPlayers()
+    {
+        var i = 0;
+        foreach (var player in testPlayerList)
+        {
+            var PlayerManager = player.AddComponent<PlayerManager>();
+            PlayerManager.GetPlayerClass().SetName("player " + i);
+            players.Add(PlayerManager.GetPlayerClass());
+
+            i++;
+        }
+        RoleDivider();
+    }
+
+    public void OnAllPlayersConnected()
+    {
+        roundManager.players = players;
+        roundManager.StartTurn();
+
+    }
+
+
     private void RoleDivider()
     {
         RoleDivider _roleDivider = new RoleDivider();
@@ -32,7 +57,6 @@ public class GameManager : MonoBehaviour
 
         foreach (var player in testPlayerList)
         {
-            Debug.Log(player.GetComponent<PlayerManager>().GetPlayerClass().GetRole());
             if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
             {
                 player.GetComponent<MeshRenderer>().material.color = Color.green;
@@ -47,5 +71,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
 
 }

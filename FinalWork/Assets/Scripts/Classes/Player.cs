@@ -4,11 +4,24 @@ using UnityEngine;
 
 public class Player
 {
+    string name;
     int playerID;
     int role;
 
     bool wasTeamLeader;
     bool isTeamLeader;
+
+    bool isDead;
+
+    public void SetName(string name)
+    {
+        this.name = name;
+    }
+
+    public string GetName()
+    {
+        return name;
+    }
 
     public void SetRole(int role)
     {
@@ -45,6 +58,16 @@ public class Player
     public bool GetIsTeamLeader()
     {
         return isTeamLeader;
+    }
+
+    public void SetIsDead(bool isDead)
+    {
+        this.isDead = isDead;
+    }
+
+    public bool GetIsDead()
+    {
+        return isDead;
     }
 
 }
