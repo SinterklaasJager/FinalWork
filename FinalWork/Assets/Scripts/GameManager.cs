@@ -13,13 +13,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        LoadPlayers();
-
         roundManager = gameObject.GetComponent<RoundManager>();
         uIManager.SetGameManager(gameObject);
         uIManager.IniateRoundUI();
 
-        OnAllPlayersConnected();
+        LoadPlayers();
+
     }
 
 
@@ -45,6 +44,7 @@ public class GameManager : MonoBehaviour
     public void OnAllPlayersConnected()
     {
         roundManager.players = players;
+        roundManager.uIManager = uIManager;
         roundManager.StartTurn();
 
     }
@@ -70,7 +70,13 @@ public class GameManager : MonoBehaviour
                 player.GetComponent<MeshRenderer>().material.color = Color.blue;
             }
         }
+
+        OnAllPlayersConnected();
     }
 
+    public List<Player> GetPlayers()
+    {
+        return players;
+    }
 
 }

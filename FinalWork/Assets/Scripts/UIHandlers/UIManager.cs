@@ -5,11 +5,20 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     private GameObject gameManager;
+
+    [Header("UI Objects")]
+    [SerializeField] private GameObject AssistantCardUIObj;
+    [SerializeField] private GameObject ProjectManagerCardUIObj;
+    [SerializeField] private GameObject CardDealerUIObj;
+    [SerializeField] private GameObject RoundUIObj;
+    [SerializeField] private GameObject PickAnAssistantUIObj;
+
+    [Header("UI Instances")]
     public GameObject AssistantCardUI;
     public GameObject ProjectManagerCardUI;
     public GameObject CardDealerUI;
     public GameObject RoundUI;
-
+    public GameObject PickAnAssistantUI;
     public void SetGameManager(GameObject gameManager)
     {
         this.gameManager = gameManager;
@@ -23,8 +32,13 @@ public class UIManager : MonoBehaviour
 
     public void IniateRoundUI()
     {
-        RoundUI = Instantiate(RoundUI, transform);
-        gameManager.GetComponent<GameManager>().roundManager.uIManager = gameObject.GetComponent<UIManager>();
+        RoundUI = Instantiate(RoundUIObj, transform);
+
     }
 
+    public void StartPickAnAssistantUI()
+    {
+        PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
+        PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager);
+    }
 }
