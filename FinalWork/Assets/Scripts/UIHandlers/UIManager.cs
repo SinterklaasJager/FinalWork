@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject CardDealerUIObj;
     [SerializeField] private GameObject RoundUIObj;
     [SerializeField] private GameObject PickAnAssistantUIObj;
+    [SerializeField] private GameObject VoteTeamLeaderObj;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -19,6 +20,7 @@ public class UIManager : MonoBehaviour
     public GameObject CardDealerUI;
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
+    public GameObject VoteTeamLeaderUI;
     public void SetGameManager(GameObject gameManager)
     {
         this.gameManager = gameManager;
@@ -40,5 +42,11 @@ public class UIManager : MonoBehaviour
     {
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
         PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager);
+    }
+
+    public void StartLeaderVotingUI(string tl, string pl, GameObject voteScript)
+    {
+        VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
+        VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
     }
 }
