@@ -9,4 +9,10 @@ public class Enums : MonoBehaviour
         good,
         bad
     }
+
+    public struct EventHandlers
+    {
+        public System.Action<Player> onAssistantPicked;
+        public System.Action<bool> OnVoteEnd;
+    }
 }

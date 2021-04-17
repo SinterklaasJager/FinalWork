@@ -12,7 +12,6 @@ public class PickAssistantBtnScript : MonoBehaviour
 
     [SerializeField]
     TextMeshProUGUI txtPlayerName;
-
     private GameObject PickAnAssistantUI;
 
     public void SetPlayer(Player player, GameObject PickAnAssistantUI)

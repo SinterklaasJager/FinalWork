@@ -5,13 +5,16 @@ using UnityEngine;
 public class VoteForOrganisers : MonoBehaviour
 {
     private int totalVotesCast, yesVotes, totalVoters;
-    private GameObject gameManager, uiManager;
+    private GameManager gameManager;
+    private UIManager uiManager;
     private List<Player> players;
     private Player teamLeader, assistant;
 
-    public void StartNewVotingRound(GameObject gm, GameObject um, List<Player> pl)
+    public Enums.EventHandlers EventHandlers;
+
+    public void StartNewVotingRound(UIManager um, List<Player> pl)
     {
-        gameManager = gm;
+        gameManager = gameObject.GetComponent<GameManager>();
         uiManager = um;
         players = pl;
 
@@ -35,7 +38,7 @@ public class VoteForOrganisers : MonoBehaviour
 
                 totalVoters++;
                 //trigger ui;
-                uiManager.GetComponent<UIManager>().StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+                uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
             }
         }
     }
@@ -49,12 +52,23 @@ public class VoteForOrganisers : MonoBehaviour
         }
         if (totalVotesCast == totalVoters)
         {
-            FinishVotingRound();
+            var voteSucceeds = false;
+            if (yesVotes >= totalVotesCast / 2)
+            {
+                voteSucceeds = true;
+            }
+
+
+            FinishVotingRound(voteSucceeds);
         }
     }
 
-    public void FinishVotingRound()
+    public void FinishVotingRound(bool voteSucceeds)
     {
+        if (EventHandlers.OnVoteEnd != null)
+        {
+            EventHandlers.OnVoteEnd?.Invoke(voteSucceeds);
+        }
 
     }
 }

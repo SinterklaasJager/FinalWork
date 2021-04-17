@@ -38,10 +38,19 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void StartPickAnAssistantUI()
+    public void StartAssistantCardDrawUI()
+    {
+        CardDealerUI.GetComponent<CardDealerUI>().ShowAssistantCards();
+    }
+    public void StartLeaderCardDrawUI()
+    {
+        CardDealerUI.GetComponent<CardDealerUI>().ShowProjectManagerCards();
+    }
+    public GameObject StartPickAnAssistantUI()
     {
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
         PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager);
+        return PickAnAssistantUI;
     }
 
     public void StartLeaderVotingUI(string tl, string pl, GameObject voteScript)

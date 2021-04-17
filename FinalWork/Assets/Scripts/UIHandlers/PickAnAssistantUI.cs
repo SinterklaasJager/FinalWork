@@ -9,9 +9,10 @@ public class PickAnAssistantUI : MonoBehaviour
     [SerializeField]
     private GameObject buttonContainer, pressedButton;
     public UIManager uIManager;
-
     private GameObject gameManager, btnPlayer;
     private List<Player> players;
+
+    public Enums.EventHandlers Events;
 
     public void SetUiManager(GameObject uIManager, GameObject gameManager)
     {
@@ -42,6 +43,7 @@ public class PickAnAssistantUI : MonoBehaviour
         var player = btn.GetComponent<PickAssistantBtnScript>().GetSelectedPlayer();
         player.SetIsAssistantCandidate(true);
         //transition to voting ui
+        Events.onAssistantPicked?.Invoke(player);
         Destroy(gameObject);
     }
 

@@ -6,7 +6,7 @@ public class Player
 {
     string name;
     int playerID, role;
-    bool wasTeamLeader, isTeamLeader, isDead, isAssistantCandidate, isTeamLeaderCandidate;
+    bool wasAssistant, isTeamLeader, isAssistant, isDead, isAssistantCandidate, isTeamLeaderCandidate;
 
 
     public void SetName(string name)
@@ -37,14 +37,14 @@ public class Player
     {
         return playerID;
     }
-    public void SetWasTeamLeader(bool wasTeamLeader)
+    public void SetWasAssistant(bool wasAssistant)
     {
-        this.wasTeamLeader = wasTeamLeader;
+        this.wasAssistant = wasAssistant;
     }
 
-    public bool GetWasTeamLeader()
+    public bool GetWasAssistant()
     {
-        return wasTeamLeader;
+        return wasAssistant;
     }
     public void SetIsTeamLeader(bool isTeamLeader)
     {
@@ -54,6 +54,16 @@ public class Player
     public bool GetIsTeamLeader()
     {
         return isTeamLeader;
+    }
+
+    public void SetIsAssistant(bool isAssistant)
+    {
+        this.isAssistant = isAssistant;
+    }
+
+    public bool GetIsAssistant()
+    {
+        return isAssistant;
     }
 
     public void SetIsDead(bool isDead)

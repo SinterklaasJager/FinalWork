@@ -4,22 +4,58 @@ using UnityEngine;
 
 public class RoundManager : MonoBehaviour
 {
-    public int turn = 0, round = 0;
+    public int turn = 0, round = 0, failedElections = 0;
     public List<Player> players;
-    private Player previousPlayer, currentPlayer;
+    private Player previousPlayer, currentPlayer, previousAssistant, currentAssistant, assistantCanditate;
+    private GameObject PickAnAssistant;
+    private VoteForOrganisers voteForOrganisers;
     public UIManager uIManager;
     public void StartTurn()
     {
         currentPlayer = players[turn];
-        currentPlayer.SetIsTeamLeader(true);
+        currentPlayer.SetIsTeamLeaderCandidate(true);
         UpdateUI();
-        uIManager.StartPickAnAssistantUI();
+        PickAnAssistant = uIManager.StartPickAnAssistantUI();
+        PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
         //uIManager.GetComponent<CardDealerUI>().ShowAssistantCards();
     }
 
-    public void TeamLeaderPickAssistant()
+    public void OnAssistantPicked(Player assistantCandidate)
     {
+        this.assistantCanditate = assistantCandidate;
+        //start vote round
+        voteForOrganisers.EventHandlers.OnVoteEnd = (succes) => OnVoteEnd(succes);
+        voteForOrganisers.StartNewVotingRound(uIManager, players);
+    }
 
+    public void OnVoteEnd(bool passed)
+    {
+        if (passed)
+        {
+            failedElections = 0;
+            currentAssistant = assistantCanditate;
+            //start Card picker
+        }
+        else
+        {
+            failedElections++;
+            if (failedElections > 2)
+            {
+                ElectionFailed();
+            }
+            else
+            {
+                voteForOrganisers.StartNewVotingRound(uIManager, players);
+            }
+
+        }
+    }
+
+    public void ElectionFailed()
+    {
+        failedElections = 0;
+        //play random card
+        EndTurn();
     }
 
     public void EndTurn()
@@ -31,10 +67,15 @@ public class RoundManager : MonoBehaviour
             round++;
         }
 
-        previousPlayer.SetWasTeamLeader(false);
+        if (previousAssistant != null)
+        {
+            previousAssistant.SetWasAssistant(false);
+        }
         previousPlayer = currentPlayer;
+        previousAssistant = currentAssistant;
         previousPlayer.SetIsTeamLeader(false);
-        previousPlayer.SetWasTeamLeader(true);
+        previousAssistant.SetWasAssistant(true);
+
     }
 
     private void UpdateUI()
