@@ -10,9 +10,16 @@ public class Enums : MonoBehaviour
         bad
     }
 
+    public enum CardPickerType
+    {
+        teamLeader,
+        assistant
+    }
+
     public struct EventHandlers
     {
         public System.Action<Player> onAssistantPicked;
         public System.Action<bool> OnVoteEnd;
+        public System.Action<Enums.CardType> OnCardSelected;
     }
 }

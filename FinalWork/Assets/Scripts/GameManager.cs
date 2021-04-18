@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public RoundManager roundManager;
     public UIManager uIManager;
 
+    public VictoryProgress victoryProgress = new VictoryProgress();
+
     void Start()
     {
         roundManager = gameObject.GetComponent<RoundManager>();

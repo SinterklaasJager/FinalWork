@@ -9,6 +9,7 @@ public class RoundManager : MonoBehaviour
     private Player previousPlayer, currentPlayer, previousAssistant, currentAssistant, assistantCanditate;
     private GameObject PickAnAssistant;
     private VoteForOrganisers voteForOrganisers;
+    private CardDealerUI cardDealer;
     public UIManager uIManager;
     public void StartTurn()
     {
@@ -34,7 +35,10 @@ public class RoundManager : MonoBehaviour
         {
             failedElections = 0;
             currentAssistant = assistantCanditate;
+
             //start Card picker
+            cardDealer = uIManager.StartAssistantCardDrawUI();
+            cardDealer.eventHandlers.OnCardSelected = (selectedCard) => CardPicked(selectedCard);
         }
         else
         {
@@ -55,9 +59,15 @@ public class RoundManager : MonoBehaviour
     {
         failedElections = 0;
         //play random card
+        CardPicked(Enums.CardType.bad);
         EndTurn();
     }
 
+    public void CardPicked(Enums.CardType selectedCard)
+    {
+        //Trigger card choice animation
+        //
+    }
     public void EndTurn()
     {
         turn++;

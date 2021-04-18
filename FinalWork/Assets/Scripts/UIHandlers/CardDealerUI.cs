@@ -13,6 +13,9 @@ public class CardDealerUI : MonoBehaviour
     private CardGeneration cardGeneration;
     private List<Enums.CardType> cards;
 
+    private Enums.CardPickerType currentCardPicker;
+    public Enums.EventHandlers eventHandlers;
+
     private void Start()
     {
         uIManager = gameObject.GetComponent<UIManager>();
@@ -31,7 +34,7 @@ public class CardDealerUI : MonoBehaviour
     public void ShowAssistantCards()
     {
         //if player is assistant;
-
+        currentCardPicker = Enums.CardPickerType.assistant;
         assistantCardUI = Instantiate(uIManager.AssistantCardUI, uIManager.gameObject.transform);
         cards = cardGeneration.GetTopThreeCards();
 
@@ -39,15 +42,18 @@ public class CardDealerUI : MonoBehaviour
 
         foreach (var card in cards)
         {
+            GameObject tempCard;
             if (card == Enums.CardType.good)
             {
-                Instantiate(prefabs.btnGood, assistantCardUI.transform.Find("CardSpot" + i));
+                tempCard = Instantiate(prefabs.btnGood, assistantCardUI.transform.Find("CardSpot" + i));
+
             }
             else
             {
-                Instantiate(prefabs.btnBad, assistantCardUI.transform.Find("CardSpot" + i));
+                tempCard = Instantiate(prefabs.btnBad, assistantCardUI.transform.Find("CardSpot" + i));
             }
 
+            tempCard.GetComponent<CardButtonClick>().SetCardDealerUI(gameObject.GetComponent<CardDealerUI>(), i - 1);
             i++;
         }
 
@@ -60,6 +66,7 @@ public class CardDealerUI : MonoBehaviour
     public void ShowProjectManagerCards()
     {
         //if player is assistant;
+        currentCardPicker = Enums.CardPickerType.teamLeader;
 
         projectManagerCardUI = Instantiate(uIManager.ProjectManagerCardUI, uIManager.gameObject.transform);
 
@@ -80,5 +87,32 @@ public class CardDealerUI : MonoBehaviour
     {
         GameObject.Destroy(projectManagerCardUI);
         cards.Clear();
+    }
+
+    public void CardSelection(int cardNumber)
+    {
+
+        if (currentCardPicker == Enums.CardPickerType.assistant)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i == cardNumber)
+                {
+                    cards.Remove(cards[i]);
+                }
+            }
+
+            ShowProjectManagerCards();
+        }
+        else
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i == cardNumber)
+                {
+                    eventHandlers.OnCardSelected?.Invoke(cards[i]);
+                }
+            }
+        }
     }
 }

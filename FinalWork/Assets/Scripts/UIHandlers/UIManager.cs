@@ -38,9 +38,10 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void StartAssistantCardDrawUI()
+    public CardDealerUI StartAssistantCardDrawUI()
     {
         CardDealerUI.GetComponent<CardDealerUI>().ShowAssistantCards();
+        return CardDealerUI.GetComponent<CardDealerUI>();
     }
     public void StartLeaderCardDrawUI()
     {

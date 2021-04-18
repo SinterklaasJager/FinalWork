@@ -78,21 +78,24 @@ public class VictoryProgress
     {
         return goodPoints;
     }
-    public int GeBadPoints()
+    public int GetBadPoints()
     {
         return badPoints;
     }
 
-    public void SetGoodPoints(int goodPoints)
+    public void SetPoints(Enums.CardType cardType)
     {
-        this.goodPoints = goodPoints;
-    }
+        if (cardType == Enums.CardType.good)
+        {
+            goodPoints++;
+        }
+        else
+        {
+            badPoints++;
+        }
+        CheckPoints();
 
-    public void SetBadPoints(int badPoints)
-    {
-        this.badPoints = badPoints;
     }
-
 
 
 
