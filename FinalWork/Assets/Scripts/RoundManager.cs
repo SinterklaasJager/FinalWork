@@ -8,9 +8,21 @@ public class RoundManager : MonoBehaviour
     public List<Player> players;
     private Player previousPlayer, currentPlayer, previousAssistant, currentAssistant, assistantCanditate;
     private GameObject PickAnAssistant;
+    private GameManager gameManager;
     private VoteForOrganisers voteForOrganisers;
     private CardDealerUI cardDealer;
     public UIManager uIManager;
+    private bool electionFailed;
+
+    public void RoundSetUp(GameManager gm, UIManager um)
+    {
+        gameManager = gm;
+        uIManager = um;
+        voteForOrganisers = gameManager.voteForOrganisers;
+
+        StartTurn();
+    }
+
     public void StartTurn()
     {
         currentPlayer = players[turn];
@@ -18,7 +30,6 @@ public class RoundManager : MonoBehaviour
         UpdateUI();
         PickAnAssistant = uIManager.StartPickAnAssistantUI();
         PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
-        //uIManager.GetComponent<CardDealerUI>().ShowAssistantCards();
     }
 
     public void OnAssistantPicked(Player assistantCandidate)
@@ -49,7 +60,7 @@ public class RoundManager : MonoBehaviour
             }
             else
             {
-                voteForOrganisers.StartNewVotingRound(uIManager, players);
+                StartTurn();
             }
 
         }
@@ -65,6 +76,7 @@ public class RoundManager : MonoBehaviour
 
     public void CardPicked(Enums.CardType selectedCard)
     {
+        gameManager.victoryProgress.SetPoints(selectedCard);
         //Trigger card choice animation
         //
     }
@@ -82,9 +94,13 @@ public class RoundManager : MonoBehaviour
             previousAssistant.SetWasAssistant(false);
         }
         previousPlayer = currentPlayer;
-        previousAssistant = currentAssistant;
         previousPlayer.SetIsTeamLeader(false);
-        previousAssistant.SetWasAssistant(true);
+        if (!electionFailed)
+        {
+            previousAssistant = currentAssistant;
+            previousAssistant.SetWasAssistant(true);
+        }
+
 
     }
 

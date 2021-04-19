@@ -7,9 +7,6 @@ public class UIManager : MonoBehaviour
     private GameObject gameManager;
 
     [Header("UI Objects")]
-    [SerializeField] private GameObject AssistantCardUIObj;
-    [SerializeField] private GameObject ProjectManagerCardUIObj;
-    [SerializeField] private GameObject CardDealerUIObj;
     [SerializeField] private GameObject RoundUIObj;
     [SerializeField] private GameObject PickAnAssistantUIObj;
     [SerializeField] private GameObject VoteTeamLeaderObj;
@@ -17,21 +14,20 @@ public class UIManager : MonoBehaviour
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
     public GameObject ProjectManagerCardUI;
-    public GameObject CardDealerUI;
+    public CardDealerUI CardDealerUI;
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
     public void SetGameManager(GameObject gameManager)
     {
         this.gameManager = gameManager;
-        CardDealerUI.GetComponent<CardDealerUI>().SetGameManager(gameManager);
+
     }
 
     public GameObject GetGameManager()
     {
         return gameManager;
     }
-
     public void IniateRoundUI()
     {
         RoundUI = Instantiate(RoundUIObj, transform);
@@ -40,8 +36,10 @@ public class UIManager : MonoBehaviour
 
     public CardDealerUI StartAssistantCardDrawUI()
     {
-        CardDealerUI.GetComponent<CardDealerUI>().ShowAssistantCards();
-        return CardDealerUI.GetComponent<CardDealerUI>();
+        CardDealerUI = gameObject.AddComponent<CardDealerUI>();
+        CardDealerUI.SetGameManager(gameManager);
+        CardDealerUI.ShowAssistantCards();
+        return CardDealerUI;
     }
     public void StartLeaderCardDrawUI()
     {

@@ -20,9 +20,16 @@ public class VoteForTeamLeaderUI : MonoBehaviour
     public void OnYesClick()
     {
         voteForLeaderScript.AddVote(true);
+        Dismiss();
     }
     public void OnNoClick()
     {
         voteForLeaderScript.AddVote(false);
+        Dismiss();
+    }
+
+    public void Dismiss()
+    {
+        Destroy(gameObject);
     }
 }

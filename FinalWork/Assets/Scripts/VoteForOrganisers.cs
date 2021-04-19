@@ -28,19 +28,29 @@ public class VoteForOrganisers : MonoBehaviour
             {
                 if (player.GetIsTeamLeaderCandidate())
                 {
+                    Debug.Log("leader cand: " + player.GetName());
                     teamLeader = player;
                 }
 
                 if (player.GetisAssistantCandidate())
                 {
+                    Debug.Log("ass cand: " + player.GetName());
                     assistant = player;
                 }
 
                 totalVoters++;
                 //trigger ui;
-                uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+
             }
+
         }
+        //for loop for testing purposes only
+
+        foreach (var player in players)
+        {
+            uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+        }
+
     }
 
     public void AddVote(bool vote)
