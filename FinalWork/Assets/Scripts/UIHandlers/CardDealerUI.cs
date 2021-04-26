@@ -13,16 +13,12 @@ public class CardDealerUI : MonoBehaviour
     private CardGeneration cardGeneration;
     private List<Enums.CardType> cards;
 
-    private void Start()
-    {
-        uIManager = gameObject.GetComponent<UIManager>();
-        uIManager.CardDealerUI = gameObject;
-
-
-    }
+    private Enums.CardPickerType currentCardPicker;
+    public Enums.EventHandlers eventHandlers;
 
     public void SetGameManager(GameObject gameManager)
     {
+        uIManager = gameObject.GetComponent<UIManager>();
         this.gameManager = gameManager;
         prefabs = gameManager.GetComponent<SpawnableObjects>();
         cardGeneration = gameManager.GetComponent<CardGeneration>();
@@ -31,23 +27,27 @@ public class CardDealerUI : MonoBehaviour
     public void ShowAssistantCards()
     {
         //if player is assistant;
-
+        Debug.Log(uIManager);
+        currentCardPicker = Enums.CardPickerType.assistant;
         assistantCardUI = Instantiate(uIManager.AssistantCardUI, uIManager.gameObject.transform);
         cards = cardGeneration.GetTopThreeCards();
 
         int i = 1;
-
+        GameObject tempCard = null;
         foreach (var card in cards)
         {
+
             if (card == Enums.CardType.good)
             {
-                Instantiate(prefabs.btnGood, assistantCardUI.transform.Find("CardSpot" + i));
+                tempCard = Instantiate(prefabs.btnGood, assistantCardUI.transform.Find("CardSpot" + i));
+
             }
             else
             {
-                Instantiate(prefabs.btnBad, assistantCardUI.transform.Find("CardSpot" + i));
+                tempCard = Instantiate(prefabs.btnBad, assistantCardUI.transform.Find("CardSpot" + i));
             }
 
+            tempCard.GetComponent<CardButtonClick>().SetCardDealerUI(gameObject.GetComponent<CardDealerUI>(), i - 1);
             i++;
         }
 
@@ -60,19 +60,24 @@ public class CardDealerUI : MonoBehaviour
     public void ShowProjectManagerCards()
     {
         //if player is assistant;
+        currentCardPicker = Enums.CardPickerType.teamLeader;
 
         projectManagerCardUI = Instantiate(uIManager.ProjectManagerCardUI, uIManager.gameObject.transform);
-
+        int i = 1;
+        GameObject tempCard = null;
         foreach (var card in cards)
         {
             if (card == Enums.CardType.good)
             {
-                Instantiate(prefabs.btnGood, projectManagerCardUI.transform);
+                tempCard = Instantiate(prefabs.btnGood, projectManagerCardUI.transform.Find("CardSpot" + i));
             }
             else
             {
-                Instantiate(prefabs.btnBad, projectManagerCardUI.transform);
+                tempCard = Instantiate(prefabs.btnBad, projectManagerCardUI.transform.Find("CardSpot" + i));
             }
+
+            tempCard.GetComponent<CardButtonClick>().SetCardDealerUI(gameObject.GetComponent<CardDealerUI>(), i - 1);
+            i++;
         }
 
     }
@@ -80,5 +85,34 @@ public class CardDealerUI : MonoBehaviour
     {
         GameObject.Destroy(projectManagerCardUI);
         cards.Clear();
+    }
+
+    public void CardSelection(int cardNumber)
+    {
+
+        if (currentCardPicker == Enums.CardPickerType.assistant)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i == cardNumber)
+                {
+                    cards.Remove(cards[i]);
+                }
+            }
+
+            ShowProjectManagerCards();
+            HideAssistantCards();
+        }
+        else
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i == cardNumber)
+                {
+                    eventHandlers.OnCardSelected?.Invoke(cards[i]);
+                    HideProjectManagerCards();
+                }
+            }
+        }
     }
 }

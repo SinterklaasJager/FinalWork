@@ -4,23 +4,82 @@ using UnityEngine;
 
 public class RoundManager : MonoBehaviour
 {
-    public int turn = 0, round = 0;
+    public int turn = 0, round = 0, failedElections = 0;
     public List<Player> players;
-    private Player previousPlayer, currentPlayer;
+    private Player previousPlayer, currentPlayer, previousAssistant, currentAssistant, assistantCanditate;
+    private GameObject PickAnAssistant;
+    private GameManager gameManager;
+    private VoteForOrganisers voteForOrganisers;
+    private CardDealerUI cardDealer;
     public UIManager uIManager;
+    private bool electionFailed;
+
+    public void RoundSetUp(GameManager gm, UIManager um)
+    {
+        gameManager = gm;
+        uIManager = um;
+        voteForOrganisers = gameManager.voteForOrganisers;
+
+        StartTurn();
+    }
+
     public void StartTurn()
     {
         currentPlayer = players[turn];
-        currentPlayer.SetIsTeamLeader(true);
+        currentPlayer.SetIsTeamLeaderCandidate(true);
         UpdateUI();
-        uIManager.GetComponent<CardDealerUI>().ShowAssistantCards();
+        PickAnAssistant = uIManager.StartPickAnAssistantUI();
+        PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
     }
 
-    public void TeamLeaderPickAssistant()
+    public void OnAssistantPicked(Player assistantCandidate)
     {
-
+        this.assistantCanditate = assistantCandidate;
+        //start vote round
+        voteForOrganisers.EventHandlers.OnVoteEnd = (succes) => OnVoteEnd(succes);
+        voteForOrganisers.StartNewVotingRound(uIManager, players);
     }
 
+    public void OnVoteEnd(bool passed)
+    {
+        if (passed)
+        {
+            failedElections = 0;
+            currentAssistant = assistantCanditate;
+
+            //start Card picker
+            cardDealer = uIManager.StartAssistantCardDrawUI();
+            cardDealer.eventHandlers.OnCardSelected = (selectedCard) => CardPicked(selectedCard);
+        }
+        else
+        {
+            failedElections++;
+            if (failedElections > 2)
+            {
+                ElectionFailed();
+            }
+            else
+            {
+                StartTurn();
+            }
+
+        }
+    }
+
+    public void ElectionFailed()
+    {
+        failedElections = 0;
+        //play random card
+        CardPicked(Enums.CardType.bad);
+        EndTurn();
+    }
+
+    public void CardPicked(Enums.CardType selectedCard)
+    {
+        gameManager.victoryProgress.SetPoints(selectedCard);
+        //Trigger card choice animation
+        //
+    }
     public void EndTurn()
     {
         turn++;
@@ -30,10 +89,19 @@ public class RoundManager : MonoBehaviour
             round++;
         }
 
-        previousPlayer.SetWasTeamLeader(false);
+        if (previousAssistant != null)
+        {
+            previousAssistant.SetWasAssistant(false);
+        }
         previousPlayer = currentPlayer;
         previousPlayer.SetIsTeamLeader(false);
-        previousPlayer.SetWasTeamLeader(true);
+        if (!electionFailed)
+        {
+            previousAssistant = currentAssistant;
+            previousAssistant.SetWasAssistant(true);
+        }
+
+
     }
 
     private void UpdateUI()

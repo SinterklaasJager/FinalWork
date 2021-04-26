@@ -7,4 +7,6 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject btnGood;
     public GameObject btnBad;
 
+    public GameObject btnPickAnAssistant;
+
 }

@@ -10,21 +10,17 @@ public class GameManager : MonoBehaviour
     public Enums enums;
     public RoundManager roundManager;
     public UIManager uIManager;
+    public VoteForOrganisers voteForOrganisers;
+    public VictoryProgress victoryProgress = new VictoryProgress();
 
     void Start()
     {
-        LoadPlayers();
-
         roundManager = gameObject.GetComponent<RoundManager>();
+        voteForOrganisers = gameObject.GetComponent<VoteForOrganisers>();
         uIManager.SetGameManager(gameObject);
         uIManager.IniateRoundUI();
 
-        OnAllPlayersConnected();
-    }
-
-
-    void Update()
-    {
+        LoadPlayers();
 
     }
 
@@ -45,7 +41,7 @@ public class GameManager : MonoBehaviour
     public void OnAllPlayersConnected()
     {
         roundManager.players = players;
-        roundManager.StartTurn();
+        roundManager.RoundSetUp(gameObject.GetComponent<GameManager>(), uIManager);
 
     }
 
@@ -70,7 +66,13 @@ public class GameManager : MonoBehaviour
                 player.GetComponent<MeshRenderer>().material.color = Color.blue;
             }
         }
+
+        OnAllPlayersConnected();
     }
 
+    public List<Player> GetPlayers()
+    {
+        return players;
+    }
 
 }

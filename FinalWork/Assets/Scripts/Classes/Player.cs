@@ -5,13 +5,9 @@ using UnityEngine;
 public class Player
 {
     string name;
-    int playerID;
-    int role;
+    int playerID, role;
+    bool wasAssistant, isTeamLeader, isAssistant, isDead, isAssistantCandidate, isTeamLeaderCandidate;
 
-    bool wasTeamLeader;
-    bool isTeamLeader;
-
-    bool isDead;
 
     public void SetName(string name)
     {
@@ -41,14 +37,14 @@ public class Player
     {
         return playerID;
     }
-    public void SetWasTeamLeader(bool wasTeamLeader)
+    public void SetWasAssistant(bool wasAssistant)
     {
-        this.wasTeamLeader = wasTeamLeader;
+        this.wasAssistant = wasAssistant;
     }
 
-    public bool GetWasTeamLeader()
+    public bool GetWasAssistant()
     {
-        return wasTeamLeader;
+        return wasAssistant;
     }
     public void SetIsTeamLeader(bool isTeamLeader)
     {
@@ -60,6 +56,16 @@ public class Player
         return isTeamLeader;
     }
 
+    public void SetIsAssistant(bool isAssistant)
+    {
+        this.isAssistant = isAssistant;
+    }
+
+    public bool GetIsAssistant()
+    {
+        return isAssistant;
+    }
+
     public void SetIsDead(bool isDead)
     {
         this.isDead = isDead;
@@ -69,5 +75,25 @@ public class Player
     {
         return isDead;
     }
+    public void SetIsAssistantCandidate(bool isAssistantCandidate)
+    {
+        this.isAssistantCandidate = isAssistantCandidate;
+    }
+
+    public bool GetisAssistantCandidate()
+    {
+        return isAssistantCandidate;
+    }
+
+    public void SetIsTeamLeaderCandidate(bool IsTeamLeaderCandidate)
+    {
+        this.isTeamLeaderCandidate = IsTeamLeaderCandidate;
+    }
+
+    public bool GetIsTeamLeaderCandidate()
+    {
+        return isTeamLeaderCandidate;
+    }
+
 
 }
