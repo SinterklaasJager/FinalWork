@@ -12,11 +12,13 @@ public class GameManager : MonoBehaviour
     public UIManager uIManager;
     public VoteForOrganisers voteForOrganisers;
     public VictoryProgress victoryProgress = new VictoryProgress();
+    public CardGeneration cardGeneration;
 
     void Start()
     {
         roundManager = gameObject.GetComponent<RoundManager>();
         voteForOrganisers = gameObject.GetComponent<VoteForOrganisers>();
+        cardGeneration = gameObject.GetComponent<CardGeneration>();
         uIManager.SetGameManager(gameObject);
         uIManager.IniateRoundUI();
 

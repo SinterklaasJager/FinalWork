@@ -36,6 +36,20 @@ public class CardGeneration : MonoBehaviour
         }
 
     }
+    public Enums.CardType GetTopCard()
+    {
+        Enums.CardType topCard;
+
+        if (cardDeck == null || cardDeck.Count < 3)
+        {
+            GenerateCardDeck();
+        }
+
+        topCard = cardDeck[0];
+        cardDeck.Remove(cardDeck[0]);
+
+        return topCard;
+    }
 
     public List<Enums.CardType> GetTopThreeCards()
     {
@@ -44,14 +58,10 @@ public class CardGeneration : MonoBehaviour
         if (cardDeck == null || cardDeck.Count < 3)
         {
             GenerateCardDeck();
-            Debug.Log(cardDeck[0]);
-            Debug.Log(cardDeck[1]);
-            Debug.Log(cardDeck[2]);
         }
 
         for (int i = 0; i < 3; i++)
         {
-            Debug.Log(cardDeck[i]);
             topThreeCards.Add(cardDeck[i]);
         }
 

@@ -70,6 +70,7 @@ public class RoundManager : MonoBehaviour
     {
         failedElections = 0;
         //play random card
+        var randomCard = gameManager.cardGeneration.GetTopCard();
         CardPicked(Enums.CardType.bad);
         EndTurn();
     }
