@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class RoundManager : MonoBehaviour
+public class RoundManager : NetworkBehaviour
 {
     public int turn = 0, round = 0, failedElections = 0;
     public List<Player> players;
@@ -28,8 +29,14 @@ public class RoundManager : MonoBehaviour
         currentPlayer = players[turn];
         currentPlayer.SetIsTeamLeaderCandidate(true);
         UpdateUI();
-        PickAnAssistant = uIManager.StartPickAnAssistantUI();
-        PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+        Debug.Log("currentPlayer: " + currentPlayer.GetPlayerID());
+        Debug.Log("localPlayerID: " + ClientScene.localPlayer.netId);
+        if (currentPlayer.GetPlayerID() == ClientScene.localPlayer.netId)
+        {
+            PickAnAssistant = uIManager.StartPickAnAssistantUI();
+            PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+        }
+
     }
 
     public void OnAssistantPicked(Player assistantCandidate)
@@ -71,7 +78,7 @@ public class RoundManager : MonoBehaviour
         failedElections = 0;
         //play random card
         var randomCard = gameManager.cardGeneration.GetTopCard();
-        CardPicked(Enums.CardType.bad);
+        CardPicked(randomCard);
         EndTurn();
     }
 

@@ -22,54 +22,18 @@ public class GameManager : MonoBehaviour
         uIManager.SetGameManager(gameObject);
         uIManager.IniateRoundUI();
 
-        LoadPlayers();
-
     }
 
-    private void LoadPlayers()
+    public void OnAllPlayersConnected(List<Player> playerList)
     {
-        var i = 0;
-        foreach (var player in testPlayerList)
-        {
-            var PlayerManager = player.AddComponent<PlayerManager>();
-            PlayerManager.GetPlayerClass().SetName("player " + i);
-            players.Add(PlayerManager.GetPlayerClass());
+        players = playerList;
 
-            i++;
-        }
-        RoleDivider();
-    }
-
-    public void OnAllPlayersConnected()
-    {
-        roundManager.players = players;
-        roundManager.RoundSetUp(gameObject.GetComponent<GameManager>(), uIManager);
-
-    }
-
-
-    private void RoleDivider()
-    {
         RoleDivider _roleDivider = new RoleDivider();
         _roleDivider.GivePlayersRoles(players);
 
-        foreach (var player in testPlayerList)
-        {
-            if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 0))
-            {
-                player.GetComponent<MeshRenderer>().material.color = Color.green;
-            }
-            else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 1))
-            {
-                player.GetComponent<MeshRenderer>().material.color = Color.red;
-            }
-            else if ((player.GetComponent<PlayerManager>().GetPlayerClass().GetRole() == 2))
-            {
-                player.GetComponent<MeshRenderer>().material.color = Color.blue;
-            }
-        }
+        roundManager.players = players;
+        roundManager.RoundSetUp(gameObject.GetComponent<GameManager>(), uIManager);
 
-        OnAllPlayersConnected();
     }
 
     public List<Player> GetPlayers()
