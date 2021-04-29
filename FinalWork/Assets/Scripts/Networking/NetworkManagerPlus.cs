@@ -6,25 +6,32 @@ using UnityEngine;
 public class NetworkManagerPlus : NetworkManager
 {
     private List<Player> players = new List<Player>();
+    public List<GameObject> playerObjects = new List<GameObject>();
 
-    [SyncVar] private int amountOfPlayers;
+    public int amountOfPlayers = 0;
     public int MaxAmountOfPlayers;
 
     private GameManager gameManager;
 
-    public override void Awake()
-    {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-    }
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        GameObject go = Instantiate(playerPrefab);
+        Debug.Log("connect player!");
+        GameObject go = Instantiate(playerPrefab, new Vector3(Random.Range(-7.5f, 7.5f), 4, Random.Range(-7.5f, 7.5f)), Quaternion.identity);
         var player = new Player();
+        var connectionId = conn.connectionId;
+
         player.SetName("player " + amountOfPlayers);
-        player.SetPlayerID(conn.connectionId);
-        players.Add(player);
-        // increment the index after setting on player, so first player starts at 0
-        amountOfPlayers++;
+        player.SetPlayerID(connectionId);
+        // players.Add(player);
+        // playerObjects.Add(go);
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        amountOfPlayers = gameManager.AddPlayer(player, go);
+
+        go.GetComponent<PlayerManager>().SetPlayerClass(player);
+
+        //Testing
+        playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
+
         Debug.Log("amountOfPlayers: " + amountOfPlayers);
         NetworkServer.AddPlayerForConnection(conn, go);
 
@@ -39,6 +46,8 @@ public class NetworkManagerPlus : NetworkManager
 
     public void StartGame()
     {
-        gameManager.OnAllPlayersConnected(players);
+        gameManager.OnAllPlayersConnected();
+        players.Clear();
+        playerObjects.Clear();
     }
 }

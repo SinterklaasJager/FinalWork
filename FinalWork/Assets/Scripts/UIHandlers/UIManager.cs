@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class UIManager : MonoBehaviour
+public class UIManager : NetworkBehaviour
 {
     private GameObject gameManager;
 
@@ -28,11 +29,15 @@ public class UIManager : MonoBehaviour
     {
         return gameManager;
     }
-    public void IniateRoundUI()
+    public void IniateRoundUI(RoundManager rm)
     {
         RoundUI = Instantiate(RoundUIObj, transform);
+        rm.SetRoundUI(RoundUI);
+        Debug.Log("Iniate Round UI: " + RoundUI);
+        NetworkServer.Spawn(RoundUI);
 
     }
+
 
     public CardDealerUI StartAssistantCardDrawUI()
     {
@@ -41,10 +46,6 @@ public class UIManager : MonoBehaviour
         CardDealerUI.ShowAssistantCards();
         return CardDealerUI;
     }
-    public void StartLeaderCardDrawUI()
-    {
-        CardDealerUI.GetComponent<CardDealerUI>().ShowProjectManagerCards();
-    }
     public GameObject StartPickAnAssistantUI()
     {
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
@@ -52,6 +53,7 @@ public class UIManager : MonoBehaviour
         return PickAnAssistantUI;
     }
 
+    [ClientRpc]
     public void StartLeaderVotingUI(string tl, string pl, GameObject voteScript)
     {
         VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);

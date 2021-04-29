@@ -30,9 +30,12 @@ public class PickAnAssistantUI : MonoBehaviour
         {
             //if not player == currentplayer
             //else setteamleadercandidate(true)
+            if (!player.GetIsTeamLeaderCandidate())
+            {
+                var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
+                btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject);
+            }
 
-            var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
-            btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject);
 
         }
 

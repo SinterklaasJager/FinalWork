@@ -1,61 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class VoteForOrganisers : MonoBehaviour
+using Mirror;
+public class VoteForOrganisers : NetworkBehaviour
 {
-    private int totalVotesCast, yesVotes, totalVoters;
+    [SyncVar] private int totalVotesCast, yesVotes, totalVoters;
     private GameManager gameManager;
     private UIManager uiManager;
-    private List<Player> players;
-    private Player teamLeader, assistant;
+    private SyncList<Player> players = new SyncList<Player>();
+    private Player teamLeader, assistant, currentPlayer;
 
     public Enums.EventHandlers EventHandlers;
 
-    public void StartNewVotingRound(UIManager um, List<Player> pl)
+    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate)
     {
+        assistant = assistantCandidate;
+        teamLeader = leaderCandidate;
+        currentPlayer = NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass();
         gameManager = gameObject.GetComponent<GameManager>();
         uiManager = um;
         players = pl;
-
-        totalVotesCast = 0;
-        yesVotes = 0;
-        totalVoters = 0;
 
         foreach (var player in players)
         {
             if (!player.GetIsDead())
             {
-                if (player.GetIsTeamLeaderCandidate())
-                {
-                    Debug.Log("leader cand: " + player.GetName());
-                    teamLeader = player;
-                }
-
-                if (player.GetisAssistantCandidate())
-                {
-                    Debug.Log("ass cand: " + player.GetName());
-                    assistant = player;
-                }
-
                 totalVoters++;
-                //trigger ui;
-
             }
-
         }
-        //for loop for testing purposes only
 
-        foreach (var player in players)
+        if (!currentPlayer.GetIsDead())
         {
+            AddVoter();
+
             uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
         }
 
     }
 
+    [Command(requiresAuthority = false)]
+    private void AddVoter()
+    {
+        //totalVoters++;
+
+        Debug.Log("totalvoters: " + totalVoters);
+    }
+    [Command(requiresAuthority = false)]
     public void AddVote(bool vote)
     {
         totalVotesCast++;
+        Debug.Log(totalVotesCast);
         if (vote)
         {
             yesVotes++;
@@ -75,10 +69,13 @@ public class VoteForOrganisers : MonoBehaviour
 
     public void FinishVotingRound(bool voteSucceeds)
     {
+        totalVotesCast = 0;
+        yesVotes = 0;
+        totalVoters = 0;
+
         if (EventHandlers.OnVoteEnd != null)
         {
             EventHandlers.OnVoteEnd?.Invoke(voteSucceeds);
         }
-
     }
 }

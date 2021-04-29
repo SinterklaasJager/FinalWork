@@ -7,10 +7,6 @@ public class RoleDivider
     //0 is goodguy
     //1 is badguy
     //2 is saboteur
-    void Start()
-    {
-
-    }
 
     public void GivePlayersRoles(List<Player> playerList)
     {
