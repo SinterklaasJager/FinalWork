@@ -21,7 +21,7 @@ public class CardDealerUI : MonoBehaviour
         uIManager = gameObject.GetComponent<UIManager>();
         this.gameManager = gameManager;
         prefabs = gameManager.GetComponent<SpawnableObjects>();
-        cardGeneration = gameManager.GetComponent<CardGeneration>();
+        cardGeneration = gameManager.GetComponent<GameManager>().cardGeneration;
     }
 
     public void ShowAssistantCards()

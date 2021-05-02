@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class VictoryProgress
+public class VictoryProgress : NetworkBehaviour
 {
-    private int goodPoints;
-    private int badPoints;
+    [SerializeField]
+    List<GameObject> goodComponents = new List<GameObject>();
+    [SerializeField]
+    List<GameObject> badComponents = new List<GameObject>();
+    [SyncVar] private int goodPoints;
+    [SyncVar] private int badPoints;
+    [SyncVar] private GameManager gameManager;
 
     //3 Badpoints
     //TeamLead can look at top 3 cards
@@ -21,9 +27,15 @@ public class VictoryProgress
 
     //5 Good points
     //Goodguys win
-
+    public void SetGameManager(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
     private void CheckPoints()
     {
+        Debug.Log("goodpoints: " + badPoints);
+        Debug.Log("goodpoints: " + goodPoints);
+
         if (goodPoints == 5)
         {
             GoodGuysWin();
@@ -83,8 +95,10 @@ public class VictoryProgress
         return badPoints;
     }
 
+    [Command(requiresAuthority = false)]
     public void SetPoints(Enums.CardType cardType)
     {
+        Debug.Log("Points: ");
         if (cardType == Enums.CardType.good)
         {
             goodPoints++;
@@ -93,10 +107,28 @@ public class VictoryProgress
         {
             badPoints++;
         }
+
+        AddVisualElement(cardType);
         CheckPoints();
 
     }
 
+    [Command(requiresAuthority = false)]
+    private void AddVisualElement(Enums.CardType cardType)
+    {
+        // GameObject comp;
 
+        if (cardType == Enums.CardType.good)
+        {
+            var comp = Instantiate(gameManager.spawnableObjects.goodRocketComponent, goodComponents[goodPoints - 1].gameObject.transform);
+            NetworkServer.Spawn(comp);
+        }
+        else
+        {
+            var comp = Instantiate(gameManager.spawnableObjects.badRocketComponent, badComponents[badPoints - 1].gameObject.transform);
+            NetworkServer.Spawn(comp);
+        }
 
+        // NetworkServer.Spawn(comp);
+    }
 }

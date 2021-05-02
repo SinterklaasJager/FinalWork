@@ -12,42 +12,86 @@ public class GameManager : NetworkBehaviour
      */
     public Helper helpers;
     public Enums enums;
+    private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj;
+    public UniversalCanvasManager universalCanvas;
+    private GameManager gameManager;
     public RoundManager roundManager;
     public UIManager uIManager;
     public VoteForOrganisers voteForOrganisers;
-    public VictoryProgress victoryProgress = new VictoryProgress();
+    private GameObject victoryProgressObj;
+    public VictoryProgress victoryProgress;
     public CardGeneration cardGeneration;
+    public SpawnableObjects spawnableObjects;
 
 
     void Start()
     {
-        roundManager = gameObject.GetComponent<RoundManager>();
+        // roundManager = gameObject.GetComponent<RoundManager>();
+        gameManager = gameObject.GetComponent<GameManager>();
+        spawnableObjects = gameObject.GetComponent<SpawnableObjects>();
         voteForOrganisers = gameObject.GetComponent<VoteForOrganisers>();
-        cardGeneration = gameObject.GetComponent<CardGeneration>();
-        uIManager.SetGameManager(gameObject);
+        // cardGeneration = gameObject.GetComponent<CardGeneration>();
+
+        universalCanvasObj = Instantiate(spawnableObjects.universalCanvas, transform);
+        universalCanvas = universalCanvasObj.GetComponent<UniversalCanvasManager>();
+        universalCanvas.SetUp(gameManager);
+
+        uIManagerObj = Instantiate(spawnableObjects.UIManager, transform);
+        uIManager = uIManagerObj.GetComponent<UIManager>();
+        uIManager.SetGameManager(gameObject, universalCanvas);
+
+        cardGenerationObj = Instantiate(spawnableObjects.cardGeneration, gameObject.transform);
+        cardGeneration = cardGenerationObj.GetComponent<CardGeneration>();
+        cardGeneration.SetUp(gameManager, helpers);
 
     }
 
-    public int AddPlayer(Player newPlayer, GameObject go)
+    public int AddPlayer(Player newPlayer, GameObject go, NetworkConnection conn)
     {
         syncedPlayers.Add(newPlayer);
         syncedPlayerObjects.Add(go);
 
-        Debug.Log("playersynclist: " + syncedPlayers);
-
         return syncedPlayers.Count;
     }
 
-
+    public void RemovePlayer(NetworkConnection conn)
+    {
+        Debug.Log("Player disconnect, remove player");
+        foreach (var player in syncedPlayers)
+        {
+            if (player.GetPlayerID() == conn.connectionId)
+            {
+                syncedPlayers.Remove(player);
+                foreach (var playerObj in syncedPlayerObjects)
+                {
+                    if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+                    {
+                        syncedPlayerObjects.Remove(playerObj);
+                    }
+                }
+            }
+        }
+    }
     public void OnAllPlayersConnected()
     {
 
         RoleDivider();
 
-        roundManager.RoundSetUp(gameObject.GetComponent<GameManager>(), uIManager);
+        NetworkServer.Spawn(cardGenerationObj);
+        NetworkServer.Spawn(universalCanvasObj);
+        NetworkServer.Spawn(uIManagerObj);
+
+        roundManagerObj = Instantiate(spawnableObjects.roundManager, gameObject.transform);
+        roundManager = roundManagerObj.GetComponent<RoundManager>();
+        NetworkServer.Spawn(roundManagerObj, syncedPlayerObjects[0]);
+        roundManager.RoundSetUp(gameManager, uIManager.gameObject);
+
+        victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameObject.transform);
+        victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
+        NetworkServer.Spawn(victoryProgressObj);
+        victoryProgress.SetGameManager(gameManager);
 
     }
-
 
     private void RoleDivider()
     {

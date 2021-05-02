@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Mirror;
 
-public class PickAnAssistantUI : MonoBehaviour
+public class PickAnAssistantUI : NetworkBehaviour
 {
     [SerializeField]
     private GameObject buttonContainer, pressedButton;
@@ -14,31 +15,33 @@ public class PickAnAssistantUI : MonoBehaviour
 
     public Enums.EventHandlers Events;
 
-    public void SetUiManager(GameObject uIManager, GameObject gameManager)
+    [Command(requiresAuthority = false)]
+    public void SetUiManager(GameObject uIManager, GameObject gameManager, Player currentPlayer)
     {
         this.uIManager = uIManager.GetComponent<UIManager>();
         this.gameManager = gameManager;
         btnPlayer = gameManager.GetComponent<SpawnableObjects>().btnPickAnAssistant;
         players = gameManager.GetComponent<GameManager>().GetPlayers();
 
-        SpawnButtons();
+        //  SpawnButtons(currentPlayer, gameManager.GetComponent<GameManager>());
     }
 
-    public void SpawnButtons()
+    public void SpawnButtons(Player currentPlayer, GameManager gameManager)
     {
-        foreach (var player in players)
+        Debug.Log("spawnableObjects: " + gameManager.spawnableObjects);
+        Debug.Log("btnPickAnAssistant: " + gameManager.spawnableObjects.btnPickAnAssistant);
+        btnPlayer = gameManager.gameObject.GetComponent<SpawnableObjects>().btnPickAnAssistant;
+        foreach (var player in gameManager.syncedPlayers)
         {
+            Debug.Log("players pick assistant: " + player.GetName());
             //if not player == currentplayer
             //else setteamleadercandidate(true)
-            if (!player.GetIsTeamLeaderCandidate())
+            if (player.GetPlayerID() != currentPlayer.GetPlayerID())
             {
                 var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
                 btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject);
             }
-
-
         }
-
     }
 
     public void OnButtonClick(GameObject btn)

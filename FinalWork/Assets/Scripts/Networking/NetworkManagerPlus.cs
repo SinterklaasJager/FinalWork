@@ -13,6 +13,17 @@ public class NetworkManagerPlus : NetworkManager
 
     private GameManager gameManager;
 
+    [SerializeField]
+    private GameObject gameManagerObj;
+
+    public override void OnStartServer()
+    {
+        gameManagerObj = Instantiate(gameManagerObj, new Vector3(0, 0, 0), Quaternion.identity);
+        gameManagerObj.name = "GameManager";
+        NetworkServer.Spawn(gameManagerObj);
+        gameManager = gameManagerObj.GetComponent<GameManager>();
+    }
+
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         Debug.Log("connect player!");
@@ -22,12 +33,12 @@ public class NetworkManagerPlus : NetworkManager
 
         player.SetName("player " + amountOfPlayers);
         player.SetPlayerID(connectionId);
+
         // players.Add(player);
         // playerObjects.Add(go);
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        amountOfPlayers = gameManager.AddPlayer(player, go);
 
         go.GetComponent<PlayerManager>().SetPlayerClass(player);
+        amountOfPlayers = gameManager.AddPlayer(player, go, conn);
 
         //Testing
         playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
@@ -43,7 +54,17 @@ public class NetworkManagerPlus : NetworkManager
 
 
     }
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        foreach (Transform transform in gameManager.uIManager.transform)
+        {
+            Destroy(transform.gameObject);
+        }
 
+        gameManager.RemovePlayer(conn);
+        amountOfPlayers--;
+        base.OnServerDisconnect(conn);
+    }
     public void StartGame()
     {
         gameManager.OnAllPlayersConnected();

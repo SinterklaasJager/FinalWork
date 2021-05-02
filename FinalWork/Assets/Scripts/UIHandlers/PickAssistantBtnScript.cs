@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 public class PickAssistantBtnScript : MonoBehaviour
 {
     private Player player;
@@ -21,7 +20,7 @@ public class PickAssistantBtnScript : MonoBehaviour
         button = gameObject.GetComponent<Button>();
 
         button.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
-        txtPlayerName.text = player.GetName();
+        txtPlayerName.text = "test " + player.GetName();
     }
 
     public void OnButtonClick()

@@ -15,6 +15,7 @@ public class CardButtonClick : MonoBehaviour
 
     public void OnBtnClick()
     {
+        Debug.Log(cardNumber);
         cardDealerUI.CardSelection(cardNumber);
     }
 }

@@ -8,77 +8,118 @@ public class RoundManager : NetworkBehaviour
     [SyncVar] public int turn = 0, round = 0, failedElections = 0;
     public SyncList<Player> players = new SyncList<Player>();
     [SyncVar] private Player previousPlayer, previousAssistant, currentAssistant, assistantCanditate;
-    [SyncVar(hook = nameof(SyncVarTest))] private Player currentPlayer;
-    private Player ConnectedClient;
-    private GameObject PickAnAssistant, ConnectedClientObj;
-    private GameManager gameManager;
-    private VoteForOrganisers voteForOrganisers;
+    [SyncVar(hook = nameof(CurrentPlayerHook))] private Player currentPlayer;
+    private Player connectedClient;
+    private GameObject PickAnAssistant, connectedClientObj;
+    [SyncVar(hook = nameof(gameManagerHook))] private GameManager gameManager;
+    [SyncVar] private VoteForOrganisers voteForOrganisers;
     private CardDealerUI cardDealer;
     private RoundUIHandler roundUI;
     public UIManager uIManager;
+    [SyncVar] private GameObject uIManagerObj;
     private bool electionFailed;
 
-    private void SyncVarTest(Player oldPlayer, Player newPlayer)
+    private void gameManagerHook(GameManager oldGm, GameManager newGm)
+    {
+        uIManager = newGm.uIManager;
+        if (gameManager == null)
+        {
+            gameManager = newGm;
+        }
+    }
+
+    private void CurrentPlayerHook(Player oldPlayer, Player newPlayer)
     {
         Debug.Log("|Sync Var Hook| current player: " + newPlayer.GetName());
+        if (currentPlayer != newPlayer)
+        {
+            currentPlayer = newPlayer;
+        }
+        /* if (roundUI != null)
+         {
+             UpdateUI();
+         }
+         */
     }
-    public void RoundSetUp(GameManager gm, UIManager um)
+
+    [Command]
+    public void RoundSetUp(GameManager gm, GameObject um)
     {
         Debug.Log("Round Setup");
         gameManager = gm;
-        uIManager = um;
+        uIManagerObj = um;
         this.players = gameManager.syncedPlayers;
-        voteForOrganisers = gameManager.voteForOrganisers;
         turn = 0;
-
-        InstantiateRoundUI();
+        round = 0;
+        //  ClientSideRoundSetUp();
+        voteForOrganisers = gameManager.voteForOrganisers;
+        // InstantiateRoundUI();
 
         foreach (var player in this.players)
         {
             if (player == NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass())
             {
-                ConnectedClientObj = NetworkClient.localPlayer.gameObject;
-                ConnectedClient = player;
-
+                connectedClientObj = NetworkClient.localPlayer.gameObject;
+                connectedClient = player;
+                Debug.Log("connected client: " + connectedClient);
             }
         }
 
         StartTurn();
     }
 
+
+    [Command(requiresAuthority = false)]
+    private void SetCurrentPlayer()
+    {
+        //the player whose turn it is.
+        currentPlayer = players[turn];
+        currentPlayer.SetIsTeamLeaderCandidate(true);
+    }
+
+    [Command]
     public void StartTurn()
     {
         Debug.Log("Start Turn");
+
+        //the player whose turn it is.
         currentPlayer = players[turn];
         currentPlayer.SetIsTeamLeaderCandidate(true);
-        UpdateUI();
-        Debug.Log("currentPlayer: " + currentPlayer.GetPlayerID());
-        Debug.Log("localPlayerID: " + NetworkClient.localPlayer.netId);
-        /*
-               if (currentPlayer == ConnectedClient)
-               {
-                   PickAnAssistant = uIManager.StartPickAnAssistantUI();
-                   PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
-               }
-                foreach (var playerObj in gameManager.syncedPlayerObjects)
-                 {
-                     var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
-                     if (player == currentPlayer)
-                     {
-                         Debug.Log("targetrpc player: " + player.GetName());
-                         StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient);
-                     }
-                 }*/
+
+        //UpdateUI();
+        SetUpAssistantPicker();
+        /* 
+             if (currentPlayer == ConnectedClient)
+             {
+                 PickAnAssistant = uIManager.StartPickAnAssistantUI();
+                 PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+             }
+
+              */
+    }
+    //[Command]
+    private void SetUpAssistantPicker()
+    {
+        foreach (var playerObj in gameManager.syncedPlayerObjects)
+        {
+            var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
+            if (player == currentPlayer)
+            {
+                Debug.Log("targetrpc player: " + player.GetName());
+                Debug.Log(uIManager);
+                StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager, currentPlayer, gameManager);
+            }
+        }
     }
 
-    //[TargetRpc]
-    /*
-    private void StartAssistantPicker(NetworkConnection target)
+    [TargetRpc]
+    private void StartAssistantPicker(NetworkConnection target, UIManager um, Player currentPlayer, GameManager gm)
     {
-        PickAnAssistant = uIManager.StartPickAnAssistantUI();
+        PickAnAssistant = um.StartPickAnAssistantUI(currentPlayer);
         PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+        PickAnAssistant.GetComponent<PickAnAssistantUI>().SpawnButtons(currentPlayer, gm);
     }
-    */
+
     public void OnAssistantPicked(Player assistantCandidate)
     {
         this.assistantCanditate = assistantCandidate;
@@ -94,6 +135,7 @@ public class RoundManager : NetworkBehaviour
     }
 
     // [ClientRpc]
+    [Command(requiresAuthority = false)]
     public void OnVoteEnd(bool passed)
     {
         Debug.Log("On Vote End");
@@ -106,11 +148,13 @@ public class RoundManager : NetworkBehaviour
 
             foreach (var playerObj in gameManager.syncedPlayerObjects)
             {
+                Debug.Log("on vote end player obj list: " + gameManager.syncedPlayerObjects);
+                Debug.Log(playerObj);
                 var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
                 if (player == currentAssistant)
                 {
                     Debug.Log("targetrpc player: " + player.GetName());
-                    StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient);
+                    StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager);
                 }
             }
             //start Card picker
@@ -147,43 +191,53 @@ public class RoundManager : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void StartAssistantCardPicker(NetworkConnection target)
+    private void StartAssistantCardPicker(NetworkConnection target, UIManager um)
     {
-        cardDealer = uIManager.StartAssistantCardDrawUI();
+        Debug.Log(um);
+        um.StartAssistantCardDrawUI(gameManager.gameObject);
+        cardDealer = um.gameObject.GetComponent<CardDealerUI>();
         cardDealer.eventHandlers.OnAssistantCardsPicked = (pickedCards) => AssistantCardsPicked(pickedCards);
     }
 
-    [TargetRpc]
-    public void targetGiveCardsToTeamLeader(NetworkConnection target, List<Enums.CardType> pickedCards)
-    {
-        Debug.Log("Give Cards To TeamLeader");
-        cardDealer.ShowProjectManagerCards(pickedCards);
-        cardDealer.eventHandlers.OnCardSelected = (selectedCard) => CardPicked(selectedCard);
-    }
+    [Command(requiresAuthority = false)]
     public void AssistantCardsPicked(List<Enums.CardType> pickedCards)
     {
         Debug.Log("Assistant Cards Picked");
+
         foreach (var playerObj in gameManager.syncedPlayerObjects)
         {
 
             var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
             if (player == currentPlayer)
             {
-                targetGiveCardsToTeamLeader(playerObj.GetComponent<NetworkIdentity>().connectionToClient, pickedCards);
+                targetGiveCardsToTeamLeader(playerObj.GetComponent<NetworkIdentity>().connectionToClient, pickedCards, uIManager);
             }
         }
     }
 
+    [TargetRpc]
+    public void targetGiveCardsToTeamLeader(NetworkConnection target, List<Enums.CardType> pickedCards, UIManager um)
+    {
+        Debug.Log("Give Cards To TeamLeader");
+        cardDealer = um.StartTeamLeaderCardDrawUI(pickedCards);
+        //cardDealer.ShowProjectManagerCards(pickedCards);
+        cardDealer.eventHandlers.OnCardSelected = (selectedCard) => CardPicked(selectedCard);
+    }
+
+
+    [Command(requiresAuthority = false)]
     public void CardPicked(Enums.CardType selectedCard)
     {
         gameManager.victoryProgress.SetPoints(selectedCard);
         //Trigger card choice animation
         //
+        EndTurn();
     }
+    //[ClientRpc]
     public void EndTurn()
     {
         turn++;
-        if (turn > players.Count)
+        if (turn >= players.Count)
         {
             turn = 0;
             round++;
@@ -200,23 +254,30 @@ public class RoundManager : NetworkBehaviour
             previousAssistant = currentAssistant;
             previousAssistant.SetWasAssistant(true);
         }
-    }
 
-    [ClientRpc]
+        StartTurn();
+    }
+    [Command(requiresAuthority = false)]
     private void InstantiateRoundUI()
     {
-        uIManager.IniateRoundUI(gameObject.GetComponent<RoundManager>());
-    }
-    [ClientRpc]
-    private void UpdateUI()
-    {
-        Debug.Log("round UI:" + roundUI);
-        roundUI.UpdateRoundText(round);
-        roundUI.UpdateCurrentPlayerText(players[turn].GetName());
+        Debug.Log("uIManager: " + uIManager);
+        gameManager.universalCanvas.IniateRoundUI(gameObject.GetComponent<RoundManager>());
+
     }
 
+    private void UpdateUI()
+    {
+        //make a shared ui canvas?
+        Debug.Log("round UI:" + roundUI);
+        roundUI = uIManager.RoundUI.GetComponent<RoundUIHandler>();
+        roundUI.UpdateRoundText(round);
+        roundUI.UpdateCurrentPlayerText(currentPlayer.GetName());
+    }
+
+    [ClientRpc]
     public void SetRoundUI(GameObject roundui)
     {
+        Debug.Log("set rount ui: " + roundui);
         this.roundUI = roundui.GetComponent<RoundUIHandler>();
     }
 

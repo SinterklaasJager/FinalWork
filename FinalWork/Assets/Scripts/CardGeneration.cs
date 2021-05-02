@@ -1,23 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CardGeneration : MonoBehaviour
+public class CardGeneration : NetworkBehaviour
 {
     private GameManager gameManager;
     private Helper helpers;
 
-    private List<Enums.CardType> cardDeck;
+    private SyncList<Enums.CardType> cardDeck = new SyncList<Enums.CardType>();
 
-    private void Awake()
+    public void SetUp(GameManager gm, Helper hlp)
     {
-        gameManager = gameObject.GetComponent<GameManager>();
-        helpers = gameObject.GetComponent<Helper>();
+        gameManager = gm;
+        helpers = hlp;
     }
 
     public void GenerateCardDeck()
     {
-        cardDeck = new List<Enums.CardType>();
+        cardDeck = new SyncList<Enums.CardType>();
 
         for (int i = 0; i < 11; i++)
         {

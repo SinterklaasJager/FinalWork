@@ -5,7 +5,9 @@ using Mirror;
 
 public class UIManager : NetworkBehaviour
 {
-    private GameObject gameManager;
+    [SyncVar] private GameObject gameManager;
+    [SyncVar(hook = nameof(UniversalCanvasHook))] private GameObject universalCanvasObj;
+    private UniversalCanvasManager univeralCanvas;
 
     [Header("UI Objects")]
     [SerializeField] private GameObject RoundUIObj;
@@ -19,44 +21,61 @@ public class UIManager : NetworkBehaviour
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
-    public void SetGameManager(GameObject gameManager)
+
+
+    public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
     {
         this.gameManager = gameManager;
+        univeralCanvas = ucm;
+        //universalCanvasObj = ucm.gameObject;
 
     }
 
-    public GameObject GetGameManager()
+    private void UniversalCanvasHook(GameObject oldUC, GameObject newUC)
     {
-        return gameManager;
+        univeralCanvas = newUC.GetComponent<UniversalCanvasManager>();
     }
-    public void IniateRoundUI(RoundManager rm)
-    {
-        RoundUI = Instantiate(RoundUIObj, transform);
-        rm.SetRoundUI(RoundUI);
-        Debug.Log("Iniate Round UI: " + RoundUI);
-        NetworkServer.Spawn(RoundUI);
+    // public GameObject GetGameManager()
+    // {
+    //     return gameManager;
+    // }
 
+
+    // [ClientRpc]
+    private void SendRoundUIToClients(GameObject rndui, RoundManager rm)
+    {
+        RoundUI = rndui;
+        rm.SetRoundUI(rndui);
     }
 
 
-    public CardDealerUI StartAssistantCardDrawUI()
+    public void StartAssistantCardDrawUI(GameObject gm)
     {
-        CardDealerUI = gameObject.AddComponent<CardDealerUI>();
+        CardDealerUI = gameObject.GetComponent<CardDealerUI>();
         CardDealerUI.SetGameManager(gameManager);
         CardDealerUI.ShowAssistantCards();
+        //return CardDealerUI;
+    }
+
+    public CardDealerUI StartTeamLeaderCardDrawUI(List<Enums.CardType> cards)
+    {
+        CardDealerUI = gameObject.GetComponent<CardDealerUI>();
+        CardDealerUI.SetGameManager(gameManager);
+        CardDealerUI.ShowProjectManagerCards(cards);
         return CardDealerUI;
     }
-    public GameObject StartPickAnAssistantUI()
+    public GameObject StartPickAnAssistantUI(Player currentPlayer)
     {
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
-        PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager);
+        //PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager, currentPlayer);
         return PickAnAssistantUI;
     }
 
-    [ClientRpc]
+    // [ClientRpc]
     public void StartLeaderVotingUI(string tl, string pl, GameObject voteScript)
     {
-        VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
-        VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
+        // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
+        // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
+        univeralCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
     }
 }
