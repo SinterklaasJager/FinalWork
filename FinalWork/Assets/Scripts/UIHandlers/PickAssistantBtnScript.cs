@@ -13,14 +13,14 @@ public class PickAssistantBtnScript : MonoBehaviour
     TextMeshProUGUI txtPlayerName;
     private GameObject PickAnAssistantUI;
 
-    public void SetPlayer(Player player, GameObject PickAnAssistantUI)
+    public void SetPlayer(Player player, GameObject PickAnAssistantUI, string playerName)
     {
         this.player = player;
         this.PickAnAssistantUI = PickAnAssistantUI;
         button = gameObject.GetComponent<Button>();
 
         button.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
-        txtPlayerName.text = "test " + player.GetName();
+        txtPlayerName.text = playerName;
     }
 
     public void OnButtonClick()

@@ -11,7 +11,7 @@ public class UIManager : NetworkBehaviour
 
     [Header("UI Objects")]
     [SerializeField] private GameObject RoundUIObj;
-    [SerializeField] private GameObject PickAnAssistantUIObj;
+    [SerializeField] public GameObject PickAnAssistantUIObj;
     [SerializeField] private GameObject VoteTeamLeaderObj;
 
     [Header("UI Instances")]
@@ -69,6 +69,12 @@ public class UIManager : NetworkBehaviour
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
         //PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager, currentPlayer);
         return PickAnAssistantUI;
+    }
+
+    private void SpawnPickAnAssistantUI()
+    {
+        PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
+        NetworkServer.Spawn(PickAnAssistantUI);
     }
 
     // [ClientRpc]

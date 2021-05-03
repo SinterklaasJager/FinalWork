@@ -56,7 +56,7 @@ public class CardGeneration : NetworkBehaviour
     {
         List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
 
-        if (cardDeck == null || cardDeck.Count < 3)
+        if (cardDeck == null || cardDeck.Count < 4)
         {
             GenerateCardDeck();
         }

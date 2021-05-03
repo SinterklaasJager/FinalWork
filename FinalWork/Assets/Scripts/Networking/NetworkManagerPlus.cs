@@ -38,7 +38,9 @@ public class NetworkManagerPlus : NetworkManager
         // playerObjects.Add(go);
 
         go.GetComponent<PlayerManager>().SetPlayerClass(player);
-        amountOfPlayers = gameManager.AddPlayer(player, go, conn);
+        gameManager.AddPlayer(player, go);
+        amountOfPlayers = gameManager.GetPlayerCount();
+
 
         //Testing
         playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);

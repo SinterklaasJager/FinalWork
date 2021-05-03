@@ -7,9 +7,6 @@ public class GameManager : NetworkBehaviour
     public SyncList<Player> syncedPlayers = new SyncList<Player>();
     public SyncList<GameObject> syncedPlayerObjects = new SyncList<GameObject>();
 
-    /* private List<Player> players = new List<Player>();
-     public List<GameObject> playerObjects = new List<GameObject>();
-     */
     public Helper helpers;
     public Enums enums;
     private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj;
@@ -26,11 +23,9 @@ public class GameManager : NetworkBehaviour
 
     void Start()
     {
-        // roundManager = gameObject.GetComponent<RoundManager>();
         gameManager = gameObject.GetComponent<GameManager>();
         spawnableObjects = gameObject.GetComponent<SpawnableObjects>();
         voteForOrganisers = gameObject.GetComponent<VoteForOrganisers>();
-        // cardGeneration = gameObject.GetComponent<CardGeneration>();
 
         universalCanvasObj = Instantiate(spawnableObjects.universalCanvas, transform);
         universalCanvas = universalCanvasObj.GetComponent<UniversalCanvasManager>();
@@ -46,11 +41,16 @@ public class GameManager : NetworkBehaviour
 
     }
 
-    public int AddPlayer(Player newPlayer, GameObject go, NetworkConnection conn)
+    public void AddPlayer(Player newPlayer, GameObject go)
     {
         syncedPlayers.Add(newPlayer);
         syncedPlayerObjects.Add(go);
 
+        Debug.Log("player: " + syncedPlayers[syncedPlayers.Count - 1].GetName() + " connected");
+    }
+
+    public int GetPlayerCount()
+    {
         return syncedPlayers.Count;
     }
 
@@ -72,9 +72,9 @@ public class GameManager : NetworkBehaviour
             }
         }
     }
+
     public void OnAllPlayersConnected()
     {
-
         RoleDivider();
 
         NetworkServer.Spawn(cardGenerationObj);
@@ -90,7 +90,6 @@ public class GameManager : NetworkBehaviour
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager);
-
     }
 
     private void RoleDivider()
@@ -118,7 +117,6 @@ public class GameManager : NetworkBehaviour
 
     }
 
-    // [ClientRpc]
     private void TestRoleDivider()
     {
         Debug.Log("Test RoleDivider");
