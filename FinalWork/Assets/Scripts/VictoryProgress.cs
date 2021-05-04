@@ -116,19 +116,19 @@ public class VictoryProgress : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void AddVisualElement(Enums.CardType cardType)
     {
-        // GameObject comp;
+        GameObject comp;
 
         if (cardType == Enums.CardType.good)
         {
-            var comp = Instantiate(gameManager.spawnableObjects.goodRocketComponent, goodComponents[goodPoints - 1].gameObject.transform);
-            NetworkServer.Spawn(comp);
+            var pos = goodComponents[goodPoints - 1].gameObject.transform.localPosition;
+            comp = Instantiate(gameManager.spawnableObjects.goodRocketComponent, pos, Quaternion.identity, transform);
         }
         else
         {
-            var comp = Instantiate(gameManager.spawnableObjects.badRocketComponent, badComponents[badPoints - 1].gameObject.transform);
-            NetworkServer.Spawn(comp);
+            var pos = badComponents[badPoints - 1].gameObject.transform.localPosition;
+            comp = Instantiate(gameManager.spawnableObjects.badRocketComponent, pos, Quaternion.identity, transform);
         }
 
-        // NetworkServer.Spawn(comp);
+        NetworkServer.Spawn(comp);
     }
 }

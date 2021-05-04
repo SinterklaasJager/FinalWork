@@ -90,6 +90,20 @@ public class GameManager : NetworkBehaviour
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager);
+
+        SetPlayerUI();
+
+    }
+
+    private void SetPlayerUI()
+    {
+        var i = 0;
+        foreach (var player in syncedPlayers)
+        {
+            uIManager.InstantiatePlayerUI(syncedPlayerObjects[i].GetComponent<NetworkIdentity>().connectionToClient, player.GetName(), player.GetRole());
+            i++;
+        }
+
     }
 
     private void RoleDivider()

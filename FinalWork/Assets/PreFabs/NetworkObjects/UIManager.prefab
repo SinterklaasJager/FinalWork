@@ -121,6 +121,8 @@ MonoBehaviour:
     type: 3}
   VoteTeamLeaderObj: {fileID: 8321652496754943259, guid: a40f95494dccc254982832bc661d97a6,
     type: 3}
+  PlayerUI: {fileID: 5419474495518749745, guid: 6a145d731f43fe44590a75f54324694c,
+    type: 3}
   AssistantCardUI: {fileID: 5644212612963016198, guid: 4a4ad9261339be04a9090771bd3b4c77,
     type: 3}
   ProjectManagerCardUI: {fileID: 5644212612963016198, guid: 223b5431834f8a24d82c950630bcab0e,

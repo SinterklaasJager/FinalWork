@@ -13,6 +13,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject RoundUIObj;
     [SerializeField] public GameObject PickAnAssistantUIObj;
     [SerializeField] private GameObject VoteTeamLeaderObj;
+    [SerializeField] private GameObject PlayerUI;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -35,13 +36,14 @@ public class UIManager : NetworkBehaviour
     {
         univeralCanvas = newUC.GetComponent<UniversalCanvasManager>();
     }
-    // public GameObject GetGameManager()
-    // {
-    //     return gameManager;
-    // }
 
+    [TargetRpc]
+    public void InstantiatePlayerUI(NetworkConnection target, string playerName, int roleNum)
+    {
+        var playerUI = Instantiate(PlayerUI, transform);
+        playerUI.GetComponent<PlayerUIComponent>().SetUI(playerName, roleNum);
+    }
 
-    // [ClientRpc]
     private void SendRoundUIToClients(GameObject rndui, RoundManager rm)
     {
         RoundUI = rndui;

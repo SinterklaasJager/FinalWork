@@ -196,7 +196,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -919,6 +919,7 @@ MonoBehaviour:
     type: 3}
   VoteTeamLeaderObj: {fileID: 8321652496754943259, guid: a40f95494dccc254982832bc661d97a6,
     type: 3}
+  PlayerUI: {fileID: 0}
   AssistantCardUI: {fileID: 5644212612963016198, guid: 4a4ad9261339be04a9090771bd3b4c77,
     type: 3}
   ProjectManagerCardUI: {fileID: 5644212612963016198, guid: 223b5431834f8a24d82c950630bcab0e,
