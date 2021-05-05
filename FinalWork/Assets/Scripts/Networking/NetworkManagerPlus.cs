@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class NetworkManagerPlus : NetworkManager
 {
+    [Scene] [SerializeField] private string menuScene = string.Empty;
+    [Scene] [SerializeField] private string gameScene = string.Empty;
     private List<Player> players = new List<Player>();
     public List<GameObject> playerObjects = new List<GameObject>();
 
@@ -15,6 +17,11 @@ public class NetworkManagerPlus : NetworkManager
 
     [SerializeField]
     private GameObject gameManagerObj;
+
+    public void SetData(string networkAd)
+    {
+        networkAddress = networkAd;
+    }
 
     public override void OnStartServer()
     {
@@ -73,4 +80,5 @@ public class NetworkManagerPlus : NetworkManager
         players.Clear();
         playerObjects.Clear();
     }
+
 }

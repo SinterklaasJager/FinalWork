@@ -1188,7 +1188,7 @@ namespace Mirror
         }
 
         /// <summary>Called on the server when a new client connects.</summary>
-        public virtual void OnServerConnect(NetworkConnection conn) {}
+        public virtual void OnServerConnect(NetworkConnection conn) { }
 
         /// <summary>Called on the server when a client disconnects.</summary>
         public virtual void OnServerDisconnect(NetworkConnection conn)
@@ -1224,13 +1224,13 @@ namespace Mirror
         }
 
         [Obsolete("OnServerError was removed because it hasn't been used in a long time.")]
-        public virtual void OnServerError(NetworkConnection conn, int errorCode) {}
+        public virtual void OnServerError(NetworkConnection conn, int errorCode) { }
 
         /// <summary>Called from ServerChangeScene immediately before SceneManager.LoadSceneAsync is executed</summary>
-        public virtual void OnServerChangeScene(string newSceneName) {}
+        public virtual void OnServerChangeScene(string newSceneName) { }
 
         /// <summary>Called on server after a scene load with ServerChangeScene() is completed.</summary>
-        public virtual void OnServerSceneChanged(string sceneName) {}
+        public virtual void OnServerSceneChanged(string sceneName) { }
 
         /// <summary>Called on the client when connected to a server. By default it sets client as ready and adds a player.</summary>
         // TODO client only ever uses NetworkClient.connection. this parameter is redundant.
@@ -1260,15 +1260,15 @@ namespace Mirror
         }
 
         [Obsolete("OnClientError was removed because it hasn't been used in a long time.")]
-        public virtual void OnClientError(NetworkConnection conn, int errorCode) {}
+        public virtual void OnClientError(NetworkConnection conn, int errorCode) { }
 
         /// <summary>Called on clients when a servers tells the client it is no longer ready, e.g. when switching scenes.</summary>
         // TODO client only ever uses NetworkClient.connection. this parameter is redundant.
-        public virtual void OnClientNotReady(NetworkConnection conn) {}
+        public virtual void OnClientNotReady(NetworkConnection conn) { }
 
         /// <summary>Called from ClientChangeScene immediately before SceneManager.LoadSceneAsync is executed</summary>
         // customHandling: indicates if scene loading will be handled through overrides
-        public virtual void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling) {}
+        public virtual void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling) { }
 
         /// <summary>Called on clients when a scene has completed loaded, when the scene load was initiated by the server.</summary>
         // Scene changes can cause player objects to be destroyed. The default
@@ -1294,21 +1294,21 @@ namespace Mirror
         // from all versions, so users only need to implement this one case.
 
         /// <summary>This is invoked when a host is started.</summary>
-        public virtual void OnStartHost() {}
+        public virtual void OnStartHost() { }
 
         /// <summary>This is invoked when a server is started - including when a host is started.</summary>
-        public virtual void OnStartServer() {}
+        public virtual void OnStartServer() { }
 
         /// <summary>This is invoked when the client is started.</summary>
-        public virtual void OnStartClient() {}
+        public virtual void OnStartClient() { }
 
         /// <summary>This is called when a server is stopped - including when a host is stopped.</summary>
-        public virtual void OnStopServer() {}
+        public virtual void OnStopServer() { }
 
         /// <summary>This is called when a client is stopped.</summary>
-        public virtual void OnStopClient() {}
+        public virtual void OnStopClient() { }
 
         /// <summary>This is called when a host is stopped.</summary>
-        public virtual void OnStopHost() {}
+        public virtual void OnStopHost() { }
     }
 }
