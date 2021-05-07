@@ -23,6 +23,8 @@ public class UIManager : NetworkBehaviour
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
 
+    private PlayerUIComponent playerUIScript;
+
 
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
     {
@@ -38,10 +40,19 @@ public class UIManager : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void InstantiatePlayerUI(NetworkConnection target, string playerName, int roleNum)
+    public void InstantiatePlayerUI(NetworkConnection target, string playerName, int roleNum, GameManager gm)
     {
         var playerUI = Instantiate(PlayerUI, transform);
-        playerUI.GetComponent<PlayerUIComponent>().SetUI(playerName, roleNum);
+        playerUI.name = "playerUI";
+        playerUIScript = playerUI.GetComponent<PlayerUIComponent>();
+        playerUIScript.SetUI(playerName, roleNum, gm);
+
+    }
+
+    [TargetRpc]
+    public void SetPlayerUIAllies(NetworkConnection target, int roleNum, string playerName)
+    {
+        playerUIScript.SetAllies(roleNum, playerName);
     }
 
     private void SendRoundUIToClients(GameObject rndui, RoundManager rm)

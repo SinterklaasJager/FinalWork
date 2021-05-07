@@ -27,7 +27,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         //  buttonStop.onClick.AddListener(ButtonStop);
 
         //This updates the Unity canvas, we have to manually call it every change, unlike legacy OnGUI.
-        SetupCanvas();
+        //  SetupCanvas();
     }
 
     public void ValueChangeCheck()

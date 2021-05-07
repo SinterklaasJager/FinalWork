@@ -11,7 +11,8 @@ public class VictoryProgress : NetworkBehaviour
     List<GameObject> badComponents = new List<GameObject>();
     [SyncVar] private int goodPoints;
     [SyncVar] private int badPoints;
-    [SyncVar] private GameManager gameManager;
+    private GameManager gameManager;
+    private RoundManager roundManager;
 
     //3 Badpoints
     //TeamLead can look at top 3 cards
@@ -27,9 +28,12 @@ public class VictoryProgress : NetworkBehaviour
 
     //5 Good points
     //Goodguys win
-    public void SetGameManager(GameManager gameManager)
+
+    [Command(requiresAuthority = false)]
+    public void SetGameManager(GameManager gameManager, RoundManager roundManager)
     {
         this.gameManager = gameManager;
+        this.roundManager = roundManager;
     }
     private void CheckPoints()
     {
@@ -38,7 +42,7 @@ public class VictoryProgress : NetworkBehaviour
 
         if (goodPoints == 5)
         {
-            GoodGuysWin();
+            GoodGuysWin(Enums.GameEndReason.enoughGoodPoints);
         }
         if (badPoints == 3)
         {
@@ -47,7 +51,6 @@ public class VictoryProgress : NetworkBehaviour
         else
         if (badPoints == 4)
         {
-
             MustKill();
         }
         else if (badPoints == 5)
@@ -57,19 +60,28 @@ public class VictoryProgress : NetworkBehaviour
         }
         else if (badPoints == 6)
         {
-            BadGuysWin();
+            BadGuysWin(Enums.GameEndReason.enoughBadPoints);
         }
 
+        if (!(badPoints > 3 || goodPoints == 5))
+        {
+            NextRound();
+        }
     }
 
-    public void GoodGuysWin()
+    private void NextRound()
     {
-
+        roundManager.EndTurn();
     }
 
-    public void BadGuysWin()
+    public void GoodGuysWin(Enums.GameEndReason reason)
     {
+        Debug.Log("Good Guys Win because: " + reason);
+    }
 
+    public void BadGuysWin(Enums.GameEndReason reason)
+    {
+        Debug.Log("Bad Guys Win because: " + reason);
     }
     private void PolicyPeekEnabled()
     {
@@ -84,6 +96,7 @@ public class VictoryProgress : NetworkBehaviour
     private void MustKill()
     {
         // teamleader must kill player
+        roundManager.SetUpDeathPicker();
     }
 
     public int GetGoodPoints()

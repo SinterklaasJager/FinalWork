@@ -82,9 +82,15 @@ MonoBehaviour:
     type: 3}
   VoteTeamLeader: {fileID: 8321652496754943259, guid: a40f95494dccc254982832bc661d97a6,
     type: 3}
+  KillAPlayerUI: {fileID: 2436576697189588876, guid: 8f70ad87c7c40694f96bb7d2c1b84279,
+    type: 3}
+  YouAreDeadUI: {fileID: 1152148402777255152, guid: ddc81d2bd109800489922c9a8e164caf,
+    type: 3}
   btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
   btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}
   btnPickAnAssistant: {fileID: 8266082363992277940, guid: f69861bff452f77498a0cacd760db90f,
+    type: 3}
+  btnPickAPlayerToKill: {fileID: 6061669302801342681, guid: 216fdf6dd30a51a419c62a4510836371,
     type: 3}
   victoryProgress: {fileID: 1491164111008820582, guid: 20dd418f5ec847a4a943e07de720563e,
     type: 3}

@@ -11,11 +11,15 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject roundUI;
     public GameObject UIManager;
     public GameObject VoteTeamLeader;
+    public GameObject KillAPlayerUI;
+    public GameObject YouAreDeadUI;
 
     [Header("UI Components")]
     public GameObject btnGood;
     public GameObject btnBad;
     public GameObject btnPickAnAssistant;
+    public GameObject btnPickAPlayerToKill;
+
 
     [Header("Rocket Components")]
     public GameObject victoryProgress;

@@ -9,6 +9,7 @@ public class VoteForOrganisers : NetworkBehaviour
     private UIManager uiManager;
     private SyncList<Player> players = new SyncList<Player>();
     private Player teamLeader, assistant, currentPlayer;
+    private bool isDead = false;
 
     public Enums.EventHandlers EventHandlers;
 
@@ -29,11 +30,28 @@ public class VoteForOrganisers : NetworkBehaviour
             }
         }
 
-        if (!currentPlayer.GetIsDead())
+        if (!isDead)
         {
-            AddVoter();
+            CheckIfDead(currentPlayer);
+            if (!isDead)
+            {
+                AddVoter();
 
-            uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+                uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+            }
+        }
+
+
+    }
+
+    private void CheckIfDead(Player player)
+    {
+        foreach (var id in gameManager.deathPlayerIds)
+        {
+            if (player.GetPlayerID() == id)
+            {
+                isDead = true;
+            }
         }
 
     }

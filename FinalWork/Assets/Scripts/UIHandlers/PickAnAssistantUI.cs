@@ -24,7 +24,7 @@ public class PickAnAssistantUI : MonoBehaviour
         //  SpawnButtons(currentPlayer, gameManager.GetComponent<GameManager>());
     }
 
-    public void SpawnButtons(GameManager gameManager, List<string> playerNames, List<int> playerIDs, int currentPlayerID)
+    public void SpawnButtons(GameManager gameManager, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID)
     {
         btnPlayer = gameManager.gameObject.GetComponent<SpawnableObjects>().btnPickAnAssistant;
         var i = 0;
@@ -36,11 +36,29 @@ public class PickAnAssistantUI : MonoBehaviour
             {
                 var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
                 btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject, playerNames[i]);
+                if (prevPlayerID != 000)
+                {
+                    if (playerIDs[i] == prevPlayerID || playerIDs[i] == prevAssistantID)
+                    {
+                        Debug.Log("Stop Interactable button");
+                        btnObject.GetComponent<Button>().interactable = false;
+                    }
+                }
+                if (gameManager.deathPlayerIds.Count > 0)
+                {
+                    foreach (var deathPlayer in gameManager.deathPlayerIds)
+                    {
+                        if (playerIDs[i] == deathPlayer)
+                        {
+                            Debug.Log("Stop Interactable button");
+                            btnObject.GetComponent<Button>().interactable = false;
+                        }
+                    }
+                }
             }
             i++;
         }
     }
-
     public void OnButtonClick(GameObject btn)
     {
         var player = btn.GetComponent<PickAssistantBtnScript>().GetSelectedPlayer();
@@ -49,6 +67,4 @@ public class PickAnAssistantUI : MonoBehaviour
         Events.onAssistantPicked?.Invoke(player);
         Destroy(gameObject);
     }
-
-
 }

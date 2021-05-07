@@ -24,5 +24,4 @@ public class Helper : MonoBehaviour
 
         return numbers;
     }
-
 }

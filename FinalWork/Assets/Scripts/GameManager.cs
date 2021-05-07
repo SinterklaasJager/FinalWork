@@ -6,6 +6,7 @@ public class GameManager : NetworkBehaviour
 {
     public SyncList<Player> syncedPlayers = new SyncList<Player>();
     public SyncList<GameObject> syncedPlayerObjects = new SyncList<GameObject>();
+    public SyncList<int> deathPlayerIds = new SyncList<int>();
 
     public Helper helpers;
     public Enums enums;
@@ -89,7 +90,7 @@ public class GameManager : NetworkBehaviour
         victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameObject.transform);
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
-        victoryProgress.SetGameManager(gameManager);
+        victoryProgress.SetGameManager(gameManager, roundManager);
 
         SetPlayerUI();
 
@@ -97,11 +98,29 @@ public class GameManager : NetworkBehaviour
 
     private void SetPlayerUI()
     {
-        var i = 0;
         foreach (var player in syncedPlayers)
         {
-            uIManager.InstantiatePlayerUI(syncedPlayerObjects[i].GetComponent<NetworkIdentity>().connectionToClient, player.GetName(), player.GetRole());
-            i++;
+            GameObject playerObject = null;
+
+            foreach (var playerObj in syncedPlayerObjects)
+            {
+                if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+                {
+                    playerObject = playerObj;
+                }
+            }
+            uIManager.InstantiatePlayerUI(playerObject.GetComponent<NetworkIdentity>().connectionToClient, player.GetName(), player.GetRole(), gameManager);
+
+            foreach (var pl in syncedPlayers)
+            {
+                if (pl != player)
+                {
+                    if (pl.GetRole() != 0)
+                    {
+                        uIManager.SetPlayerUIAllies(playerObject.GetComponent<NetworkIdentity>().connectionToClient, pl.GetRole(), pl.GetName());
+                    }
+                }
+            }
         }
 
     }
@@ -173,5 +192,4 @@ public class GameManager : NetworkBehaviour
         }
         return players;
     }
-
 }
