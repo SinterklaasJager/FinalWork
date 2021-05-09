@@ -9,12 +9,9 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 {
     [SerializeField] private Button buttonHost, buttonServer, buttonClient, buttonStop, buttonConfirm;
     // [SerializeField] private GameObject PanelStart, PanelStop;
-    [SerializeField] private TMP_InputField inputFieldAddress, inputFieldUserName;
+    [SerializeField] private TMP_InputField inputFieldAddress;
     [SerializeField] private TMP_Text serverText, clientText;
-    [SerializeField] private GameObject playerNameInputObject, beforeGameStartObject;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
-    // [SerializeField] private BeforeGameStart beforeGameStart;
-    private Enums.MenuButtonType clickedButton;
 
     public static string userName;
 
@@ -58,51 +55,25 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         buttonConfirm.interactable = !string.IsNullOrEmpty(name);
     }
 
-    public void ButtonClick()
-    {
-        userName = inputFieldUserName.text;
-        Debug.Log("username: " + userName);
-        //  beforeGameStart.SetName(userName);
-        playerNameInputObject.SetActive(false);
-        if (clickedButton == Enums.MenuButtonType.server)
-        {
-            NetworkManager.singleton.StartServer();
-        }
-        else if (clickedButton == Enums.MenuButtonType.client)
-        {
-            buttonClient.interactable = false;
-            NetworkManager.singleton.StartClient();
-        }
-        else if (clickedButton == Enums.MenuButtonType.host)
-        {
-            NetworkManager.singleton.StartHost();
-            gameObject.SetActive(false);
-        }
-        // SetupCanvas();
-    }
-
     public void ButtonHost()
     {
-        clickedButton = Enums.MenuButtonType.host;
-        playerNameInputObject.SetActive(true);
+        NetworkManager.singleton.StartHost();
+        gameObject.SetActive(false);
     }
 
     public void ButtonServer()
     {
-        clickedButton = Enums.MenuButtonType.server;
-        playerNameInputObject.SetActive(true);
+        NetworkManager.singleton.StartServer();
     }
 
     public void ButtonClient()
     {
-        clickedButton = Enums.MenuButtonType.client;
-        playerNameInputObject.SetActive(true);
+        buttonClient.interactable = false;
+        NetworkManager.singleton.StartClient();
     }
 
     private void HandleClientConnected()
     {
-        //beforeGameStart.cmdSetUserName(userName);
-        //beforeGameStart.SetName(userName);
         gameObject.SetActive(false);
     }
     private void HandleClientDisconnected()

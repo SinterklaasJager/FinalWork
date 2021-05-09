@@ -24,13 +24,6 @@ public class Enums : MonoBehaviour
         enoughGoodPoints,
         enoughBadPoints
     }
-    public enum MenuButtonType
-    {
-        host,
-        server,
-        client,
-        name
-    }
 
     public struct EventHandlers
     {

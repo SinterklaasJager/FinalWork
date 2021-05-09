@@ -58,18 +58,11 @@ public class NetworkManagerPlus : NetworkManager
     }
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        //   beforeGameStart.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
-        // beforeGameStart.targetSetUserName(conn, gameManager);
         Debug.Log("connect player!");
-        //    Debug.Log(beforeGameStart.UserName);
         GameObject go = Instantiate(playerPrefab, new Vector3(Random.Range(-7.5f, 7.5f), 4, Random.Range(-7.5f, 7.5f)), Quaternion.identity);
         var player = new Player();
         var connectionId = conn.connectionId;
         player.SetPlayerID(connectionId);
-        //   player.SetName(beforeGameStart.UserName);
-
-        // players.Add(player);
-        // playerObjects.Add(go);
 
         go.GetComponent<PlayerManager>().SetPlayerClass(player);
         gameManager.AddPlayer(conn, player, go);
@@ -81,15 +74,9 @@ public class NetworkManagerPlus : NetworkManager
 
         Debug.Log("amountOfPlayers: " + amountOfPlayers);
         NetworkServer.AddPlayerForConnection(conn, go);
-        // beforeGameStart.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
 
         StartGame();
 
-        // if (amountOfPlayers == MaxAmountOfPlayers)
-        // {
-        //     Debug.Log("Start Game! ");
-        //     StartGame();
-        // }
     }
     public override void OnServerDisconnect(NetworkConnection conn)
     {

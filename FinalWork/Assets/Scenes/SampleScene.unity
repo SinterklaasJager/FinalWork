@@ -152,7 +152,7 @@ PrefabInstance:
         type: 3}
       propertyPath: beforeGameStart
       value: 
-      objectReference: {fileID: 918052879}
+      objectReference: {fileID: 0}
     - target: {fileID: 3627419504782204953, guid: 28c97f08a9a6d8a47afc18c745114e4e,
         type: 3}
       propertyPath: networkManagerPlus
@@ -362,87 +362,13 @@ RectTransform:
   m_Children:
   - {fileID: 6471498113867678720}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1001 &277992926
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -4017722160783811179, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: sceneId
-      value: 4209830406
-      objectReference: {fileID: 0}
-    - target: {fileID: 1696951357674866807, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_Name
-      value: BeforeGameStart
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 521.41
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 299.1132
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 41.0625
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857803769497016350, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9, type: 3}
 --- !u!1 &549607918
 GameObject:
   m_ObjectHideFlags: 0
@@ -628,18 +554,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &918052879 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5744175794706583682, guid: 2dba9eccc9eb9bb4da96c19f549c9ac9,
-    type: 3}
-  m_PrefabInstance: {fileID: 277992926}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8d8bbe2f6a6aac49857b91d4747217f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -818,7 +732,7 @@ MonoBehaviour:
   amountOfPlayers: 0
   MaxAmountOfPlayers: 2
   networkManagerHubDoublePlus: {fileID: 1287238543}
-  beforeGameStart: {fileID: 918052879}
+  gameManager: {fileID: 0}
   gameManagerObj: {fileID: 5596158979758662823, guid: 80e3b67e05a731843becaa61081b6ff3,
     type: 3}
 --- !u!4 &1021946089
