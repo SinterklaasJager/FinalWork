@@ -35,6 +35,7 @@ public class VictoryProgress : NetworkBehaviour
         this.gameManager = gameManager;
         this.roundManager = roundManager;
     }
+
     private void CheckPoints()
     {
         Debug.Log("goodpoints: " + badPoints);
@@ -111,7 +112,6 @@ public class VictoryProgress : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void SetPoints(Enums.CardType cardType)
     {
-        Debug.Log("Points: ");
         if (cardType == Enums.CardType.good)
         {
             goodPoints++;
@@ -123,7 +123,6 @@ public class VictoryProgress : NetworkBehaviour
 
         AddVisualElement(cardType);
         CheckPoints();
-
     }
 
     [Command(requiresAuthority = false)]

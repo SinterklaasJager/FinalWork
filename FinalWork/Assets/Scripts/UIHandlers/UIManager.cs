@@ -14,6 +14,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] public GameObject PickAnAssistantUIObj;
     [SerializeField] private GameObject VoteTeamLeaderObj;
     [SerializeField] private GameObject PlayerUI;
+    [SerializeField] private GameObject EnterPlayerNameUI;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -24,6 +25,7 @@ public class UIManager : NetworkBehaviour
     public GameObject VoteTeamLeaderUI;
 
     private PlayerUIComponent playerUIScript;
+    private GameObject GetPlayerNameUI;
 
 
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
@@ -96,5 +98,14 @@ public class UIManager : NetworkBehaviour
         // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
         // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
         univeralCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+    }
+
+    [TargetRpc]
+    public void StartPlayerNameUI(NetworkConnection target, GameObject networkObj, GameManager gm)
+    {
+        GetPlayerNameUI = Instantiate(EnterPlayerNameUI);
+        GetPlayerNameUI.transform.SetParent(transform, false);
+
+        GetPlayerNameUI.GetComponent<AddPlayerNameUI>().SetNameUI(gm, networkObj);
     }
 }

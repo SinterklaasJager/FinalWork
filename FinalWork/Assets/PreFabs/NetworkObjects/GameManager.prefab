@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5596158979758662818}
   - component: {fileID: 5596158979758662819}
   - component: {fileID: 5596158979758662831}
+  - component: {fileID: 5775626558656115474}
   - component: {fileID: 5596158979758662828}
   m_Layer: 0
   m_Name: GameManager
@@ -58,6 +59,7 @@ MonoBehaviour:
   voteForOrganisers: {fileID: 0}
   victoryProgress: {fileID: 0}
   cardGeneration: {fileID: 0}
+  addName: {fileID: 0}
   spawnableObjects: {fileID: 0}
 --- !u!114 &5596158979758662817
 MonoBehaviour:
@@ -85,6 +87,8 @@ MonoBehaviour:
   KillAPlayerUI: {fileID: 2436576697189588876, guid: 8f70ad87c7c40694f96bb7d2c1b84279,
     type: 3}
   YouAreDeadUI: {fileID: 1152148402777255152, guid: ddc81d2bd109800489922c9a8e164caf,
+    type: 3}
+  GetPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
     type: 3}
   btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
   btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}
@@ -136,6 +140,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!114 &5775626558656115474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138763c677c0f9a40a608ddcf2f7ca96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  btnReady: {fileID: 0}
+  inpUserName: {fileID: 0}
 --- !u!114 &5596158979758662828
 MonoBehaviour:
   m_ObjectHideFlags: 0

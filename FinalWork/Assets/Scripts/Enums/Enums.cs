@@ -24,6 +24,13 @@ public class Enums : MonoBehaviour
         enoughGoodPoints,
         enoughBadPoints
     }
+    public enum MenuButtonType
+    {
+        host,
+        server,
+        client,
+        name
+    }
 
     public struct EventHandlers
     {
@@ -32,6 +39,7 @@ public class Enums : MonoBehaviour
         public System.Action<bool> OnVoteEnd;
         public System.Action<List<Enums.CardType>> OnAssistantCardsPicked;
         public System.Action<Enums.CardType> OnCardSelected;
+        public System.Action<string> OnNameEntered;
 
     }
 }

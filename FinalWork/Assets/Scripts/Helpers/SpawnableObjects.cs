@@ -13,6 +13,7 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject VoteTeamLeader;
     public GameObject KillAPlayerUI;
     public GameObject YouAreDeadUI;
+    public GameObject GetPlayerNameUI;
 
     [Header("UI Components")]
     public GameObject btnGood;

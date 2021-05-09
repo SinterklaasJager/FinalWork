@@ -17,7 +17,7 @@ public class RoundManager : NetworkBehaviour
     private RoundUIHandler roundUI;
     public UIManager uIManager;
     [SyncVar] private GameObject uIManagerObj;
-    private bool electionFailed;
+    [SyncVar] private bool electionFailed = false;
 
     private void gameManagerHook(GameManager oldGm, GameManager newGm)
     {
@@ -96,8 +96,8 @@ public class RoundManager : NetworkBehaviour
 
         //UpdateUI();
         SetUpAssistantPicker();
-
     }
+
     [Command]
     private void SetUpAssistantPicker()
     {
@@ -217,14 +217,17 @@ public class RoundManager : NetworkBehaviour
 
         }
     }
-
+    [Command(requiresAuthority = false)]
     public void ElectionFailed()
     {
+        electionFailed = true;
         failedElections = 0;
         //play random card
+        Debug.Log("Play random card");
         var randomCard = gameManager.cardGeneration.GetTopCard();
+        Debug.Log("random card: " + randomCard);
         CardPicked(randomCard);
-        EndTurn();
+        //  EndTurn();
     }
 
     [TargetRpc]
@@ -280,19 +283,24 @@ public class RoundManager : NetworkBehaviour
             turn = 0;
             round++;
         }
-
         if (previousAssistant != null)
         {
             previousAssistant.SetWasAssistant(false);
         }
         currentPlayer.SetIsTeamLeader(false);
         previousPlayer = currentPlayer;
+        Debug.Log("electionFailed: " + electionFailed);
         if (!electionFailed)
         {
             currentAssistant.SetWasAssistant(true);
             previousAssistant = currentAssistant;
         }
-
+        else
+        {
+            previousAssistant = null;
+            previousPlayer = null;
+        }
+        electionFailed = false;
         StartTurn();
     }
 

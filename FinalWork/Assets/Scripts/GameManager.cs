@@ -19,6 +19,7 @@ public class GameManager : NetworkBehaviour
     private GameObject victoryProgressObj;
     public VictoryProgress victoryProgress;
     public CardGeneration cardGeneration;
+    public AddName addName;
     public SpawnableObjects spawnableObjects;
 
 
@@ -27,6 +28,7 @@ public class GameManager : NetworkBehaviour
         gameManager = gameObject.GetComponent<GameManager>();
         spawnableObjects = gameObject.GetComponent<SpawnableObjects>();
         voteForOrganisers = gameObject.GetComponent<VoteForOrganisers>();
+        addName = gameObject.GetComponent<AddName>();
 
         universalCanvasObj = Instantiate(spawnableObjects.universalCanvas, transform);
         universalCanvas = universalCanvasObj.GetComponent<UniversalCanvasManager>();
@@ -42,11 +44,20 @@ public class GameManager : NetworkBehaviour
 
     }
 
-    public void AddPlayer(Player newPlayer, GameObject go)
+    // public void SetPlayerName(BeforeGameStart beforeGameStart)
+    // {
+    //     Debug.Log("username @ gamemanager: " + beforeGameStart.UserName);
+    //     syncedPlayers[syncedPlayers.Count - 1].SetName(beforeGameStart.UserName);
+    //     // var nw = NetworkManager.singleton as NetworkManagerPlus;
+    //     // nw.StartGame();
+    // }
+
+    public void AddPlayer(NetworkConnection conn, Player newPlayer, GameObject go)
     {
+        // newPlayer.SetName(beforeGameStart.UserName);
         syncedPlayers.Add(newPlayer);
         syncedPlayerObjects.Add(go);
-
+        //SetPlayerName(beforeGameStart);
         Debug.Log("player: " + syncedPlayers[syncedPlayers.Count - 1].GetName() + " connected");
     }
 
@@ -76,11 +87,24 @@ public class GameManager : NetworkBehaviour
 
     public void OnAllPlayersConnected()
     {
-        RoleDivider();
-
         NetworkServer.Spawn(cardGenerationObj);
         NetworkServer.Spawn(universalCanvasObj);
         NetworkServer.Spawn(uIManagerObj);
+
+        SpawnNameGetUI();
+    }
+
+    public void SpawnNameGetUI()
+    {
+        foreach (var playerObj in syncedPlayerObjects)
+        {
+            uIManager.StartPlayerNameUI(playerObj.GetComponent<NetworkIdentity>().connectionToClient, playerObj, gameManager);
+        }
+    }
+
+    public void AllPlayersReady()
+    {
+        RoleDivider();
 
         roundManagerObj = Instantiate(spawnableObjects.roundManager, gameObject.transform);
         roundManager = roundManagerObj.GetComponent<RoundManager>();
@@ -93,7 +117,6 @@ public class GameManager : NetworkBehaviour
         victoryProgress.SetGameManager(gameManager, roundManager);
 
         SetPlayerUI();
-
     }
 
     private void SetPlayerUI()
