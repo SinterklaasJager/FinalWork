@@ -11,6 +11,7 @@ public class VictoryProgress : NetworkBehaviour
     List<GameObject> badComponents = new List<GameObject>();
     [SyncVar] private int goodPoints;
     [SyncVar] private int badPoints;
+
     private GameManager gameManager;
     private RoundManager roundManager;
 
@@ -63,8 +64,7 @@ public class VictoryProgress : NetworkBehaviour
         {
             BadGuysWin(Enums.GameEndReason.enoughBadPoints);
         }
-
-        if (!(badPoints > 3 || goodPoints == 5))
+        else
         {
             NextRound();
         }

@@ -24,7 +24,7 @@ public class PickAnAssistantUI : MonoBehaviour
         //  SpawnButtons(currentPlayer, gameManager.GetComponent<GameManager>());
     }
 
-    public void SpawnButtons(GameManager gameManager, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID)
+    public void SpawnButtons(GameManager gameManager, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID, List<int> deathPlayerIDs)
     {
         btnPlayer = gameManager.gameObject.GetComponent<SpawnableObjects>().btnPickAnAssistant;
         var i = 0;
@@ -52,17 +52,29 @@ public class PickAnAssistantUI : MonoBehaviour
                     }
                 }
                 //Disable Death Players
-                if (gameManager.deathPlayerIds.Count > 0)
+                if (deathPlayerIDs.Count > 0)
                 {
-                    foreach (var deathPlayer in gameManager.deathPlayerIds)
+                    foreach (var deathId in deathPlayerIDs)
                     {
-                        if (playerIDs[i] == deathPlayer)
+                        if (playerIDs[i] == deathId)
                         {
-                            Debug.Log("Stop Interactable button");
                             btnObject.GetComponent<Button>().interactable = false;
                         }
                     }
+
                 }
+                // if (gameManager.deathPlayerIds.Count > 0)
+                // {
+                //     foreach (var deathPlayer in gameManager.deathPlayerIds)
+                //     {
+                //         Debug.Log("deathPlayer: " + deathPlayer);
+                //         if (playerIDs[i] == deathPlayer)
+                //         {
+                //             Debug.Log("Stop Interactable button");
+                //             btnObject.GetComponent<Button>().interactable = false;
+                //         }
+                //     }
+                // }
             }
             i++;
         }

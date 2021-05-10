@@ -10,11 +10,13 @@ public class VoteForOrganisers : NetworkBehaviour
     private SyncList<Player> players = new SyncList<Player>();
     private Player teamLeader, assistant, currentPlayer;
     private bool isDead = false;
+    private List<int> deathPlayerIDs;
 
     public Enums.EventHandlers EventHandlers;
 
-    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate, int totalVoters)
+    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate, int totalVoters, List<int> deathPlayerIDs)
     {
+        this.deathPlayerIDs = deathPlayerIDs;
         this.totalVoters = totalVoters;
         assistant = assistantCandidate;
         teamLeader = leaderCandidate;
@@ -23,30 +25,14 @@ public class VoteForOrganisers : NetworkBehaviour
         uiManager = um;
         players = pl;
 
-        if (!isDead)
+        uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+        foreach (var player in gameManager.syncedPlayerObjects)
         {
-            CheckIfDead(currentPlayer);
-            if (!isDead)
+            if (player.GetComponent<PlayerManager>().GetPlayerClass().GetIsDead())
             {
-                AddVoter();
-
-                uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+                uiManager.DisableLeaderVotingUI(player.GetComponent<NetworkIdentity>().connectionToClient);
             }
         }
-
-
-    }
-
-    private void CheckIfDead(Player player)
-    {
-        foreach (var id in gameManager.deathPlayerIds)
-        {
-            if (player.GetPlayerID() == id)
-            {
-                isDead = true;
-            }
-        }
-
     }
 
     [Command(requiresAuthority = false)]

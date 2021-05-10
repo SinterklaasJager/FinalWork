@@ -7,7 +7,7 @@ public class UIManager : NetworkBehaviour
 {
     [SyncVar] private GameObject gameManager;
     [SyncVar(hook = nameof(UniversalCanvasHook))] private GameObject universalCanvasObj;
-    private UniversalCanvasManager univeralCanvas;
+    private UniversalCanvasManager universalCanvas;
 
     [Header("UI Objects")]
     [SerializeField] private GameObject RoundUIObj;
@@ -31,14 +31,14 @@ public class UIManager : NetworkBehaviour
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
     {
         this.gameManager = gameManager;
-        univeralCanvas = ucm;
+        universalCanvas = ucm;
         //universalCanvasObj = ucm.gameObject;
 
     }
 
     private void UniversalCanvasHook(GameObject oldUC, GameObject newUC)
     {
-        univeralCanvas = newUC.GetComponent<UniversalCanvasManager>();
+        universalCanvas = newUC.GetComponent<UniversalCanvasManager>();
     }
 
     [TargetRpc]
@@ -97,7 +97,11 @@ public class UIManager : NetworkBehaviour
     {
         // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
         // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
-        univeralCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+        universalCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+    }
+    public void DisableLeaderVotingUI(NetworkConnection target)
+    {
+        universalCanvas.DisableLeaderVotingUI(target);
     }
 
     [TargetRpc]

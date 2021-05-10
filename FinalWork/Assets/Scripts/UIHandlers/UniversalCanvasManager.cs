@@ -20,6 +20,13 @@ public class UniversalCanvasManager : NetworkBehaviour
         voteTeamLeaderUI = Instantiate(gameManager.spawnableObjects.VoteTeamLeader, transform);
         voteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
     }
+    [TargetRpc]
+    public void DisableLeaderVotingUI(NetworkConnection target)
+    {
+        // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
+        // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
+        Destroy(voteTeamLeaderUI);
+    }
     public void IniateRoundUI(RoundManager rm)
     {
         if (RoundUI == null)

@@ -103,11 +103,16 @@ public class RoundManager : NetworkBehaviour
     {
         List<string> playerNames = new List<string>();
         List<int> playerIDs = new List<int>();
+        List<int> deathPlayerIDs = new List<int>();
 
         foreach (var player in gameManager.syncedPlayers)
         {
             playerNames.Add(player.GetName());
             playerIDs.Add(player.GetPlayerID());
+            if (player.GetIsDead())
+            {
+                deathPlayerIDs.Add(player.GetPlayerID());
+            }
         }
 
         var currentPlayerID = currentPlayer.GetPlayerID();
@@ -131,19 +136,19 @@ public class RoundManager : NetworkBehaviour
                 Debug.Log("targetrpc player: " + player.GetName());
                 Debug.Log(uIManager);
 
-                StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager, currentPlayer, gameManager, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID);
+                StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager, currentPlayer, gameManager, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID, deathPlayerIDs);
             }
         }
     }
 
     [TargetRpc]
-    private void StartAssistantPicker(NetworkConnection target, UIManager um, Player currentPlayer, GameManager gm, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID)
+    private void StartAssistantPicker(NetworkConnection target, UIManager um, Player currentPlayer, GameManager gm, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID, List<int> deathPlayerIDs)
     {
         //PickAnAssistant = um.StartPickAnAssistantUI(currentPlayer);
         PickAnAssistant = Instantiate(um.PickAnAssistantUIObj, um.gameObject.transform);
         //  PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
         PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPickedInt = (assistantCandidate) => OnAssistantPickedID(assistantCandidate);
-        PickAnAssistant.GetComponent<PickAnAssistantUI>().SpawnButtons(gm, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID);
+        PickAnAssistant.GetComponent<PickAnAssistantUI>().SpawnButtons(gm, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID, deathPlayerIDs);
     }
     // public void OnAssistantPicked(Player assistantCandidate)
     // {
@@ -185,10 +190,18 @@ public class RoundManager : NetworkBehaviour
                 totalVoters++;
             }
         }
+        List<int> deathPlayerIDs = new List<int>();
 
+        foreach (var player in gameManager.syncedPlayers)
+        {
+            if (player.GetIsDead())
+            {
+                deathPlayerIDs.Add(player.GetPlayerID());
+            }
+        }
 
         voteForOrganisers.EventHandlers.OnVoteEnd = (succes) => OnVoteEnd(succes);
-        voteForOrganisers.StartNewVotingRound(uIManager, gameManager.syncedPlayers, assistantCandidate, currentPlayer, totalVoters);
+        voteForOrganisers.StartNewVotingRound(uIManager, gameManager.syncedPlayers, assistantCandidate, currentPlayer, totalVoters, deathPlayerIDs);
     }
 
     [Command(requiresAuthority = false)]
@@ -337,12 +350,10 @@ public class RoundManager : NetworkBehaviour
         foreach (var playerObj in gameManager.syncedPlayerObjects)
         {
             var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
-            Debug.Log(player.GetName());
 
             if (player == currentPlayer)
             {
-                Debug.Log("targetrpc player: " + player.GetName());
-                Debug.Log(uIManager);
+                Debug.Log("targetrpc player that gets to do the killing: " + player.GetName());
 
                 TargetKillAPlayerKiller(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager, currentPlayer, gameManager, playerNames, playerIDs, currentPlayerID);
             }
@@ -379,7 +390,8 @@ public class RoundManager : NetworkBehaviour
         }
 
         playerToKill.SetIsDead(true);
-        gameManager.deathPlayerIds.Add(playerToKill.GetPlayerID());
+        gameManager.deathPlayerIds.Add(playerToKillID);
+        Debug.Log("playerToKill: " + playerToKill.GetName());
 
         if (!CheckEndPrematurely(playerToKill))
         {
