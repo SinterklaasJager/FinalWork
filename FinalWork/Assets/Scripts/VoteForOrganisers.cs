@@ -4,7 +4,7 @@ using UnityEngine;
 using Mirror;
 public class VoteForOrganisers : NetworkBehaviour
 {
-    [SyncVar] private int totalVotesCast, yesVotes, totalVoters;
+    [SyncVar] private int totalVotesCast, yesVotes, noVotes, totalVoters;
     private GameManager gameManager;
     private UIManager uiManager;
     private SyncList<Player> players = new SyncList<Player>();
@@ -13,22 +13,15 @@ public class VoteForOrganisers : NetworkBehaviour
 
     public Enums.EventHandlers EventHandlers;
 
-    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate)
+    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate, int totalVoters)
     {
+        this.totalVoters = totalVoters;
         assistant = assistantCandidate;
         teamLeader = leaderCandidate;
         currentPlayer = NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass();
         gameManager = gameObject.GetComponent<GameManager>();
         uiManager = um;
         players = pl;
-
-        foreach (var player in players)
-        {
-            if (!player.GetIsDead())
-            {
-                totalVoters++;
-            }
-        }
 
         if (!isDead)
         {
@@ -67,15 +60,20 @@ public class VoteForOrganisers : NetworkBehaviour
     public void AddVote(bool vote)
     {
         totalVotesCast++;
-        Debug.Log(totalVotesCast);
+        Debug.Log("totalVotesCast: " + totalVotesCast);
         if (vote)
         {
             yesVotes++;
+            Debug.Log("yesVotes: " + yesVotes);
+        }
+        else
+        {
+            noVotes++;
         }
         if (totalVotesCast == totalVoters)
         {
             var voteSucceeds = false;
-            if (yesVotes >= totalVotesCast / 2)
+            if (yesVotes > noVotes)
             {
                 voteSucceeds = true;
             }
@@ -89,6 +87,7 @@ public class VoteForOrganisers : NetworkBehaviour
     {
         totalVotesCast = 0;
         yesVotes = 0;
+        noVotes = 0;
         totalVoters = 0;
 
         if (EventHandlers.OnVoteEnd != null)

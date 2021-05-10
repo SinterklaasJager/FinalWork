@@ -28,7 +28,8 @@ public class Enums : MonoBehaviour
     public struct EventHandlers
     {
         public System.Action<Player> onAssistantPicked;
-        public System.Action<Player> onPlayerToKillPicked;
+        public System.Action<int> onAssistantPickedInt;
+        public System.Action<int> onPlayerToKillPicked;
         public System.Action<bool> OnVoteEnd;
         public System.Action<List<Enums.CardType>> OnAssistantCardsPicked;
         public System.Action<Enums.CardType> OnCardSelected;

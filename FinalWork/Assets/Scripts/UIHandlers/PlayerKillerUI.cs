@@ -13,7 +13,7 @@ public class PlayerKillerUI : MonoBehaviour
     public UIManager uIManager;
     private GameObject gameManager, btnPlayer;
     private List<Player> players;
-    private Player selectedPlayer;
+    private int selectedPlayer;
 
     public Enums.EventHandlers Events;
 
@@ -26,10 +26,25 @@ public class PlayerKillerUI : MonoBehaviour
             if (playerIDs[i] != currentPlayerID)
             {
                 var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
-                btnObject.GetComponent<PickAPlayerToKillBtnScript>().SetPlayer(player, gameObject, playerNames[i]);
+                btnObject.GetComponent<PickAPlayerToKillBtnScript>().SetPlayer(player, gameObject, playerNames[i], playerIDs[i]);
+
+                //disable death players
+                if (gameManager.deathPlayerIds.Count > 0)
+                {
+                    foreach (var deathPlayer in gameManager.deathPlayerIds)
+                    {
+                        if (playerIDs[i] == deathPlayer)
+                        {
+                            Debug.Log("Stop Interactable button");
+                            btnObject.GetComponent<Button>().interactable = false;
+                        }
+                    }
+                }
             }
             i++;
         }
+
+
     }
 
     public void OnStartTheKilling()
@@ -60,7 +75,7 @@ public class PlayerKillerUI : MonoBehaviour
 
     public void OnButtonClick(GameObject btn)
     {
-        selectedPlayer = btn.GetComponent<PickAPlayerToKillBtnScript>().GetSelectedPlayer();
+        selectedPlayer = btn.GetComponent<PickAPlayerToKillBtnScript>().GetSelectedPlayerID();
         OnPlayerSelected();
     }
 }

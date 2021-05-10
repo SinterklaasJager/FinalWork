@@ -8,13 +8,15 @@ public class PickAssistantBtnScript : MonoBehaviour
 {
     private Player player;
     private Button button;
+    private int playerID;
 
     [SerializeField]
     TextMeshProUGUI txtPlayerName;
     private GameObject PickAnAssistantUI;
 
-    public void SetPlayer(Player player, GameObject PickAnAssistantUI, string playerName)
+    public void SetPlayer(Player player, GameObject PickAnAssistantUI, string playerName, int playerID)
     {
+        this.playerID = playerID;
         this.player = player;
         this.PickAnAssistantUI = PickAnAssistantUI;
         button = gameObject.GetComponent<Button>();
@@ -30,5 +32,9 @@ public class PickAssistantBtnScript : MonoBehaviour
     public Player GetSelectedPlayer()
     {
         return player;
+    }
+    public int GetPlayerID()
+    {
+        return playerID;
     }
 }

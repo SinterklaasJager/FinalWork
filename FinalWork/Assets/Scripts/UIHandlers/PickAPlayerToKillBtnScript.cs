@@ -8,13 +8,15 @@ public class PickAPlayerToKillBtnScript : MonoBehaviour
 {
     private Player player;
     private Button button;
+    private int playerID;
 
     [SerializeField]
     TextMeshProUGUI txtPlayerName;
     private GameObject playerKillerUIObj;
 
-    public void SetPlayer(Player player, GameObject playerKillerUIObj, string playerName)
+    public void SetPlayer(Player player, GameObject playerKillerUIObj, string playerName, int playerID)
     {
+        this.playerID = playerID;
         this.player = player;
         this.playerKillerUIObj = playerKillerUIObj;
         button = gameObject.GetComponent<Button>();
@@ -27,8 +29,9 @@ public class PickAPlayerToKillBtnScript : MonoBehaviour
     {
         playerKillerUIObj.GetComponent<PlayerKillerUI>().OnButtonClick(gameObject);
     }
-    public Player GetSelectedPlayer()
+
+    public int GetSelectedPlayerID()
     {
-        return player;
+        return playerID;
     }
 }

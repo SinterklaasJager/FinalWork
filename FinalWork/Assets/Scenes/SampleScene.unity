@@ -730,7 +730,7 @@ MonoBehaviour:
   playerObjects: []
   userName: 
   amountOfPlayers: 0
-  MaxAmountOfPlayers: 2
+  MaxAmountOfPlayers: 3
   networkManagerHubDoublePlus: {fileID: 1287238543}
   gameManager: {fileID: 0}
   gameManagerObj: {fileID: 5596158979758662823, guid: 80e3b67e05a731843becaa61081b6ff3,

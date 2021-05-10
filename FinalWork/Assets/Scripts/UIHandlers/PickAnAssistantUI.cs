@@ -35,15 +35,23 @@ public class PickAnAssistantUI : MonoBehaviour
             if (playerIDs[i] != currentPlayerID)
             {
                 var btnObject = Instantiate(btnPlayer, buttonContainer.transform);
-                btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject, playerNames[i]);
+                btnObject.GetComponent<PickAssistantBtnScript>().SetPlayer(player, gameObject, playerNames[i], playerIDs[i]);
+                //disable Previous councilors
                 if (prevPlayerID != 000)
                 {
-                    if (playerIDs[i] == prevPlayerID || playerIDs[i] == prevAssistantID)
+                    if (gameManager.syncedPlayers.Count - gameManager.deathPlayerIds.Count > 5)
                     {
-                        Debug.Log("Stop Interactable button");
+                        if (playerIDs[i] == prevPlayerID)
+                        {
+                            btnObject.GetComponent<Button>().interactable = false;
+                        }
+                    }
+                    if (playerIDs[i] == prevAssistantID)
+                    {
                         btnObject.GetComponent<Button>().interactable = false;
                     }
                 }
+                //Disable Death Players
                 if (gameManager.deathPlayerIds.Count > 0)
                 {
                     foreach (var deathPlayer in gameManager.deathPlayerIds)
@@ -62,9 +70,12 @@ public class PickAnAssistantUI : MonoBehaviour
     public void OnButtonClick(GameObject btn)
     {
         var player = btn.GetComponent<PickAssistantBtnScript>().GetSelectedPlayer();
+        var playerID = btn.GetComponent<PickAssistantBtnScript>().GetPlayerID();
+
         player.SetIsAssistantCandidate(true);
         //transition to voting ui
-        Events.onAssistantPicked?.Invoke(player);
+        // Events.onAssistantPicked?.Invoke(player);
+        Events.onAssistantPickedInt(playerID);
         Destroy(gameObject);
     }
 }

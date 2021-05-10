@@ -71,7 +71,7 @@ public class RoundManager : NetworkBehaviour
 
         while (gameManager.syncedPlayers[turn].GetIsDead())
         {
-            Debug.Log("Current Player is not dead");
+            Debug.Log("Current Player is dead");
 
             turn++;
 
@@ -141,12 +141,20 @@ public class RoundManager : NetworkBehaviour
     {
         //PickAnAssistant = um.StartPickAnAssistantUI(currentPlayer);
         PickAnAssistant = Instantiate(um.PickAnAssistantUIObj, um.gameObject.transform);
-        PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+        //  PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
+        PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPickedInt = (assistantCandidate) => OnAssistantPickedID(assistantCandidate);
         PickAnAssistant.GetComponent<PickAnAssistantUI>().SpawnButtons(gm, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID);
     }
-    public void OnAssistantPicked(Player assistantCandidate)
+    // public void OnAssistantPicked(Player assistantCandidate)
+    // {
+    //     var playerID = assistantCandidate.GetPlayerID();
+    //     //start vote round
+    //     SetAssistantCandidate(playerID);
+    //     cmdStartVotingRound();
+    // }
+    public void OnAssistantPickedID(int assistantCandidate)
     {
-        var playerID = assistantCandidate.GetPlayerID();
+        var playerID = assistantCandidate;
         //start vote round
         SetAssistantCandidate(playerID);
         cmdStartVotingRound();
@@ -169,9 +177,18 @@ public class RoundManager : NetworkBehaviour
     public void cmdStartVotingRound()
     {
         Debug.Log("assistantCandidate: " + assistantCandidate.GetName());
+        var totalVoters = 0;
+        foreach (var player in gameManager.syncedPlayers)
+        {
+            if (!player.GetIsDead())
+            {
+                totalVoters++;
+            }
+        }
+
 
         voteForOrganisers.EventHandlers.OnVoteEnd = (succes) => OnVoteEnd(succes);
-        voteForOrganisers.StartNewVotingRound(uIManager, gameManager.syncedPlayers, assistantCandidate, currentPlayer);
+        voteForOrganisers.StartNewVotingRound(uIManager, gameManager.syncedPlayers, assistantCandidate, currentPlayer, totalVoters);
     }
 
     [Command(requiresAuthority = false)]
@@ -340,9 +357,9 @@ public class RoundManager : NetworkBehaviour
         PickAnAssistant.GetComponent<PlayerKillerUI>().SpawnButtons(gm, playerNames, playerIDs, currentPlayerID);
     }
 
-    private void OnTargetToKillSelected(Player playerToKill)
+    private void OnTargetToKillSelected(int playerToKill)
     {
-        var playerID = playerToKill.GetPlayerID();
+        var playerID = playerToKill;
         //start vote round
         cmdKillAPlayer(playerID);
     }
@@ -376,6 +393,10 @@ public class RoundManager : NetworkBehaviour
                     TargetKillAPlayerVictim(playerObj.GetComponent<NetworkIdentity>().connectionToClient, player, gameManager, uIManager);
                 }
             }
+        }
+        else
+        {
+            Debug.Log("END PREMATURELY");
         }
     }
 
