@@ -1,15 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class UIManager : MonoBehaviour
+public class UIManager : NetworkBehaviour
 {
-    private GameObject gameManager;
+    [SyncVar] private GameObject gameManager;
+    [SyncVar(hook = nameof(UniversalCanvasHook))] private GameObject universalCanvasObj;
+    private UniversalCanvasManager univeralCanvas;
 
     [Header("UI Objects")]
     [SerializeField] private GameObject RoundUIObj;
-    [SerializeField] private GameObject PickAnAssistantUIObj;
+    [SerializeField] public GameObject PickAnAssistantUIObj;
     [SerializeField] private GameObject VoteTeamLeaderObj;
+    [SerializeField] private GameObject PlayerUI;
+    [SerializeField] private GameObject EnterPlayerNameUI;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -18,43 +23,89 @@ public class UIManager : MonoBehaviour
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
-    public void SetGameManager(GameObject gameManager)
+
+    private PlayerUIComponent playerUIScript;
+    private GameObject GetPlayerNameUI;
+
+
+    public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
     {
         this.gameManager = gameManager;
+        univeralCanvas = ucm;
+        //universalCanvasObj = ucm.gameObject;
 
     }
 
-    public GameObject GetGameManager()
+    private void UniversalCanvasHook(GameObject oldUC, GameObject newUC)
     {
-        return gameManager;
+        univeralCanvas = newUC.GetComponent<UniversalCanvasManager>();
     }
-    public void IniateRoundUI()
+
+    [TargetRpc]
+    public void InstantiatePlayerUI(NetworkConnection target, string playerName, int roleNum, GameManager gm)
     {
-        RoundUI = Instantiate(RoundUIObj, transform);
+        var playerUI = Instantiate(PlayerUI, transform);
+        playerUI.name = "playerUI";
+        playerUIScript = playerUI.GetComponent<PlayerUIComponent>();
+        playerUIScript.SetUI(playerName, roleNum, gm);
 
     }
 
-    public CardDealerUI StartAssistantCardDrawUI()
+    [TargetRpc]
+    public void SetPlayerUIAllies(NetworkConnection target, int roleNum, string playerName)
     {
-        CardDealerUI = gameObject.AddComponent<CardDealerUI>();
+        playerUIScript.SetAllies(roleNum, playerName);
+    }
+
+    private void SendRoundUIToClients(GameObject rndui, RoundManager rm)
+    {
+        RoundUI = rndui;
+        rm.SetRoundUI(rndui);
+    }
+
+
+    public void StartAssistantCardDrawUI(GameObject gm)
+    {
+        CardDealerUI = gameObject.GetComponent<CardDealerUI>();
         CardDealerUI.SetGameManager(gameManager);
         CardDealerUI.ShowAssistantCards();
+        //return CardDealerUI;
+    }
+
+    public CardDealerUI StartTeamLeaderCardDrawUI(List<Enums.CardType> cards)
+    {
+        CardDealerUI = gameObject.GetComponent<CardDealerUI>();
+        CardDealerUI.SetGameManager(gameManager);
+        CardDealerUI.ShowProjectManagerCards(cards);
         return CardDealerUI;
     }
-    public void StartLeaderCardDrawUI()
-    {
-        CardDealerUI.GetComponent<CardDealerUI>().ShowProjectManagerCards();
-    }
-    public GameObject StartPickAnAssistantUI()
+    public GameObject StartPickAnAssistantUI(Player currentPlayer)
     {
         PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
-        PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager);
+        //PickAnAssistantUI.GetComponent<PickAnAssistantUI>().SetUiManager(gameObject, gameManager, currentPlayer);
         return PickAnAssistantUI;
     }
 
+    private void SpawnPickAnAssistantUI()
+    {
+        PickAnAssistantUI = Instantiate(PickAnAssistantUIObj, transform);
+        NetworkServer.Spawn(PickAnAssistantUI);
+    }
+
+    // [ClientRpc]
     public void StartLeaderVotingUI(string tl, string pl, GameObject voteScript)
     {
-        VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
-        VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
+        // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
+        // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
+        univeralCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+    }
+
+    [TargetRpc]
+    public void StartPlayerNameUI(NetworkConnection target, GameObject networkObj, GameManager gm)
+    {
+        GetPlayerNameUI = Instantiate(EnterPlayerNameUI);
+        GetPlayerNameUI.transform.SetParent(transform, false);
+
+        GetPlayerNameUI.GetComponent<AddPlayerNameUI>().SetNameUI(gm, networkObj);
     }
 }

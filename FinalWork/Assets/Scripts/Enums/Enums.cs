@@ -16,10 +16,24 @@ public class Enums : MonoBehaviour
         assistant
     }
 
+    public enum GameEndReason
+    {
+        saboteurDead,
+        rebelsDead,
+        goodGuysDead,
+        enoughGoodPoints,
+        enoughBadPoints
+    }
+
     public struct EventHandlers
     {
         public System.Action<Player> onAssistantPicked;
+        public System.Action<int> onAssistantPickedInt;
+        public System.Action<int> onPlayerToKillPicked;
         public System.Action<bool> OnVoteEnd;
+        public System.Action<List<Enums.CardType>> OnAssistantCardsPicked;
         public System.Action<Enums.CardType> OnCardSelected;
+        public System.Action<string> OnNameEntered;
+
     }
 }

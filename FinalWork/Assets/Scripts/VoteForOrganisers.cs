@@ -1,69 +1,79 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class VoteForOrganisers : MonoBehaviour
+using Mirror;
+public class VoteForOrganisers : NetworkBehaviour
 {
-    private int totalVotesCast, yesVotes, totalVoters;
+    [SyncVar] private int totalVotesCast, yesVotes, noVotes, totalVoters;
     private GameManager gameManager;
     private UIManager uiManager;
-    private List<Player> players;
-    private Player teamLeader, assistant;
+    private SyncList<Player> players = new SyncList<Player>();
+    private Player teamLeader, assistant, currentPlayer;
+    private bool isDead = false;
 
     public Enums.EventHandlers EventHandlers;
 
-    public void StartNewVotingRound(UIManager um, List<Player> pl)
+    public void StartNewVotingRound(UIManager um, SyncList<Player> pl, Player assistantCandidate, Player leaderCandidate, int totalVoters)
     {
+        this.totalVoters = totalVoters;
+        assistant = assistantCandidate;
+        teamLeader = leaderCandidate;
+        currentPlayer = NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass();
         gameManager = gameObject.GetComponent<GameManager>();
         uiManager = um;
         players = pl;
 
-        totalVotesCast = 0;
-        yesVotes = 0;
-        totalVoters = 0;
-
-        foreach (var player in players)
+        if (!isDead)
         {
-            if (!player.GetIsDead())
+            CheckIfDead(currentPlayer);
+            if (!isDead)
             {
-                if (player.GetIsTeamLeaderCandidate())
-                {
-                    Debug.Log("leader cand: " + player.GetName());
-                    teamLeader = player;
-                }
+                AddVoter();
 
-                if (player.GetisAssistantCandidate())
-                {
-                    Debug.Log("ass cand: " + player.GetName());
-                    assistant = player;
-                }
-
-                totalVoters++;
-                //trigger ui;
-
+                uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
             }
-
         }
-        //for loop for testing purposes only
 
-        foreach (var player in players)
+
+    }
+
+    private void CheckIfDead(Player player)
+    {
+        foreach (var id in gameManager.deathPlayerIds)
         {
-            uiManager.StartLeaderVotingUI(teamLeader.GetName(), assistant.GetName(), gameObject);
+            if (player.GetPlayerID() == id)
+            {
+                isDead = true;
+            }
         }
 
     }
 
+    [Command(requiresAuthority = false)]
+    private void AddVoter()
+    {
+        //totalVoters++;
+
+        Debug.Log("totalvoters: " + totalVoters);
+    }
+    [Command(requiresAuthority = false)]
     public void AddVote(bool vote)
     {
         totalVotesCast++;
+        Debug.Log("totalVotesCast: " + totalVotesCast);
         if (vote)
         {
             yesVotes++;
+            Debug.Log("yesVotes: " + yesVotes);
+        }
+        else
+        {
+            noVotes++;
         }
         if (totalVotesCast == totalVoters)
         {
             var voteSucceeds = false;
-            if (yesVotes >= totalVotesCast / 2)
+            if (yesVotes > noVotes)
             {
                 voteSucceeds = true;
             }
@@ -75,10 +85,14 @@ public class VoteForOrganisers : MonoBehaviour
 
     public void FinishVotingRound(bool voteSucceeds)
     {
+        totalVotesCast = 0;
+        yesVotes = 0;
+        noVotes = 0;
+        totalVoters = 0;
+
         if (EventHandlers.OnVoteEnd != null)
         {
             EventHandlers.OnVoteEnd?.Invoke(voteSucceeds);
         }
-
     }
 }

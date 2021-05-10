@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
-public class RoundUIHandler : MonoBehaviour
+using Mirror;
+public class RoundUIHandler : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI round;

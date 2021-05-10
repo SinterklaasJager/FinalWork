@@ -1,23 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CardGeneration : MonoBehaviour
+public class CardGeneration : NetworkBehaviour
 {
     private GameManager gameManager;
     private Helper helpers;
 
-    private List<Enums.CardType> cardDeck;
+    private SyncList<Enums.CardType> cardDeck = new SyncList<Enums.CardType>();
 
-    private void Awake()
+    public void SetUp(GameManager gm, Helper hlp)
     {
-        gameManager = gameObject.GetComponent<GameManager>();
-        helpers = gameObject.GetComponent<Helper>();
+        gameManager = gm;
+        helpers = hlp;
     }
 
     public void GenerateCardDeck()
     {
-        cardDeck = new List<Enums.CardType>();
+        cardDeck = new SyncList<Enums.CardType>();
 
         for (int i = 0; i < 11; i++)
         {
@@ -36,22 +37,32 @@ public class CardGeneration : MonoBehaviour
         }
 
     }
+    public Enums.CardType GetTopCard()
+    {
+        Enums.CardType topCard;
+
+        if (cardDeck == null || cardDeck.Count < 3)
+        {
+            GenerateCardDeck();
+        }
+
+        topCard = cardDeck[0];
+        cardDeck.Remove(cardDeck[0]);
+
+        return topCard;
+    }
 
     public List<Enums.CardType> GetTopThreeCards()
     {
         List<Enums.CardType> topThreeCards = new List<Enums.CardType>();
 
-        if (cardDeck == null || cardDeck.Count < 3)
+        if (cardDeck == null || cardDeck.Count < 4)
         {
             GenerateCardDeck();
-            Debug.Log(cardDeck[0]);
-            Debug.Log(cardDeck[1]);
-            Debug.Log(cardDeck[2]);
         }
 
         for (int i = 0; i < 3; i++)
         {
-            Debug.Log(cardDeck[i]);
             topThreeCards.Add(cardDeck[i]);
         }
 

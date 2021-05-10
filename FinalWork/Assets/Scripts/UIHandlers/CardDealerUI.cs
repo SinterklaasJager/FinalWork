@@ -21,7 +21,7 @@ public class CardDealerUI : MonoBehaviour
         uIManager = gameObject.GetComponent<UIManager>();
         this.gameManager = gameManager;
         prefabs = gameManager.GetComponent<SpawnableObjects>();
-        cardGeneration = gameManager.GetComponent<CardGeneration>();
+        cardGeneration = gameManager.GetComponent<GameManager>().cardGeneration;
     }
 
     public void ShowAssistantCards()
@@ -57,9 +57,10 @@ public class CardDealerUI : MonoBehaviour
     {
         GameObject.Destroy(assistantCardUI);
     }
-    public void ShowProjectManagerCards()
+    public void ShowProjectManagerCards(List<Enums.CardType> cards)
     {
-        //if player is assistant;
+        this.cards = cards;
+        //if player is PM;
         currentCardPicker = Enums.CardPickerType.teamLeader;
 
         projectManagerCardUI = Instantiate(uIManager.ProjectManagerCardUI, uIManager.gameObject.transform);
@@ -100,7 +101,8 @@ public class CardDealerUI : MonoBehaviour
                 }
             }
 
-            ShowProjectManagerCards();
+            // ShowProjectManagerCards();
+            eventHandlers.OnAssistantCardsPicked?.Invoke(cards);
             HideAssistantCards();
         }
         else
