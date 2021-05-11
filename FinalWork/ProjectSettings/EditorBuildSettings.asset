@@ -4,5 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Samples/ARCore Extensions/1.23.0/Cloud Anchor Sample/Scenes/CloudAnchors.unity
+    guid: 83fb41cc294e74bdea57537befa00ffc
+  m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 5aa9d4db4b3459e4389ed6d4e79da1ad,
+      type: 2}
