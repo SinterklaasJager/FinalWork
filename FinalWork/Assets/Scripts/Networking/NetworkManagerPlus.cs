@@ -10,22 +10,21 @@ public class NetworkManagerPlus : NetworkManager
     private List<Player> players = new List<Player>();
     public List<GameObject> playerObjects = new List<GameObject>();
     public string userName;
+    private bool gameLocationPicked = false;
 
     public int amountOfPlayers = 0;
     public int MaxAmountOfPlayers;
 
     [SerializeField]
     private NetworkManagerHubDoublePlus networkManagerHubDoublePlus;
-    [SerializeField]
-    // private BeforeGameStart beforeGameStart;
 
     private GameManager gameManager;
 
     [SerializeField]
-    private GameObject gameManagerObj;
-
+    private GameObject gameManagerObj, ARManagerObject;
     public static event System.Action onClientConnected;
     public static event System.Action onClientDisconnected;
+    public static Enums.AREvents AREvents;
 
     public void SetData(string networkAd)
     {
@@ -68,15 +67,35 @@ public class NetworkManagerPlus : NetworkManager
         gameManager.AddPlayer(conn, player, go);
         amountOfPlayers = gameManager.GetPlayerCount();
 
+        Debug.Log("amountOfPlayers: " + amountOfPlayers);
+        if (amountOfPlayers == 1)
+        {
+            PickGameLocation();
+            gameManager.InstantiateARHostUI(conn);
+        }
 
         //Testing
         playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
 
-        Debug.Log("amountOfPlayers: " + amountOfPlayers);
         NetworkServer.AddPlayerForConnection(conn, go);
 
         StartGame();
 
+    }
+
+    private void PickGameLocation()
+    {
+        Debug.Log("[server] Pick a game Location");
+        AREvents.OnHostGameLocationPicked = (gameLocationObj) => GameLocationPicked(gameLocationObj);
+        ARManagerObject.SetActive(true);
+    }
+
+    private void GameLocationPicked(GameObject gameLocationObj)
+    {
+        Debug.Log("[server] Game Location Picked");
+        gameManager.SetGameLocation(gameLocationObj);
+        gameLocationPicked = true;
+        StartGame();
     }
     public override void OnServerDisconnect(NetworkConnection conn)
     {
@@ -92,12 +111,23 @@ public class NetworkManagerPlus : NetworkManager
     public void StartGame()
     {
         Debug.Log("Check If there are enough players: " + amountOfPlayers);
-        if (amountOfPlayers == MaxAmountOfPlayers)
+        if (amountOfPlayers == MaxAmountOfPlayers && gameLocationPicked)
         {
             Debug.Log("Start Game! ");
             gameManager.OnAllPlayersConnected();
             players.Clear();
             playerObjects.Clear();
+        }
+        else
+        {
+            if (amountOfPlayers != MaxAmountOfPlayers)
+            {
+                Debug.Log("waiting for all players to connect");
+            }
+            if (!gameLocationPicked)
+            {
+                Debug.Log("waiting for Host to pick a location");
+            }
         }
     }
 

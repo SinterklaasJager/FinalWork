@@ -15,6 +15,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject VoteTeamLeaderObj;
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject EnterPlayerNameUI;
+    [SerializeField] private GameObject ARHostUI;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -23,7 +24,7 @@ public class UIManager : NetworkBehaviour
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
-
+    public GameObject ArHostUI;
     private PlayerUIComponent playerUIScript;
     private GameObject GetPlayerNameUI;
 
@@ -39,6 +40,12 @@ public class UIManager : NetworkBehaviour
     private void UniversalCanvasHook(GameObject oldUC, GameObject newUC)
     {
         universalCanvas = newUC.GetComponent<UniversalCanvasManager>();
+    }
+
+    [TargetRpc]
+    public void InstantiateARHostUI(NetworkConnection target)
+    {
+        ArHostUI = Instantiate(ARHostUI, transform);
     }
 
     [TargetRpc]

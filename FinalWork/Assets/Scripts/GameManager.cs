@@ -21,6 +21,7 @@ public class GameManager : NetworkBehaviour
     public CardGeneration cardGeneration;
     public AddName addName;
     public SpawnableObjects spawnableObjects;
+    public GameObject gameLocationObject;
 
 
     void Start()
@@ -111,12 +112,25 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(roundManagerObj, syncedPlayerObjects[0]);
         roundManager.RoundSetUp(gameManager, uIManager.gameObject);
 
-        victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameObject.transform);
+        SetPlayerUI();
+    }
+
+    public void InstantiateARHostUI(NetworkConnection conn)
+    {
+        Debug.Log("InstantiateARHostUI");
+        uIManager.InstantiateARHostUI(conn);
+    }
+
+    public void SetGameLocation(GameObject gameLocationObject)
+    {
+        this.gameLocationObject = gameLocationObject;
+        NetworkServer.Spawn(gameLocationObject);
+
+        victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameLocationObject.transform);
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager, roundManager);
 
-        SetPlayerUI();
     }
 
     private void SetPlayerUI()
