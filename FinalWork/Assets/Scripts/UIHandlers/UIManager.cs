@@ -15,7 +15,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject VoteTeamLeaderObj;
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject EnterPlayerNameUI;
-    [SerializeField] private GameObject ARHostUI;
+    [SerializeField] private GameObject ArHostUIObj;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -41,11 +41,20 @@ public class UIManager : NetworkBehaviour
     {
         universalCanvas = newUC.GetComponent<UniversalCanvasManager>();
     }
+    // [Command(requiresAuthority = false)]
+    // public void SetUpARHostUI(GameObject go, GameManager gm)
+    // {
+    //     InstantiateARHostUI(go.GetComponent<NetworkIdentity>().connectionToClient, gm);
+    // }
 
     [TargetRpc]
-    public void InstantiateARHostUI(NetworkConnection target)
+    public void InstantiateARHostUI(NetworkConnection target, GameManager gm, GameObject ARObject)
     {
-        ArHostUI = Instantiate(ARHostUI, transform);
+        Debug.Log(gm);
+        Debug.Log("targetRPC: " + target);
+        ArHostUI = Instantiate(ArHostUIObj, transform);
+        ArHostUI.GetComponent<ARHostUI>().SetGameManager(gm);
+        ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
     }
 
     [TargetRpc]

@@ -21,10 +21,10 @@ public class NetworkManagerPlus : NetworkManager
     private GameManager gameManager;
 
     [SerializeField]
-    private GameObject gameManagerObj, ARManagerObject;
+    private GameObject gameManagerObj;
     public static event System.Action onClientConnected;
     public static event System.Action onClientDisconnected;
-    public static Enums.AREvents AREvents;
+    public Enums.AREvents AREvents;
 
     public void SetData(string networkAd)
     {
@@ -37,6 +37,7 @@ public class NetworkManagerPlus : NetworkManager
         gameManagerObj.name = "GameManager";
         NetworkServer.Spawn(gameManagerObj);
         gameManager = gameManagerObj.GetComponent<GameManager>();
+        gameManager.SetNetworkManager(this);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -68,32 +69,24 @@ public class NetworkManagerPlus : NetworkManager
         amountOfPlayers = gameManager.GetPlayerCount();
 
         Debug.Log("amountOfPlayers: " + amountOfPlayers);
-        if (amountOfPlayers == 1)
-        {
-            PickGameLocation();
-            gameManager.InstantiateARHostUI(conn);
-        }
+
 
         //Testing
         playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
 
         NetworkServer.AddPlayerForConnection(conn, go);
 
+        if (amountOfPlayers == 1)
+        {
+            gameManager.InstantiateARHostUI(go);
+        }
+
         StartGame();
 
     }
 
-    private void PickGameLocation()
+    public void GameLocationPicked()
     {
-        Debug.Log("[server] Pick a game Location");
-        AREvents.OnHostGameLocationPicked = (gameLocationObj) => GameLocationPicked(gameLocationObj);
-        ARManagerObject.SetActive(true);
-    }
-
-    private void GameLocationPicked(GameObject gameLocationObj)
-    {
-        Debug.Log("[server] Game Location Picked");
-        gameManager.SetGameLocation(gameLocationObj);
         gameLocationPicked = true;
         StartGame();
     }

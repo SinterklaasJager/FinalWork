@@ -15,7 +15,6 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private Canvas canvas;
 
     [Header("AR Components")]
-    [SerializeField] private GameObject ARObject;
 
     public static string userName;
 
@@ -78,7 +77,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     public void ButtonClient()
     {
         buttonClient.interactable = false;
-        ARObject.SetActive(true);
+        // ARObject.SetActive(true);
         NetworkManager.singleton.StartClient();
     }
 

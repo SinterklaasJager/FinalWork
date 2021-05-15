@@ -61,6 +61,7 @@ MonoBehaviour:
   cardGeneration: {fileID: 0}
   addName: {fileID: 0}
   spawnableObjects: {fileID: 0}
+  gameLocationObject: {fileID: 0}
 --- !u!114 &5596158979758662817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +96,10 @@ MonoBehaviour:
   btnPickAnAssistant: {fileID: 8266082363992277940, guid: f69861bff452f77498a0cacd760db90f,
     type: 3}
   btnPickAPlayerToKill: {fileID: 6061669302801342681, guid: 216fdf6dd30a51a419c62a4510836371,
+    type: 3}
+  ARManagerObject: {fileID: 4937185117869343173, guid: d71dc4a2cbaf9144faa71233e876b518,
+    type: 3}
+  gameLocationObject: {fileID: 6264570194549671905, guid: d70afd94f65642942887bfb50773452d,
     type: 3}
   victoryProgress: {fileID: 1491164111008820582, guid: 20dd418f5ec847a4a943e07de720563e,
     type: 3}
@@ -154,8 +159,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  btnReady: {fileID: 0}
-  inpUserName: {fileID: 0}
 --- !u!114 &5596158979758662828
 MonoBehaviour:
   m_ObjectHideFlags: 0

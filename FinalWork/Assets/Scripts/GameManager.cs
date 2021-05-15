@@ -10,11 +10,12 @@ public class GameManager : NetworkBehaviour
 
     public Helper helpers;
     public Enums enums;
-    private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj;
+    private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj, ARManagerObj;
     public UniversalCanvasManager universalCanvas;
     private GameManager gameManager;
     public RoundManager roundManager;
     public UIManager uIManager;
+    public NetworkManagerPlus networkManager;
     public VoteForOrganisers voteForOrganisers;
     private GameObject victoryProgressObj;
     public VictoryProgress victoryProgress;
@@ -23,6 +24,12 @@ public class GameManager : NetworkBehaviour
     public SpawnableObjects spawnableObjects;
     public GameObject gameLocationObject;
 
+    public Enums.AREvents AREvents;
+
+    public void SetNetworkManager(NetworkManagerPlus nwp)
+    {
+        networkManager = nwp;
+    }
 
     void Start()
     {
@@ -43,15 +50,9 @@ public class GameManager : NetworkBehaviour
         cardGeneration = cardGenerationObj.GetComponent<CardGeneration>();
         cardGeneration.SetUp(gameManager, helpers);
 
-    }
+        AREvents.OnHostGameLocation = (gameLocationPos, rotation) => SetGameLocationPosition(gameLocationPos, rotation);
 
-    // public void SetPlayerName(BeforeGameStart beforeGameStart)
-    // {
-    //     Debug.Log("username @ gamemanager: " + beforeGameStart.UserName);
-    //     syncedPlayers[syncedPlayers.Count - 1].SetName(beforeGameStart.UserName);
-    //     // var nw = NetworkManager.singleton as NetworkManagerPlus;
-    //     // nw.StartGame();
-    // }
+    }
 
     public void AddPlayer(NetworkConnection conn, Player newPlayer, GameObject go)
     {
@@ -90,7 +91,7 @@ public class GameManager : NetworkBehaviour
     {
         NetworkServer.Spawn(cardGenerationObj);
         NetworkServer.Spawn(universalCanvasObj);
-        NetworkServer.Spawn(uIManagerObj);
+
 
         SpawnNameGetUI();
     }
@@ -112,25 +113,35 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(roundManagerObj, syncedPlayerObjects[0]);
         roundManager.RoundSetUp(gameManager, uIManager.gameObject);
 
-        SetPlayerUI();
-    }
-
-    public void InstantiateARHostUI(NetworkConnection conn)
-    {
-        Debug.Log("InstantiateARHostUI");
-        uIManager.InstantiateARHostUI(conn);
-    }
-
-    public void SetGameLocation(GameObject gameLocationObject)
-    {
-        this.gameLocationObject = gameLocationObject;
-        NetworkServer.Spawn(gameLocationObject);
-
         victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameLocationObject.transform);
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager, roundManager);
 
+        SetPlayerUI();
+    }
+
+    public void StartAR()
+    {
+        NetworkServer.Spawn(uIManagerObj);
+
+        ARManagerObj = Instantiate(spawnableObjects.ARManagerObject, transform);
+        NetworkServer.Spawn(ARManagerObj);
+    }
+    public void InstantiateARHostUI(GameObject go)
+    {
+        StartAR();
+        Debug.Log("InstantiateARHostUI");
+
+        uIManager.InstantiateARHostUI(go.GetComponent<NetworkIdentity>().connectionToClient, gameManager, ARManagerObj);
+    }
+
+    [Command(requiresAuthority = false)]
+    public void SetGameLocationPosition(Vector3 gameLocationPosition, Quaternion rotation)
+    {
+        gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, gameLocationPosition, rotation);
+        NetworkServer.Spawn(gameLocationObject);
+        networkManager.GameLocationPicked();
     }
 
     private void SetPlayerUI()

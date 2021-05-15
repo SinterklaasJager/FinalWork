@@ -39,6 +39,6 @@ public class Enums : MonoBehaviour
 
     public struct AREvents
     {
-        public System.Action<GameObject> OnHostGameLocationPicked;
+        public System.Action<Vector3, Quaternion> OnHostGameLocation;
     }
 }

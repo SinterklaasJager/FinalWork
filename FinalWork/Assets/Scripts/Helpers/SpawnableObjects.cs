@@ -21,6 +21,9 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject btnPickAnAssistant;
     public GameObject btnPickAPlayerToKill;
 
+    [Header("AR Components")]
+    public GameObject ARManagerObject;
+    public GameObject gameLocationObject;
 
     [Header("Rocket Components")]
     public GameObject victoryProgress;
