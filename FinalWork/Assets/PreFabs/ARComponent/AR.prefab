@@ -43,6 +43,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8362b0249b3dcb4aa6e824259983398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ARUI: {fileID: 0}
+  SessionOrigin: {fileID: 4937185118489648856}
+  SessionCore: {fileID: 4937185117547368657}
+  ARExtentions: {fileID: 1957913720}
+  AnchorManager: {fileID: 1225095605}
+  RaycastManager: {fileID: 4937185118489648861}
+  LobbyScreen: {fileID: 0}
+  StartScreen: {fileID: 0}
+  ARScreen: {fileID: 0}
+  StatusScreen: {fileID: 0}
+  TrackingHelperText: {fileID: 0}
 --- !u!1 &1957913720
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,11 +544,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b286627bae5039429563b16a21b1504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToInstantiate: {fileID: 6264570194549671905, guid: d70afd94f65642942887bfb50773452d,
-    type: 3}
-  confirmLocationPanel: {fileID: 0}
-  ARUI: {fileID: 0}
-  networkManagerPlus: {fileID: 0}
 --- !u!114 &1225095605
 MonoBehaviour:
   m_ObjectHideFlags: 0

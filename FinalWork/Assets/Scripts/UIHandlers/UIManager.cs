@@ -54,7 +54,8 @@ public class UIManager : NetworkBehaviour
         Debug.Log("targetRPC: " + target);
         ArHostUI = Instantiate(ArHostUIObj, transform);
         ArHostUI.GetComponent<ARHostUI>().SetGameManager(gm);
-        ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
+        // ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
+        ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
     }
 
     [TargetRpc]

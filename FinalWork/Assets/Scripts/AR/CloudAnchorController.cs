@@ -36,6 +36,12 @@ using UnityEngine.XR.ARSubsystems;
 /// </summary>
 public class CloudAnchorController : MonoBehaviour
 {
+    [Header("Custom Variables")]
+    private GameObject spawnedObject;
+    private GameManager gameManager;
+    public GameObject ARUI;
+    private bool allowPlacement;
+
     [Header("AR Foundation")]
 
     /// <summary>
@@ -361,20 +367,58 @@ public class CloudAnchorController : MonoBehaviour
         // If there was an anchor placed, then instantiate the corresponding object.
         if (hitResults.Count > 0)
         {
-            // The first touch on the Hosting mode will instantiate the origin anchor. Any
-            // subsequent touch will instantiate a star, both in Hosting and Resolving modes.
-            if (CanPlaceStars())
+            Debug.Log("Hit the Plane, Allowed to Place?: " + allowPlacement);
+            if (allowPlacement)
             {
-                InstantiateStar(ToWorldOriginPose(hitResults[0].pose));
-            }
-            else if (!IsOriginPlaced && _currentMode == ApplicationMode.Hosting)
-            {
-                ARAnchor anchor = AnchorManager.AddAnchor(hitResults[0].pose);
+                var hitPose = hitResults[0].pose;
+
+                ARAnchor anchor = AnchorManager.AddAnchor(hitPose);
                 WorldOrigin = anchor.transform;
                 InstantiateAnchor(anchor);
                 OnAnchorInstantiated(true);
+
+                if (spawnedObject == null)
+                {
+                    gameManager.AREvents.OnHostGameLocation = (gameLocationPos, rotation) => GameLocationSet(gameLocationPos, rotation);
+                    spawnedObject = Instantiate(gameManager.spawnableObjects.gameLocationObject, hitPose.position, hitPose.rotation);
+
+                    ARUI.SetActive(true);
+                    ARUI.GetComponent<ARHostUI>().spawnedObject = spawnedObject;
+                    ARUI.GetComponent<ARHostUI>().networkManagerPlus = _networkManager;
+                    ARUI.GetComponent<ARHostUI>().EnableConfirmationButton();
+                }
+                else
+                {
+                    spawnedObject.transform.position = hitPose.position;
+                }
             }
+
+            // // The first touch on the Hosting mode will instantiate the origin anchor. Any
+            // // subsequent touch will instantiate a star, both in Hosting and Resolving modes.
+            // if (CanPlaceStars())
+            // {
+            //     InstantiateStar(ToWorldOriginPose(hitResults[0].pose));
+            // }
+            // else if (!IsOriginPlaced && _currentMode == ApplicationMode.Hosting)
+            // {
+            //     ARAnchor anchor = AnchorManager.AddAnchor(hitResults[0].pose);
+            //     WorldOrigin = anchor.transform;
+            //     InstantiateAnchor(anchor);
+            //     OnAnchorInstantiated(true);
+            // }
         }
+    }
+    public void SetUp(GameManager gm, GameObject arui)
+    {
+        Debug.Log("TapToPlaceSETUP: " + gm);
+        gameManager = gm;
+        ARUI = arui;
+        allowPlacement = true;
+    }
+
+    private void GameLocationSet(Vector3 x, Quaternion rot)
+    {
+        allowPlacement = false;
     }
 
     /// <summary>
@@ -728,7 +772,8 @@ public class CloudAnchorController : MonoBehaviour
         }
 
         //   NetworkUIController.ShowDebugMessage(reason);
-        Invoke("DoReturnToLobby", 3.0f);
+        Debug.Log("RETURN TO LOBBY REASON: " + reason);
+        //  Invoke("DoReturnToLobby", 3.0f);
     }
 
     /// <summary>
