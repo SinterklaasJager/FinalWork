@@ -10,7 +10,7 @@ public class NetworkManagerPlus : NetworkManager
     private List<Player> players = new List<Player>();
     public List<GameObject> playerObjects = new List<GameObject>();
     public string userName;
-    private bool gameLocationPicked = false;
+    public bool gameLocationPicked = false;
 
     public int amountOfPlayers = 0;
     public int MaxAmountOfPlayers;

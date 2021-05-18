@@ -178,12 +178,12 @@ public class CloudAnchorController : MonoBehaviour
     /// <summary>
     /// The current cloud anchor mode.
     /// </summary>
-    private ApplicationMode _currentMode = ApplicationMode.Ready;
+    private ApplicationMode _currentMode = ApplicationMode.Hosting;
 
     /// <summary>
     /// The current active UI screen.
     /// </summary>
-    private ActiveScreen _currentActiveScreen = ActiveScreen.LobbyScreen;
+    private ActiveScreen _currentActiveScreen = ActiveScreen.ARScreen;
 
     /// <summary>
     /// The Network Manager.
@@ -298,26 +298,31 @@ public class CloudAnchorController : MonoBehaviour
 
         // A Name is provided to the Game Object so it can be found by other Scripts
         // instantiated as prefabs in the scene.
-        gameObject.name = "CloudAnchorsExampleController";
-        ResetStatus();
+        gameObject.name = "CloudAnchorController";
+        // ResetStatus();
     }
 
     /// <summary>
     /// The Unity Update() method.
     /// </summary>
+
+    static List<ARRaycastHit> hits = new List<ARRaycastHit>();
     public void Update()
     {
-        UpdateApplicationLifecycle();
 
-        if (_currentActiveScreen != ActiveScreen.ARScreen)
-        {
-            return;
-        }
+        // Debug.Log("_currentMode: " + _currentMode);
+        // UpdateApplicationLifecycle();
+
+        // if (_currentActiveScreen != ActiveScreen.ARScreen)
+        // {
+        //     return;
+        // }
 
         // If we are neither in hosting nor resolving mode then the update is complete.
         if (_currentMode != ApplicationMode.Hosting &&
             _currentMode != ApplicationMode.Resolving)
         {
+            Debug.Log("_currentMode: " + _currentMode);
             return;
         }
 
@@ -336,10 +341,10 @@ public class CloudAnchorController : MonoBehaviour
         }
 
         // Display tracking failure reason.
-        if (_currentMode == ApplicationMode.Hosting || _passedResolvingPreparedTime)
-        {
-            DisplayTrackingHelperMessage();
-        }
+        // if (_currentMode == ApplicationMode.Hosting || _passedResolvingPreparedTime)
+        // {
+        //     DisplayTrackingHelperMessage();
+        // }
 
         // If the origin anchor has not been placed yet, then update in resolving mode is
         // complete.
@@ -360,17 +365,18 @@ public class CloudAnchorController : MonoBehaviour
         {
             return;
         }
+        Debug.Log("Update RayCast: " + RaycastManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon));
 
-        List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
-        RaycastManager.Raycast(Input.GetTouch(0).position, hitResults);
+        // List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
+        RaycastManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon);
 
         // If there was an anchor placed, then instantiate the corresponding object.
-        if (hitResults.Count > 0)
+        if (hits.Count > 0)
         {
             Debug.Log("Hit the Plane, Allowed to Place?: " + allowPlacement);
             if (allowPlacement)
             {
-                var hitPose = hitResults[0].pose;
+                var hitPose = hits[0].pose;
 
                 ARAnchor anchor = AnchorManager.AddAnchor(hitPose);
                 WorldOrigin = anchor.transform;
@@ -410,10 +416,19 @@ public class CloudAnchorController : MonoBehaviour
     }
     public void SetUp(GameManager gm, GameObject arui)
     {
-        Debug.Log("TapToPlaceSETUP: " + gm);
+        Debug.Log("GayManager: " + gm);
+        Debug.Log("ARUI: " + arui);
         gameManager = gm;
         ARUI = arui;
         allowPlacement = true;
+        _currentMode = ApplicationMode.Hosting;
+
+        var ARManager = gameObject.GetComponentInParent<ARManager>();
+        SessionOrigin = ARManager.SessionOrigin;
+        SessionCore = ARManager.SessionCore;
+        ARExtentions = ARManager.ARExtentions;
+        AnchorManager = ARManager.AnchorManager;
+        RaycastManager = ARManager.RaycastManager;
     }
 
     private void GameLocationSet(Vector3 x, Quaternion rot)

@@ -16,6 +16,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject EnterPlayerNameUI;
     [SerializeField] private GameObject ArHostUIObj;
+    [SerializeField] private GameObject ARCloudAnchorObj;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -55,7 +56,9 @@ public class UIManager : NetworkBehaviour
         ArHostUI = Instantiate(ArHostUIObj, transform);
         ArHostUI.GetComponent<ARHostUI>().SetGameManager(gm);
         // ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
-        ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
+        //ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
+        var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
+        arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
     }
 
     [TargetRpc]

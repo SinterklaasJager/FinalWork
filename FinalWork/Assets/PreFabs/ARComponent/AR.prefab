@@ -1,59 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &852916367
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 852916368}
-  - component: {fileID: 852916369}
-  m_Layer: 0
-  m_Name: Cloud Anchor Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &852916368
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 852916367}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -400.51642, y: -217.69205, z: -41.125}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4937185117869343172}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &852916369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 852916367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8362b0249b3dcb4aa6e824259983398, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ARUI: {fileID: 0}
-  SessionOrigin: {fileID: 4937185118489648856}
-  SessionCore: {fileID: 4937185117547368657}
-  ARExtentions: {fileID: 1957913720}
-  AnchorManager: {fileID: 1225095605}
-  RaycastManager: {fileID: 4937185118489648861}
-  LobbyScreen: {fileID: 0}
-  StartScreen: {fileID: 0}
-  ARScreen: {fileID: 0}
-  StatusScreen: {fileID: 0}
-  TrackingHelperText: {fileID: 0}
 --- !u!1 &1957913720
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +48,7 @@ MonoBehaviour:
   CameraManager: {fileID: 4937185118098058677}
   ARCoreExtensionsConfig: {fileID: 11400000, guid: 191f9fa03d189de4e840bda1266b9b0a,
     type: 2}
-  CameraConfigFilter: {fileID: 0}
+  CameraConfigFilter: {fileID: 11400000, guid: 2557bb82ec59a884b9d3305250c949f7, type: 2}
 --- !u!1 &4937185117547368657
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,7 +141,6 @@ Transform:
   - {fileID: 4937185118489648857}
   - {fileID: 4937185118486618806}
   - {fileID: 1957913721}
-  - {fileID: 852916368}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -212,6 +157,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameLocationChooser: {fileID: 0}
+  SessionOrigin: {fileID: 4937185118489648856}
+  SessionCore: {fileID: 4937185117547368657}
+  ARExtentions: {fileID: 1957913720}
+  AnchorManager: {fileID: 1225095605}
+  RaycastManager: {fileID: 4937185118489648861}
 --- !u!114 &2420059533528190324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +417,6 @@ GameObject:
   - component: {fileID: 4937185118489648861}
   - component: {fileID: 4937185118489648862}
   - component: {fileID: 1225095605}
-  - component: {fileID: 1225095606}
   - component: {fileID: 1225095607}
   m_Layer: 0
   m_Name: AR Session Origin
@@ -557,23 +506,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AnchorPrefab: {fileID: 0}
---- !u!114 &1225095606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4937185118489648858}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  visible: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &1225095607
 MonoBehaviour:
   m_ObjectHideFlags: 0
