@@ -12,6 +12,9 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private TMP_InputField inputFieldAddress;
     [SerializeField] private TMP_Text serverText, clientText;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
+    [SerializeField] private Canvas canvas;
+
+    [Header("AR Components")]
 
     public static string userName;
 
@@ -57,10 +60,15 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     public void ButtonHost()
     {
+        //ARObject.SetActive(true);
+        //  NetworkManagerPlus.AREvents.OnHostGameLocationPicked = (gameLocationObj) => OnHostLocationPicked(gameLocationObj);
         NetworkManager.singleton.StartHost();
         gameObject.SetActive(false);
     }
-
+    public void OnHostLocationPicked(GameObject gameLocationObj)
+    {
+        NetworkManager.singleton.StartHost();
+    }
     public void ButtonServer()
     {
         NetworkManager.singleton.StartServer();
@@ -69,6 +77,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     public void ButtonClient()
     {
         buttonClient.interactable = false;
+        // ARObject.SetActive(true);
         NetworkManager.singleton.StartClient();
     }
 

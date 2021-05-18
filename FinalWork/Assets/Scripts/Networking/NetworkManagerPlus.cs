@@ -10,22 +10,21 @@ public class NetworkManagerPlus : NetworkManager
     private List<Player> players = new List<Player>();
     public List<GameObject> playerObjects = new List<GameObject>();
     public string userName;
+    public bool gameLocationPicked = false;
 
     public int amountOfPlayers = 0;
     public int MaxAmountOfPlayers;
 
     [SerializeField]
     private NetworkManagerHubDoublePlus networkManagerHubDoublePlus;
-    [SerializeField]
-    // private BeforeGameStart beforeGameStart;
 
     private GameManager gameManager;
 
     [SerializeField]
     private GameObject gameManagerObj;
-
     public static event System.Action onClientConnected;
     public static event System.Action onClientDisconnected;
+    public Enums.AREvents AREvents;
 
     public void SetData(string networkAd)
     {
@@ -38,6 +37,7 @@ public class NetworkManagerPlus : NetworkManager
         gameManagerObj.name = "GameManager";
         NetworkServer.Spawn(gameManagerObj);
         gameManager = gameManagerObj.GetComponent<GameManager>();
+        gameManager.SetNetworkManager(this);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -68,15 +68,27 @@ public class NetworkManagerPlus : NetworkManager
         gameManager.AddPlayer(conn, player, go);
         amountOfPlayers = gameManager.GetPlayerCount();
 
+        Debug.Log("amountOfPlayers: " + amountOfPlayers);
+
 
         //Testing
         playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
 
-        Debug.Log("amountOfPlayers: " + amountOfPlayers);
         NetworkServer.AddPlayerForConnection(conn, go);
+
+        if (amountOfPlayers == 1)
+        {
+            gameManager.InstantiateARHostUI(go);
+        }
 
         StartGame();
 
+    }
+
+    public void GameLocationPicked()
+    {
+        gameLocationPicked = true;
+        StartGame();
     }
     public override void OnServerDisconnect(NetworkConnection conn)
     {
@@ -92,12 +104,23 @@ public class NetworkManagerPlus : NetworkManager
     public void StartGame()
     {
         Debug.Log("Check If there are enough players: " + amountOfPlayers);
-        if (amountOfPlayers == MaxAmountOfPlayers)
+        if (amountOfPlayers == MaxAmountOfPlayers && gameLocationPicked)
         {
             Debug.Log("Start Game! ");
             gameManager.OnAllPlayersConnected();
             players.Clear();
             playerObjects.Clear();
+        }
+        else
+        {
+            if (amountOfPlayers != MaxAmountOfPlayers)
+            {
+                Debug.Log("waiting for all players to connect");
+            }
+            if (!gameLocationPicked)
+            {
+                Debug.Log("waiting for Host to pick a location");
+            }
         }
     }
 

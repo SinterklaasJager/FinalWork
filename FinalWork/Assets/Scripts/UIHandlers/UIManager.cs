@@ -7,7 +7,7 @@ public class UIManager : NetworkBehaviour
 {
     [SyncVar] private GameObject gameManager;
     [SyncVar(hook = nameof(UniversalCanvasHook))] private GameObject universalCanvasObj;
-    private UniversalCanvasManager univeralCanvas;
+    private UniversalCanvasManager universalCanvas;
 
     [Header("UI Objects")]
     [SerializeField] private GameObject RoundUIObj;
@@ -15,6 +15,8 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject VoteTeamLeaderObj;
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject EnterPlayerNameUI;
+    [SerializeField] private GameObject ArHostUIObj;
+    [SerializeField] private GameObject ARCloudAnchorObj;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -23,7 +25,7 @@ public class UIManager : NetworkBehaviour
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
-
+    public GameObject ArHostUI;
     private PlayerUIComponent playerUIScript;
     private GameObject GetPlayerNameUI;
 
@@ -31,14 +33,32 @@ public class UIManager : NetworkBehaviour
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
     {
         this.gameManager = gameManager;
-        univeralCanvas = ucm;
+        universalCanvas = ucm;
         //universalCanvasObj = ucm.gameObject;
 
     }
 
     private void UniversalCanvasHook(GameObject oldUC, GameObject newUC)
     {
-        univeralCanvas = newUC.GetComponent<UniversalCanvasManager>();
+        universalCanvas = newUC.GetComponent<UniversalCanvasManager>();
+    }
+    // [Command(requiresAuthority = false)]
+    // public void SetUpARHostUI(GameObject go, GameManager gm)
+    // {
+    //     InstantiateARHostUI(go.GetComponent<NetworkIdentity>().connectionToClient, gm);
+    // }
+
+    [TargetRpc]
+    public void InstantiateARHostUI(NetworkConnection target, GameManager gm, GameObject ARObject)
+    {
+        Debug.Log(gm);
+        Debug.Log("targetRPC: " + target);
+        ArHostUI = Instantiate(ArHostUIObj, transform);
+        ArHostUI.GetComponent<ARHostUI>().SetGameManager(gm);
+        // ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
+        //ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
+        var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
+        arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
     }
 
     [TargetRpc]
@@ -97,7 +117,11 @@ public class UIManager : NetworkBehaviour
     {
         // VoteTeamLeaderUI = Instantiate(VoteTeamLeaderObj, transform);
         // VoteTeamLeaderUI.GetComponent<VoteForTeamLeaderUI>().SetNames(tl, pl, voteScript);
-        univeralCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+        universalCanvas.StartLeaderVotingUI(tl, pl, voteScript, VoteTeamLeaderObj);
+    }
+    public void DisableLeaderVotingUI(NetworkConnection target)
+    {
+        universalCanvas.DisableLeaderVotingUI(target);
     }
 
     [TargetRpc]

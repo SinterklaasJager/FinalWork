@@ -142,6 +142,10 @@ MonoBehaviour:
     type: 3}
   EnterPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
     type: 3}
+  ArHostUIObj: {fileID: 2475188845531797869, guid: f750fc77c38e26843a4f55476edfcbb9,
+    type: 3}
+  ARCloudAnchorObj: {fileID: 730263186811177259, guid: ee28009cdb6500148a51fb21b61b932a,
+    type: 3}
   AssistantCardUI: {fileID: 5644212612963016198, guid: 4a4ad9261339be04a9090771bd3b4c77,
     type: 3}
   ProjectManagerCardUI: {fileID: 5644212612963016198, guid: 223b5431834f8a24d82c950630bcab0e,
@@ -150,6 +154,7 @@ MonoBehaviour:
   RoundUI: {fileID: 0}
   PickAnAssistantUI: {fileID: 0}
   VoteTeamLeaderUI: {fileID: 0}
+  ArHostUI: {fileID: 0}
 --- !u!114 &7304176298806975430
 MonoBehaviour:
   m_ObjectHideFlags: 0
