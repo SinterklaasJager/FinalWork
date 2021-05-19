@@ -27,6 +27,9 @@ public class GameManager : NetworkBehaviour
 
     public Enums.AREvents AREvents;
 
+    public Enums.EventHandlers events;
+    public int playersInLobby;
+
     public void SetNetworkManager(NetworkManagerPlus nwp)
     {
         networkManager = nwp;
@@ -56,30 +59,14 @@ public class GameManager : NetworkBehaviour
 
     public void AddPlayer(NetworkConnection conn, Player newPlayer, GameObject go)
     {
-        // newPlayer.SetName(beforeGameStart.UserName);
         syncedPlayers.Add(newPlayer);
         syncedPlayerObjects.Add(go);
-        //SetPlayerName(beforeGameStart);
-        Debug.Log("player: " + syncedPlayers[syncedPlayers.Count - 1].GetName() + " connected");
 
         if (syncedPlayers.Count == 1)
         {
-            FirstPlayerConnected();
+            NetworkServer.Spawn(uIManagerObj);
         }
-
-        lobbyUIManager.AddNewPlayer(newPlayer.GetName());
     }
-
-    public void FirstPlayerConnected()
-    {
-        NetworkServer.Spawn(uIManagerObj);
-        lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManager.transform);
-        lobbyUIManager = lobbyUIObj.GetComponent<LobbyUIManager>();
-        NetworkServer.Spawn(lobbyUIObj);
-        Debug.Log("networkManager.MaxAmountOfPlayers " + networkManager.MaxAmountOfPlayers);
-        lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
-    }
-
     public int GetPlayerCount()
     {
         return syncedPlayers.Count;
@@ -110,16 +97,43 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(universalCanvasObj);
 
 
-        SpawnNameGetUI();
+        //SpawnNameGetUI();
     }
 
-    public void SpawnNameGetUI()
+    public void SpawnNameGetUI(GameObject playerObj)
     {
-        foreach (var playerObj in syncedPlayerObjects)
+        // foreach (var playerObj in syncedPlayerObjects)
+        // {
+        events.OnNameEntered = (player) => OnNameEntered(player);
+        uIManager.StartPlayerNameUI(playerObj.GetComponent<NetworkIdentity>().connectionToClient, playerObj, gameManager);
+        // }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void OnNameEntered(Player player)
+    {
+        if (syncedPlayers.Count == 1)
         {
-            uIManager.StartPlayerNameUI(playerObj.GetComponent<NetworkIdentity>().connectionToClient, playerObj, gameManager);
+            SetUpLobby();
+        }
+
+        lobbyUIManager.AddNewPlayer(player.GetName());
+        playersInLobby++;
+
+        if (playersInLobby == networkManager.MaxAmountOfPlayers)
+        {
+            AllPlayersReady();
         }
     }
+    public void SetUpLobby()
+    {
+        lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManager.transform);
+        lobbyUIManager = lobbyUIObj.GetComponent<LobbyUIManager>();
+        NetworkServer.Spawn(lobbyUIObj);
+        Debug.Log("networkManager.MaxAmountOfPlayers " + networkManager.MaxAmountOfPlayers);
+        lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
+    }
+
 
     public void AllPlayersReady()
     {

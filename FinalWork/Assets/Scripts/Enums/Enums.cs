@@ -33,7 +33,7 @@ public class Enums : MonoBehaviour
         public System.Action<bool> OnVoteEnd;
         public System.Action<List<Enums.CardType>> OnAssistantCardsPicked;
         public System.Action<Enums.CardType> OnCardSelected;
-        public System.Action<string> OnNameEntered;
+        public System.Action<Player> OnNameEntered;
 
     }
 

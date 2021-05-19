@@ -54,6 +54,10 @@ public class NetworkManagerPlus : NetworkManager
     {
         base.OnClientDisconnect(conn);
         onClientDisconnected?.Invoke();
+        if (gameManager.playersInLobby > 0)
+        {
+            gameManager.playersInLobby--;
+        }
     }
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
@@ -65,7 +69,6 @@ public class NetworkManagerPlus : NetworkManager
 
         if (amountOfPlayers == 1 || gameLocationPicked)
         {
-
             GameObject go = Instantiate(playerPrefab, new Vector3(Random.Range(-7.5f, 7.5f), 4, Random.Range(-7.5f, 7.5f)), Quaternion.identity);
             var player = new Player();
             var connectionId = conn.connectionId;
@@ -87,20 +90,20 @@ public class NetworkManagerPlus : NetworkManager
             {
                 gameManager.InstantiateARHostUI(go);
             }
+            else
+            {
+                gameManager.SpawnNameGetUI(go);
+            }
 
             StartGame();
         }
-        else
-        {
-
-        }
-
     }
 
     public void GameLocationPicked()
     {
+        gameManager.SpawnNameGetUI(gameManager.syncedPlayerObjects[0]);
         gameLocationPicked = true;
-        maxConnections = 5;
+        maxConnections = MaxAmountOfPlayers;
         //StartGame();
     }
     public override void OnServerDisconnect(NetworkConnection conn)
