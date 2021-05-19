@@ -10,8 +10,7 @@ public class NetworkManagerPlus : NetworkManager
     private List<Player> players = new List<Player>();
     public List<GameObject> playerObjects = new List<GameObject>();
     public string userName;
-    public bool gameLocationPicked = false;
-
+    public bool gameLocationPicked;
     public int amountOfPlayers = 0;
     public int MaxAmountOfPlayers;
 
@@ -59,36 +58,50 @@ public class NetworkManagerPlus : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         Debug.Log("connect player!");
-        GameObject go = Instantiate(playerPrefab, new Vector3(Random.Range(-7.5f, 7.5f), 4, Random.Range(-7.5f, 7.5f)), Quaternion.identity);
-        var player = new Player();
-        var connectionId = conn.connectionId;
-        player.SetPlayerID(connectionId);
-
-        go.GetComponent<PlayerManager>().SetPlayerClass(player);
-        gameManager.AddPlayer(conn, player, go);
-        amountOfPlayers = gameManager.GetPlayerCount();
-
-        Debug.Log("amountOfPlayers: " + amountOfPlayers);
-
-
-        //Testing
-        playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
-
-        NetworkServer.AddPlayerForConnection(conn, go);
-
         if (amountOfPlayers == 1)
         {
-            gameManager.InstantiateARHostUI(go);
+            maxConnections = 1;
         }
 
-        StartGame();
+        if (amountOfPlayers == 1 || gameLocationPicked)
+        {
+
+            GameObject go = Instantiate(playerPrefab, new Vector3(Random.Range(-7.5f, 7.5f), 4, Random.Range(-7.5f, 7.5f)), Quaternion.identity);
+            var player = new Player();
+            var connectionId = conn.connectionId;
+            player.SetPlayerID(connectionId);
+
+            go.GetComponent<PlayerManager>().SetPlayerClass(player);
+            gameManager.AddPlayer(conn, player, go);
+            amountOfPlayers = gameManager.GetPlayerCount();
+
+            Debug.Log("amountOfPlayers: " + amountOfPlayers);
+
+
+            //Testing
+            playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
+
+            NetworkServer.AddPlayerForConnection(conn, go);
+
+            if (amountOfPlayers == 1)
+            {
+                gameManager.InstantiateARHostUI(go);
+            }
+
+            StartGame();
+        }
+        else
+        {
+
+        }
 
     }
 
     public void GameLocationPicked()
     {
         gameLocationPicked = true;
-        StartGame();
+        maxConnections = 5;
+        //StartGame();
     }
     public override void OnServerDisconnect(NetworkConnection conn)
     {

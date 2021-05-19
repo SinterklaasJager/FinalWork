@@ -10,7 +10,7 @@ public class GameManager : NetworkBehaviour
 
     public Helper helpers;
     public Enums enums;
-    private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj, ARManagerObj;
+    private GameObject roundManagerObj, cardGenerationObj, universalCanvasObj, uIManagerObj, ARManagerObj, lobbyUIObj;
     public UniversalCanvasManager universalCanvas;
     private GameManager gameManager;
     public RoundManager roundManager;
@@ -22,6 +22,7 @@ public class GameManager : NetworkBehaviour
     public CardGeneration cardGeneration;
     public AddName addName;
     public SpawnableObjects spawnableObjects;
+    public LobbyUIManager lobbyUIManager;
     public GameObject gameLocationObject;
 
     public Enums.AREvents AREvents;
@@ -51,7 +52,6 @@ public class GameManager : NetworkBehaviour
         cardGeneration.SetUp(gameManager, helpers);
 
         AREvents.OnHostGameLocation = (gameLocationPos, rotation) => SetGameLocationPosition(gameLocationPos, rotation);
-
     }
 
     public void AddPlayer(NetworkConnection conn, Player newPlayer, GameObject go)
@@ -61,6 +61,23 @@ public class GameManager : NetworkBehaviour
         syncedPlayerObjects.Add(go);
         //SetPlayerName(beforeGameStart);
         Debug.Log("player: " + syncedPlayers[syncedPlayers.Count - 1].GetName() + " connected");
+
+        if (syncedPlayers.Count == 1)
+        {
+            FirstPlayerConnected();
+        }
+
+        lobbyUIManager.AddNewPlayer(newPlayer.GetName());
+    }
+
+    public void FirstPlayerConnected()
+    {
+        NetworkServer.Spawn(uIManagerObj);
+        lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManager.transform);
+        lobbyUIManager = lobbyUIObj.GetComponent<LobbyUIManager>();
+        NetworkServer.Spawn(lobbyUIObj);
+        Debug.Log("networkManager.MaxAmountOfPlayers " + networkManager.MaxAmountOfPlayers);
+        lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
     }
 
     public int GetPlayerCount()
@@ -123,8 +140,6 @@ public class GameManager : NetworkBehaviour
 
     public void StartAR()
     {
-        NetworkServer.Spawn(uIManagerObj);
-
         ARManagerObj = Instantiate(spawnableObjects.ARManagerObject, transform);
         NetworkServer.Spawn(ARManagerObj);
     }
@@ -137,7 +152,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void SetGameLocationPosition(Vector3 gameLocationPosition, Quaternion rotation)
+    public void SetGameLocationPosition(Vector3 gameLocationPosition, Quaternion rotation, NetworkConnectionToClient sender = null)
     {
         gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, gameLocationPosition, rotation);
         NetworkServer.Spawn(gameLocationObject);

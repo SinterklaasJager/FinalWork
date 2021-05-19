@@ -56,11 +56,13 @@ MonoBehaviour:
   universalCanvas: {fileID: 0}
   roundManager: {fileID: 0}
   uIManager: {fileID: 0}
+  networkManager: {fileID: 0}
   voteForOrganisers: {fileID: 0}
   victoryProgress: {fileID: 0}
   cardGeneration: {fileID: 0}
   addName: {fileID: 0}
   spawnableObjects: {fileID: 0}
+  lobbyUIManager: {fileID: 0}
   gameLocationObject: {fileID: 0}
 --- !u!114 &5596158979758662817
 MonoBehaviour:
@@ -91,6 +93,7 @@ MonoBehaviour:
     type: 3}
   GetPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
     type: 3}
+  LobbyUI: {fileID: 1744369479649317213, guid: 4ca01966215e00946816bbb26b3eb36c, type: 3}
   btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
   btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}
   btnPickAnAssistant: {fileID: 8266082363992277940, guid: f69861bff452f77498a0cacd760db90f,

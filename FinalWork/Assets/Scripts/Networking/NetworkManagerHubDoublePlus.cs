@@ -10,9 +10,12 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private Button buttonHost, buttonServer, buttonClient, buttonStop, buttonConfirm;
     // [SerializeField] private GameObject PanelStart, PanelStop;
     [SerializeField] private TMP_InputField inputFieldAddress;
-    [SerializeField] private TMP_Text serverText, clientText;
+    [SerializeField] private TMP_Text serverText, clientText, attemptingToConnectText, connectionErrorText;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject ipInputPanel;
+
+    private bool clientConnected, clientConnectionFailed;
 
     [Header("AR Components")]
 
@@ -76,18 +79,47 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     public void ButtonClient()
     {
+        clientConnectionFailed = false;
         buttonClient.interactable = false;
+        connectionErrorText.gameObject.SetActive(false);
         // ARObject.SetActive(true);
         NetworkManager.singleton.StartClient();
+        StartCoroutine("ConnectionMessage");
+    }
+
+    private IEnumerator ConnectionMessage()
+    {
+        while (!clientConnected && !clientConnectionFailed)
+        {
+            attemptingToConnectText.gameObject.SetActive(true);
+            attemptingToConnectText.text = "Attempting to connect";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect.";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect..";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect...";
+            yield return new WaitForSeconds(.5f);
+        }
+        if (clientConnectionFailed)
+        {
+            attemptingToConnectText.gameObject.SetActive(false);
+            connectionErrorText.gameObject.SetActive(true);
+            yield return null;
+        }
+
     }
 
     private void HandleClientConnected()
     {
         gameObject.SetActive(false);
+        clientConnected = true;
     }
     private void HandleClientDisconnected()
     {
         buttonClient.interactable = true;
+        clientConnected = false;
+        clientConnectionFailed = true;
     }
 
     public void ButtonStop()
@@ -109,6 +141,16 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         }
 
         SetupCanvas();
+    }
+
+    public void HideIPPanel()
+    {
+        ipInputPanel.SetActive(false);
+    }
+
+    public void ShowIPPanel()
+    {
+        ipInputPanel.SetActive(true);
     }
 
     public void SetupCanvas()

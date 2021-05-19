@@ -14,7 +14,7 @@ public class PlayerDebugScript : MonoBehaviour
 
     public void SetPlayerID(int playerID)
     {
-        Debug.Log(playerID);
+        // Debug.Log(playerID);
         txtPlayerID.text = playerID.ToString();
     }
 }
