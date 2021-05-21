@@ -54,9 +54,12 @@ public class NetworkManagerPlus : NetworkManager
     {
         base.OnClientDisconnect(conn);
         onClientDisconnected?.Invoke();
-        if (gameManager.playersInLobby > 0)
+        if (gameManager != null)
         {
-            gameManager.playersInLobby--;
+            if (gameManager.playersInLobby > 0)
+            {
+                gameManager.playersInLobby--;
+            }
         }
     }
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -101,6 +104,7 @@ public class NetworkManagerPlus : NetworkManager
 
     public void GameLocationPicked()
     {
+        Debug.Log("GameLocation Picked, Spawn Name UI");
         gameManager.SpawnNameGetUI(gameManager.syncedPlayerObjects[0]);
         gameLocationPicked = true;
         maxConnections = MaxAmountOfPlayers;

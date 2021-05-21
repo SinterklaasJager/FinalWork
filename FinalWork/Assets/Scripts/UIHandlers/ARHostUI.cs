@@ -45,11 +45,9 @@ public class ARHostUI : MonoBehaviour
             gameManager = GameObject.Find("GameManager(clone)").GetComponent<GameManager>();
         }
 
-        if (gameManager.AREvents.OnHostGameLocation != null)
-        {
-            gameManager.AREvents.OnHostGameLocation.Invoke(spawnedObject.transform.position, spawnedObject.transform.rotation);
-            Destroy(gameObject);
-        }
+        Debug.Log("Trigger GameLocation Event");
+        gameManager.AREvents.OnHostGameLocation.Invoke(spawnedObject.transform.position, spawnedObject.transform.rotation);
+        Destroy(gameObject);
 
     }
 }

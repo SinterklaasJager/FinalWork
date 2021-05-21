@@ -13,7 +13,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private TMP_Text serverText, clientText, attemptingToConnectText, connectionErrorText;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private GameObject ipInputPanel;
+    [SerializeField] private GameObject ipInputPanel, mainMenu;
 
     private bool clientConnected, clientConnectionFailed;
 
@@ -101,25 +101,29 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
             attemptingToConnectText.text = "Attempting to connect...";
             yield return new WaitForSeconds(.5f);
         }
-        if (clientConnectionFailed)
-        {
-            attemptingToConnectText.gameObject.SetActive(false);
-            connectionErrorText.gameObject.SetActive(true);
-            yield return null;
-        }
+        // if (clientConnectionFailed)
+        // {
+        //     attemptingToConnectText.gameObject.SetActive(false);
+        //     connectionErrorText.gameObject.SetActive(true);
+        //     yield return null;
+        // }
 
     }
 
     private void HandleClientConnected()
     {
-        gameObject.SetActive(false);
+        mainMenu.SetActive(false);
         clientConnected = true;
     }
     private void HandleClientDisconnected()
     {
+        mainMenu.SetActive(true);
         buttonClient.interactable = true;
         clientConnected = false;
         clientConnectionFailed = true;
+        attemptingToConnectText.gameObject.SetActive(false);
+        connectionErrorText.gameObject.SetActive(true);
+        StopCoroutine("ConnectionMessage");
     }
 
     public void ButtonStop()
@@ -146,6 +150,10 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     public void HideIPPanel()
     {
         ipInputPanel.SetActive(false);
+        StopCoroutine("ConnectionMessage");
+        NetworkManager.singleton.StopClient();
+        attemptingToConnectText.gameObject.SetActive(false);
+        connectionErrorText.gameObject.SetActive(false);
     }
 
     public void ShowIPPanel()
@@ -155,7 +163,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     public void SetupCanvas()
     {
-        gameObject.SetActive(false);
+        mainMenu.SetActive(false);
         /*
         // Here we will dump majority of the canvas UI that may be changed.
 

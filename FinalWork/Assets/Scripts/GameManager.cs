@@ -168,6 +168,7 @@ public class GameManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void SetGameLocationPosition(Vector3 gameLocationPosition, Quaternion rotation, NetworkConnectionToClient sender = null)
     {
+        Debug.Log("SetGamePosition");
         gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, gameLocationPosition, rotation);
         NetworkServer.Spawn(gameLocationObject);
         networkManager.GameLocationPicked();
