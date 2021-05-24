@@ -30,7 +30,7 @@ public class VictoryProgress : NetworkBehaviour
     //5 Good points
     //Goodguys win
 
-    [Command(requiresAuthority = false)]
+    // [Command(requiresAuthority = false)]
     public void SetGameManager(GameManager gameManager, RoundManager roundManager)
     {
         this.gameManager = gameManager;

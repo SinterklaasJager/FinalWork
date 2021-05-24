@@ -42,7 +42,8 @@ public class RoundManager : NetworkBehaviour
          */
     }
 
-    [Command]
+    // [Command]
+    [Server]
     public void RoundSetUp(GameManager gm, GameObject um)
     {
         Debug.Log("Round Setup");
@@ -54,15 +55,15 @@ public class RoundManager : NetworkBehaviour
         voteForOrganisers = gameManager.voteForOrganisers;
         // InstantiateRoundUI();
 
-        foreach (var player in gameManager.syncedPlayers)
-        {
-            if (player == NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass())
-            {
-                connectedClientObj = NetworkClient.localPlayer.gameObject;
-                connectedClient = player;
-                Debug.Log("connected client: " + connectedClient);
-            }
-        }
+        // foreach (var player in gameManager.syncedPlayers)
+        // {
+        //     if (player == NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass())
+        //     {
+        //         connectedClientObj = NetworkClient.localPlayer.gameObject;
+        //         connectedClient = player;
+        //         Debug.Log("connected client: " + connectedClient);
+        //     }
+        // }
         StartTurn();
     }
     private void CheckIfDead()

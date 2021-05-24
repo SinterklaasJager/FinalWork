@@ -59,6 +59,16 @@ public class UIManager : NetworkBehaviour
         //ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
         var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
         arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
+        arc.GetComponent<CloudAnchorController>().OnEnterHostingModeClick();
+    }
+
+    [TargetRpc]
+    public void SetARClient(NetworkConnection target, GameManager gm, GameObject ARObject)
+    {
+        var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
+        arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
+        arc.GetComponent<CloudAnchorController>().OnEnterResolvingModeClick();
+
     }
 
     [TargetRpc]

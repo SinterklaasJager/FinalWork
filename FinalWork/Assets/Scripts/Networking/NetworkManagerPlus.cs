@@ -83,7 +83,6 @@ public class NetworkManagerPlus : NetworkManager
 
             Debug.Log("amountOfPlayers: " + amountOfPlayers);
 
-
             //Testing
             playerPrefab.GetComponent<PlayerDebugScript>().SetPlayerID(connectionId);
 
@@ -105,7 +104,6 @@ public class NetworkManagerPlus : NetworkManager
     public void GameLocationPicked()
     {
         Debug.Log("GameLocation Picked, Spawn Name UI");
-        gameManager.SpawnNameGetUI(gameManager.syncedPlayerObjects[0]);
         gameLocationPicked = true;
         maxConnections = MaxAmountOfPlayers;
         //StartGame();

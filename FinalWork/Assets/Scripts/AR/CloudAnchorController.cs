@@ -178,7 +178,7 @@ public class CloudAnchorController : MonoBehaviour
     /// <summary>
     /// The current cloud anchor mode.
     /// </summary>
-    private ApplicationMode _currentMode = ApplicationMode.Hosting;
+    private ApplicationMode _currentMode = ApplicationMode.Ready;
 
     /// <summary>
     /// The current active UI screen.
@@ -268,6 +268,8 @@ public class CloudAnchorController : MonoBehaviour
         }
     }
 
+    private ARAnchor anchor;
+
     /// <summary>
     /// Callback handling Start Now button click event.
     /// </summary>
@@ -322,7 +324,7 @@ public class CloudAnchorController : MonoBehaviour
         if (_currentMode != ApplicationMode.Hosting &&
             _currentMode != ApplicationMode.Resolving)
         {
-            Debug.Log("_currentMode: " + _currentMode);
+            //Debug.Log("_currentMode: " + _currentMode);
             return;
         }
 
@@ -378,20 +380,22 @@ public class CloudAnchorController : MonoBehaviour
             {
                 var hitPose = hits[0].pose;
 
-                ARAnchor anchor = AnchorManager.AddAnchor(hitPose);
+                anchor = AnchorManager.AddAnchor(hitPose);
                 WorldOrigin = anchor.transform;
                 InstantiateAnchor(anchor);
                 OnAnchorInstantiated(true);
 
                 if (spawnedObject == null)
                 {
-                    gameManager.AREvents.OnHostGameLocation = (gameLocationPos, rotation) => GameLocationSet(gameLocationPos, rotation);
+                    gameManager.AREvents.OnHostGameLocation = (gameLocationPos, rotation) => GameLocationSet();
                     spawnedObject = Instantiate(gameManager.spawnableObjects.gameLocationObject, hitPose.position, hitPose.rotation);
 
                     ARUI.SetActive(true);
-                    ARUI.GetComponent<ARHostUI>().spawnedObject = spawnedObject;
-                    ARUI.GetComponent<ARHostUI>().networkManagerPlus = _networkManager;
-                    ARUI.GetComponent<ARHostUI>().EnableConfirmationButton();
+                    var arHostUI = ARUI.GetComponent<ARHostUI>();
+                    arHostUI.spawnedObject = spawnedObject;
+                    arHostUI.networkManagerPlus = _networkManager;
+                    arHostUI.anchor = anchor;
+                    arHostUI.EnableConfirmationButton();
                 }
                 else
                 {
@@ -421,7 +425,7 @@ public class CloudAnchorController : MonoBehaviour
         gameManager = gm;
         ARUI = arui;
         allowPlacement = true;
-        _currentMode = ApplicationMode.Hosting;
+        //  _currentMode = ApplicationMode.Hosting;
 
         var ARManager = gameObject.GetComponentInParent<ARManager>();
         SessionOrigin = ARManager.SessionOrigin;
@@ -431,7 +435,7 @@ public class CloudAnchorController : MonoBehaviour
         RaycastManager = ARManager.RaycastManager;
     }
 
-    private void GameLocationSet(Vector3 x, Quaternion rot)
+    private void GameLocationSet()
     {
         allowPlacement = false;
     }
@@ -507,6 +511,7 @@ public class CloudAnchorController : MonoBehaviour
     /// </summary>
     public void OnEnterResolvingModeClick()
     {
+        Debug.Log("Resolving Mode: " + _currentMode);
         if (_currentMode == ApplicationMode.Resolving)
         {
             _currentMode = ApplicationMode.Ready;
@@ -515,6 +520,7 @@ public class CloudAnchorController : MonoBehaviour
         }
 
         _currentMode = ApplicationMode.Resolving;
+        Debug.Log("Resolving Mode: " + _currentMode);
     }
 
     /// <summary>

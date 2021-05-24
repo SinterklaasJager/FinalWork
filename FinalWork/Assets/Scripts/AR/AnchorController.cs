@@ -101,12 +101,14 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     public void Awake()
     {
+        Debug.Log("Anchor Controller Awake");
+        gameObject.name = "AnchorController";
         _cloudAnchorController =
             GameObject.Find("CloudAnchorController")
             .GetComponent<CloudAnchorController>();
         _anchorManager = _cloudAnchorController.AnchorManager;
-        _anchorMesh = transform.Find("AnchorMesh").gameObject;
-        _anchorMesh.SetActive(false);
+        // _anchorMesh = transform.Find("AnchorMesh").gameObject;
+        // _anchorMesh.SetActive(false);
     }
 
     /// <summary>
@@ -170,7 +172,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     /// <param name="cloudAnchorId">The new Cloud Anchor Id.</param>
 #pragma warning disable 618
-    [Command]
+    [Command(requiresAuthority = false)]
 #pragma warning restore 618
     public void CmdSetCloudAnchorId(string cloudAnchorId)
     {
@@ -184,12 +186,14 @@ public class AnchorController : NetworkBehaviour
     /// <param name="anchor">The last placed anchor.</param>
     public void HostAnchor(ARAnchor anchor)
     {
+        Debug.Log("HostAnchor");
         _isHost = true;
         _shouldResolve = false;
         transform.SetParent(anchor.transform);
-        _anchorMesh.SetActive(true);
+        //  _anchorMesh.SetActive(true);
 
         _cloudAnchor = _anchorManager.HostCloudAnchor(anchor);
+        Debug.Log("_cloudAnchor(anchor controller): " + _cloudAnchor);
         if (_cloudAnchor == null)
         {
             Debug.LogError("Failed to add Cloud Anchor.");
@@ -231,6 +235,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     private void UpdateHostedCloudAnchor()
     {
+        Debug.Log("Update Hosted Anchor");
         if (_cloudAnchor == null)
         {
             Debug.LogError("No Cloud Anchor.");
@@ -240,6 +245,7 @@ public class AnchorController : NetworkBehaviour
         CloudAnchorState cloudAnchorState = _cloudAnchor.cloudAnchorState;
         if (cloudAnchorState == CloudAnchorState.Success)
         {
+            Debug.Log("Hosted Anchor succes");
             CmdSetCloudAnchorId(_cloudAnchor.cloudAnchorId);
             _cloudAnchorController.OnAnchorHosted(
                 true, "Successfully hosted Cloud Anchor.");
@@ -247,6 +253,7 @@ public class AnchorController : NetworkBehaviour
         }
         else if (cloudAnchorState != CloudAnchorState.TaskInProgress)
         {
+            Debug.Log("Hosted Anchor fail: " + cloudAnchorState);
             _cloudAnchorController.OnAnchorHosted(false,
                 "Fail to host Cloud Anchor with state: " + cloudAnchorState);
             _shouldUpdatePoint = false;
@@ -258,6 +265,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     private void UpdateResolvedCloudAnchor()
     {
+        Debug.Log("Update Resolved Anchor");
         if (_cloudAnchor == null)
         {
             Debug.LogError("No Cloud Anchor.");
@@ -267,12 +275,13 @@ public class AnchorController : NetworkBehaviour
         CloudAnchorState cloudAnchorState = _cloudAnchor.cloudAnchorState;
         if (cloudAnchorState == CloudAnchorState.Success)
         {
+            Debug.Log(" Resolved Anchor succes");
             transform.SetParent(_cloudAnchor.transform, false);
             _cloudAnchorController.OnAnchorResolved(
                 true,
                 "Successfully resolved Cloud Anchor.");
             _cloudAnchorController.WorldOrigin = transform;
-            _anchorMesh.SetActive(true);
+            // _anchorMesh.SetActive(true);
 
             // Mark resolving timeout passed so it won't fire OnResolvingTimeoutPassed event.
             _passedResolvingTimeout = true;
@@ -280,6 +289,7 @@ public class AnchorController : NetworkBehaviour
         }
         else if (cloudAnchorState != CloudAnchorState.TaskInProgress)
         {
+            Debug.Log(" Resolved Anchor fail: " + cloudAnchorState);
             _cloudAnchorController.OnAnchorResolved(
                 false, "Fail to resolve Cloud Anchor with state: " + cloudAnchorState);
             _shouldUpdatePoint = false;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 
 public class Enums : MonoBehaviour
 {
@@ -40,5 +41,6 @@ public class Enums : MonoBehaviour
     public struct AREvents
     {
         public System.Action<Vector3, Quaternion> OnHostGameLocation;
+        public System.Action<GameObject> OnReadyToSetAnchor;
     }
 }
