@@ -116,6 +116,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     public override void OnStartClient()
     {
+        Debug.Log("OnStartClient id: " + _clouAnchorId);
         if (_clouAnchorId != string.Empty)
         {
             _shouldResolve = true;
@@ -140,15 +141,18 @@ public class AnchorController : NetworkBehaviour
             {
                 if (!_cloudAnchorController.IsResolvingPrepareTimePassed())
                 {
+                    Debug.Log("!_cloudAnchorController.IsResolvingPrepareTimePassed()");
                     return;
                 }
-
+                Debug.Log("passedResolvingTimeout" + _passedResolvingTimeout);
                 if (!_passedResolvingTimeout)
                 {
+                    Debug.Log("timeSinceStartResolving: " + _timeSinceStartResolving);
                     _timeSinceStartResolving += Time.deltaTime;
 
                     if (_timeSinceStartResolving > _resolvingTimeout)
                     {
+                        Debug.Log("_timeSinceStartResolving > _resolvingTimeout");
                         _passedResolvingTimeout = true;
                         _cloudAnchorController.OnResolvingTimeoutPassed();
                     }
@@ -156,6 +160,7 @@ public class AnchorController : NetworkBehaviour
 
                 if (!string.IsNullOrEmpty(_clouAnchorId) && _cloudAnchor == null)
                 {
+                    Debug.Log("ResolveAnchor");
                     ResolveCloudAnchorId(_clouAnchorId);
                 }
             }
@@ -213,6 +218,8 @@ public class AnchorController : NetworkBehaviour
     /// <param name="cloudAnchorId">The Cloud Anchor Id to be resolved.</param>
     private void ResolveCloudAnchorId(string cloudAnchorId)
     {
+        Debug.Log("ResolveAnchor with id: " + cloudAnchorId);
+        Debug.Log("ResolveAnchor with anchor: " + _cloudAnchor);
         _cloudAnchorController.OnAnchorInstantiated(false);
         _cloudAnchor = _anchorManager.ResolveCloudAnchorId(cloudAnchorId);
         if (_cloudAnchor == null)

@@ -61,6 +61,7 @@ public class NetworkManagerPlus : NetworkManager
                 gameManager.playersInLobby--;
             }
         }
+        networkManagerHubDoublePlus.LeaveGame();
     }
     public override void OnServerAddPlayer(NetworkConnection conn)
     {

@@ -126,6 +126,14 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         StopCoroutine("ConnectionMessage");
     }
 
+    public void LeaveGame()
+    {
+        mainMenu.SetActive(true);
+        buttonClient.interactable = true;
+        clientConnected = false;
+        ipInputPanel.SetActive(false);
+    }
+
     public void ButtonStop()
     {
         // stop host if host mode

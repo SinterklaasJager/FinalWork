@@ -136,10 +136,9 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void SetUpLobby()
     {
-        var testCanvas = GameObject.Find("cvsMenu");
         Debug.Log("networkManager.MaxAmountOfPlayers " + networkManager.MaxAmountOfPlayers);
         // lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManager.transform);
-        lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, testCanvas.transform);
+        lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManager.gameObject.transform);
         NetworkServer.Spawn(lobbyUIObj);
         lobbyUIManager = lobbyUIObj.GetComponent<LobbyUIManager>();
         lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);

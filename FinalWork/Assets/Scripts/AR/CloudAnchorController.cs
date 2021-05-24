@@ -287,6 +287,11 @@ public class CloudAnchorController : MonoBehaviour
             "https://developers.google.com/ar/cloud-anchors-privacy");
     }
 
+    public void Awake()
+    {
+        gameObject.name = "CloudAnchorController";
+    }
+
     /// <summary>
     /// The Unity Start() method.
     /// </summary>
@@ -300,7 +305,7 @@ public class CloudAnchorController : MonoBehaviour
 
         // A Name is provided to the Game Object so it can be found by other Scripts
         // instantiated as prefabs in the scene.
-        gameObject.name = "CloudAnchorController";
+
         // ResetStatus();
     }
 
@@ -448,8 +453,16 @@ public class CloudAnchorController : MonoBehaviour
     /// </returns>
     public bool IsResolvingPrepareTimePassed()
     {
+        Debug.Log("_currentMode: " + _currentMode);
+        //  _currentMode = ApplicationMode.Resolving;
+        Debug.Log("_timeSinceStart: " + _timeSinceStart);
         return _currentMode != ApplicationMode.Ready &&
             _timeSinceStart > _resolvingPrepareTime;
+    }
+
+    private IEnumerator ResolvingprepareTime()
+    {
+        yield return null;
     }
 
     /// <summary>

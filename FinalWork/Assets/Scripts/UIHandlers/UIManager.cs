@@ -55,9 +55,7 @@ public class UIManager : NetworkBehaviour
         Debug.Log("targetRPC: " + target);
         ArHostUI = Instantiate(ArHostUIObj, transform);
         ArHostUI.GetComponent<ARHostUI>().SetGameManager(gm);
-        // ARObject.GetComponentInChildren<TapToPlaceObjects>().SetUp(gm, ArHostUI);
-        //ARObject.GetComponentInChildren<CloudAnchorController>().SetUp(gm, ArHostUI);
-        var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
+        var arc = GameObject.Find("CloudAnchorController");
         arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
         arc.GetComponent<CloudAnchorController>().OnEnterHostingModeClick();
     }
@@ -65,7 +63,7 @@ public class UIManager : NetworkBehaviour
     [TargetRpc]
     public void SetARClient(NetworkConnection target, GameManager gm, GameObject ARObject)
     {
-        var arc = Instantiate(ARCloudAnchorObj, ARObject.transform);
+        var arc = GameObject.Find("CloudAnchorController");
         arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
         arc.GetComponent<CloudAnchorController>().OnEnterResolvingModeClick();
 

@@ -8,7 +8,7 @@ public class VoteForOrganisers : NetworkBehaviour
     private GameManager gameManager;
     private UIManager uiManager;
     private SyncList<Player> players = new SyncList<Player>();
-    private Player teamLeader, assistant, currentPlayer;
+    private Player teamLeader, assistant;
     private bool isDead = false;
     private List<int> deathPlayerIDs;
 
@@ -20,7 +20,6 @@ public class VoteForOrganisers : NetworkBehaviour
         this.totalVoters = totalVoters;
         assistant = assistantCandidate;
         teamLeader = leaderCandidate;
-        currentPlayer = NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass();
         gameManager = gameObject.GetComponent<GameManager>();
         uiManager = um;
         players = pl;

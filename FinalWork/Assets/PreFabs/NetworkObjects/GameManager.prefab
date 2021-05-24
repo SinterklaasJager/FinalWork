@@ -64,6 +64,7 @@ MonoBehaviour:
   spawnableObjects: {fileID: 0}
   lobbyUIManager: {fileID: 0}
   gameLocationObject: {fileID: 0}
+  playersInLobby: 0
 --- !u!114 &5596158979758662817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,6 +78,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roundManager: {fileID: 8497392128214883745, guid: 5c4544609717c65408bece5738151b97,
+    type: 3}
+  PickAnAssistantUI: {fileID: 3930102801564467992, guid: 182c3e460c89f2a4489c4a2705930613,
     type: 3}
   cardGeneration: {fileID: 3086840156843739262, guid: a6e0e381169248343b6e903c1df979bf,
     type: 3}

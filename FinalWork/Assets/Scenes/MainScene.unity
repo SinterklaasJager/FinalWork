@@ -2364,8 +2364,8 @@ MonoBehaviour:
   userName: 
   gameLocationPicked: 1
   amountOfPlayers: 0
-  MaxAmountOfPlayers: 2
-  networkManagerHubDoublePlus: {fileID: 0}
+  MaxAmountOfPlayers: 3
+  networkManagerHubDoublePlus: {fileID: 585988585}
   gameManagerObj: {fileID: 5596158979758662823, guid: 80e3b67e05a731843becaa61081b6ff3,
     type: 3}
 --- !u!4 &1021946089
