@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using Mirror;
 
 public class ARHostUI : NetworkBehaviour
 {
-    [SerializeField] private GameObject hostPickGameLocation, btnConfirmation;
+    [SerializeField] private GameObject hostPickGameLocation, confirmationButton, failureMessage;
+    [SerializeField] private Button btnConfirmation;
     private GameManager gameManager;
     public GameObject spawnedObject;
     public NetworkManagerPlus networkManagerPlus;
@@ -16,10 +18,11 @@ public class ARHostUI : NetworkBehaviour
     private void OnAwake()
     {
         Debug.Log("ARHOST UI AWOKE");
+        failureMessage.SetActive(false);
+        confirmationButton.SetActive(false);
     }
     public void SetGameManager(GameManager gameManager)
     {
-        Debug.Log("GameManager");
         this.gameManager = gameManager;
     }
 
@@ -35,34 +38,39 @@ public class ARHostUI : NetworkBehaviour
 
     public void EnableConfirmationButton()
     {
-        btnConfirmation.SetActive(true);
+        confirmationButton.SetActive(true);
+        btnConfirmation.interactable = true;
+    }
+
+    public void FailedToHostAnchor()
+    {
+        failureMessage.SetActive(true);
+        EnableConfirmationButton();
     }
     private void SetAnchor(GameObject AnchorController)
     {
         AnchorController.GetComponent<AnchorController>().HostAnchor(anchor);
-        Destroy(gameObject);
+        Destroy(spawnedObject);
+        //Destroy(gameObject);
 
     }
-    [TargetRpc]
-    private void TargetSetAnchor()
-    {
 
-    }
     public void ConfirmClick()
     {
-        gameManager.AREvents.OnReadyToSetAnchor = (AnchorController) => SetAnchor(AnchorController);
-        Debug.Log("confirm Click");
-        Debug.Log("spawnedObject: " + spawnedObject);
-
         if (gameManager == null)
         {
             Debug.Log("gameManager = null");
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         }
+        btnConfirmation.interactable = false;
+        gameManager.AREvents.OnReadyToSetAnchor = (AnchorController) => SetAnchor(AnchorController);
+        Debug.Log("confirm Click");
+        Debug.Log("spawnedObject: " + spawnedObject);
+
         Debug.Log("Trigger GameLocation Event");
         // SpawnGameLocation(spawnedObject);
         gameManager.SetGameLocationPosition(spawnedObject.transform.position, spawnedObject.transform.rotation);
-        Destroy(spawnedObject);
+
         //gameManager.AREvents.OnHostGameLocation.Invoke(spawnedObject.transform.position, spawnedObject.transform.rotation);
 
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
@@ -14,6 +15,8 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject ipInputPanel, mainMenu;
+    [SerializeField] private AudioManager globalAudio;
+    [SerializeField] private MainMenuManager mainMenuManager;
 
     private bool clientConnected, clientConnectionFailed;
 
@@ -112,8 +115,10 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     private void HandleClientConnected()
     {
+        mainMenuManager.PlayMainMenuSong(false);
         mainMenu.SetActive(false);
         clientConnected = true;
+        globalAudio.PlayIntroTune(true);
     }
     private void HandleClientDisconnected()
     {
@@ -132,6 +137,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         buttonClient.interactable = true;
         clientConnected = false;
         ipInputPanel.SetActive(false);
+        SceneManager.LoadScene("MainScene");
     }
 
     public void ButtonStop()

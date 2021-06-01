@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class MainMenuManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip mainMenuSong;
+
     void Start()
     {
-        
+        if (!audioSource.isPlaying)
+        {
+            PlayMainMenuSong(true);
+        }
     }
-
-    // Update is called once per frame
-    void Update()
+    public void PlayMainMenuSong(bool play)
     {
-        
+        if (play)
+        {
+            audioSource.PlayOneShot(mainMenuSong);
+        }
+        else
+        {
+            audioSource.Stop();
+        }
+
     }
 }

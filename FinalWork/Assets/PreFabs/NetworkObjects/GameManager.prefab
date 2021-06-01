@@ -51,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  testCube: {fileID: 335285802089707027, guid: 795aa4e0311899146ada18b6f15ff6ea, type: 3}
   helpers: {fileID: 5596158979758662819}
   enums: {fileID: 5596158979758662818}
   universalCanvas: {fileID: 0}
@@ -64,6 +65,10 @@ MonoBehaviour:
   spawnableObjects: {fileID: 0}
   lobbyUIManager: {fileID: 0}
   gameLocationObject: {fileID: 0}
+  anchorTransform: {fileID: 0}
+  anchorPosition: {x: 0, y: 0, z: 0}
+  anchorRotation: {x: 0, y: 0, z: 0, w: 0}
+  cloudAnchorId: 
   playersInLobby: 0
 --- !u!114 &5596158979758662817
 MonoBehaviour:
@@ -97,6 +102,8 @@ MonoBehaviour:
   GetPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
     type: 3}
   LobbyUI: {fileID: 1744369479649317213, guid: 4ca01966215e00946816bbb26b3eb36c, type: 3}
+  victoryScreen: {fileID: 3369040150918288639, guid: 24027a139db9ce148ba27208406da362,
+    type: 3}
   btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
   btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}
   btnPickAnAssistant: {fileID: 8266082363992277940, guid: f69861bff452f77498a0cacd760db90f,

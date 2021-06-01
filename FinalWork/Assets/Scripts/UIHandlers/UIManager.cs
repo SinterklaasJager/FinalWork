@@ -17,6 +17,8 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject EnterPlayerNameUI;
     [SerializeField] private GameObject ArHostUIObj;
     [SerializeField] private GameObject ARCloudAnchorObj;
+    [SerializeField] private GameObject playerIntroObj;
+    [SerializeField] private GameObject moreInfoObj;
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -27,7 +29,9 @@ public class UIManager : NetworkBehaviour
     public GameObject VoteTeamLeaderUI;
     public GameObject ArHostUI;
     private PlayerUIComponent playerUIScript;
+    private IntroScreenManager introScreenManager;
     private GameObject GetPlayerNameUI;
+    private GameObject moreinfo;
 
 
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
@@ -66,8 +70,24 @@ public class UIManager : NetworkBehaviour
         var arc = GameObject.Find("CloudAnchorController");
         arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
         arc.GetComponent<CloudAnchorController>().OnEnterResolvingModeClick();
+    }
+
+    [TargetRpc]
+    public void InstantiatePlayerIntro(NetworkConnection target, string playerName, string allyName, Enums.Role role, int playerNumber)
+    {
+        var playerUI = Instantiate(playerIntroObj, transform);
+        playerUI.name = "PlayerIntro";
+        introScreenManager = playerUI.GetComponent<IntroScreenManager>();
+        Debug.Log("intro setup UIManager: " + role + playerName + playerNumber);
+        introScreenManager.SetUp(role, playerName, playerNumber);
+        if (allyName != null)
+        {
+            Debug.Log("set Ally: " + allyName);
+            introScreenManager.SetAlly(allyName);
+        }
 
     }
+
 
     [TargetRpc]
     public void InstantiatePlayerUI(NetworkConnection target, string playerName, int roleNum, GameManager gm)
@@ -77,6 +97,24 @@ public class UIManager : NetworkBehaviour
         playerUIScript = playerUI.GetComponent<PlayerUIComponent>();
         playerUIScript.SetUI(playerName, roleNum, gm);
 
+    }
+
+    [TargetRpc]
+    public void InstantiateMoreInfo(NetworkConnection target)
+    {
+        if (moreinfo == null)
+        {
+            moreinfo = Instantiate(moreInfoObj, transform);
+        }
+
+    }
+
+    [ClientRpc]
+    public void InstantiateVictoryScreen(Enums.GameEndReason reason, int goodPoints, int badPoints, GameManager gm)
+    {
+        Debug.Log("uimanager victory screen: " + reason + goodPoints + badPoints);
+        var victoryscreen = Instantiate(gm.spawnableObjects.victoryScreen, transform);
+        victoryscreen.GetComponent<VictoryScreenHandler>().SetVictory(reason, badPoints, goodPoints);
     }
 
     [TargetRpc]

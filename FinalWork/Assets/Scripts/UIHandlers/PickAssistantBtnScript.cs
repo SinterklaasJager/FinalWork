@@ -23,6 +23,7 @@ public class PickAssistantBtnScript : MonoBehaviour
 
         button.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
         txtPlayerName.text = playerName;
+        txtPlayerName.fontSize = 10;
     }
 
     public void OnButtonClick()

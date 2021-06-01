@@ -90,6 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f9cda00227a6e4e99b78093701fa76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   LobbyPlayerPrefab: {fileID: 7805811068453839336, guid: 7702bfd154246ce4d9a4f87d417259e5,
     type: 3}
   objectsToCreate: 5
@@ -806,6 +808,7 @@ GameObject:
   - component: {fileID: 1744369479649317283}
   - component: {fileID: 7319235203153286057}
   - component: {fileID: 6578481318507327993}
+  - component: {fileID: 1770424828}
   m_Layer: 5
   m_Name: LobbyUI
   m_TagString: Untagged
@@ -856,7 +859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.9372549}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -903,9 +906,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  populateGrid: {fileID: 1744369478844744837}
+  lobbyPlayerPrefab: {fileID: 7805811068453839336, guid: 7702bfd154246ce4d9a4f87d417259e5,
+    type: 3}
+  placeToPutPlayers: {fileID: 1744369478844744839}
   txtAmountOfPlayers: {fileID: 1744369479538082487}
   txtMaxAmountOfPlayers: {fileID: 1744369479549375006}
+  canvasGroup: {fileID: 1770424828}
+--- !u!225 &1770424828
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744369479649317213}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1744369480177465906
 GameObject:
   m_ObjectHideFlags: 0

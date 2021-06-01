@@ -48,7 +48,11 @@ public class PickAnAssistantUI : MonoBehaviour
                     }
                     if (playerIDs[i] == prevAssistantID)
                     {
-                        btnObject.GetComponent<Button>().interactable = false;
+                        if (gameManager.syncedPlayers.Count - gameManager.deathPlayerIds.Count > 2)
+                        {
+                            btnObject.GetComponent<Button>().interactable = false;
+                        }
+
                     }
                 }
                 //Disable Death Players
@@ -63,18 +67,6 @@ public class PickAnAssistantUI : MonoBehaviour
                     }
 
                 }
-                // if (gameManager.deathPlayerIds.Count > 0)
-                // {
-                //     foreach (var deathPlayer in gameManager.deathPlayerIds)
-                //     {
-                //         Debug.Log("deathPlayer: " + deathPlayer);
-                //         if (playerIDs[i] == deathPlayer)
-                //         {
-                //             Debug.Log("Stop Interactable button");
-                //             btnObject.GetComponent<Button>().interactable = false;
-                //         }
-                //     }
-                // }
             }
             i++;
         }

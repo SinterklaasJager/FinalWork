@@ -5,6 +5,12 @@ using UnityEngine.XR.ARFoundation;
 
 public class Enums : MonoBehaviour
 {
+    public enum Role
+    {
+        rebel,
+        colonist,
+        saboteur
+    }
     public enum CardType
     {
         good,
@@ -23,7 +29,8 @@ public class Enums : MonoBehaviour
         rebelsDead,
         goodGuysDead,
         enoughGoodPoints,
-        enoughBadPoints
+        enoughBadPoints,
+        bombPlaced
     }
 
     public struct EventHandlers

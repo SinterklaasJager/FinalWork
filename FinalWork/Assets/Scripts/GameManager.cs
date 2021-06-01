@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 using Mirror;
+using Google.XR.ARCoreExtensions;
+
 public class GameManager : NetworkBehaviour
 {
     public SyncList<Player> syncedPlayers = new SyncList<Player>();
@@ -30,13 +33,28 @@ public class GameManager : NetworkBehaviour
 
     public Enums.EventHandlers events;
 
+    [SyncVar] public Transform anchorTransform;
+    [SyncVar] public Vector3 anchorPosition;
+    [SyncVar] public Quaternion anchorRotation;
+    [SyncVar] public string cloudAnchorId;
+
     public int playersInLobby;
+    private bool allPlayerNamesReady, playersFinishedResolvingAR;
+    private int playerAmountFinishedResolvingAR;
 
     public void SetNetworkManager(NetworkManagerPlus nwp)
     {
         networkManager = nwp;
     }
 
+    [Command(requiresAuthority = false)]
+    public void SetWorldPosition(Vector3 position, Quaternion rotation, Transform transform)
+    {
+        Debug.Log("SetWorldAnchor");
+        anchorTransform = transform;
+        anchorPosition = position;
+        anchorRotation = rotation;
+    }
     void Start()
     {
         gameObject.name = "GameManager";
@@ -56,6 +74,7 @@ public class GameManager : NetworkBehaviour
         cardGenerationObj = Instantiate(spawnableObjects.cardGeneration, gameObject.transform);
         cardGeneration = cardGenerationObj.GetComponent<CardGeneration>();
         cardGeneration.SetUp(gameManager, helpers);
+
         AREvents.OnHostGameLocation = (gameLocationPos, rotation) => SetGameLocationPosition(gameLocationPos, rotation);
     }
 
@@ -67,6 +86,9 @@ public class GameManager : NetworkBehaviour
         if (syncedPlayers.Count == 1)
         {
             NetworkServer.Spawn(uIManagerObj);
+            lobbyUIObj = Instantiate(spawnableObjects.LobbyUI, uIManagerObj.transform);
+            lobbyUIManager = lobbyUIObj.GetComponent<LobbyUIManager>();
+            lobbyUIObj.SetActive(false);
         }
     }
     public int GetPlayerCount()
@@ -97,7 +119,6 @@ public class GameManager : NetworkBehaviour
     {
         NetworkServer.Spawn(cardGenerationObj);
         NetworkServer.Spawn(universalCanvasObj);
-        //SpawnNameGetUI();
     }
 
     public void SpawnNameGetUI(GameObject playerObj)
@@ -107,6 +128,13 @@ public class GameManager : NetworkBehaviour
         events.OnNameEntered = (player) => OnNameEntered(player);
         uIManager.StartPlayerNameUI(playerObj.GetComponent<NetworkIdentity>().connectionToClient, playerObj, gameManager);
         // }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void SpawnNameGetUIForHost()
+    {
+        Debug.Log(anchorTransform);
+        SpawnNameGetUI(syncedPlayerObjects[0]);
     }
 
     // [Command(requiresAuthority = false)]
@@ -120,17 +148,43 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (syncedPlayers.Count == 1)
+        if (!lobbyUIObj.activeSelf)
         {
-            SetUpLobby();
+            //  SetUpLobby();
+            Debug.Log("setup Lobby");
+            networkManager.OpenGameToAllPlayers();
+            lobbyUIObj.SetActive(true);
+            NetworkServer.Spawn(lobbyUIObj);
+            lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
+            EnableLobbyUI(player);
         }
+    }
 
+    private void EnableLobbyUI(Player player)
+    {
+        Debug.Log("EnableLobbyUI");
+
+        foreach (var playerObj in syncedPlayerObjects)
+        {
+            if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+            {
+                var sender = playerObj.GetComponent<NetworkIdentity>().connectionToClient;
+
+                uIManager.InstantiateMoreInfo(sender);
+
+                Debug.Log("Change Opacity: " + player.GetName());
+                lobbyUIManager.ChangeOpacity(playerObj.GetComponent<NetworkIdentity>().connectionToClient, 1);
+                ChangeOpacity(sender, lobbyUIObj);
+                playersInLobby++;
+            }
+        }
         lobbyUIManager.AddNewPlayer(player.GetName());
-        playersInLobby++;
 
         if (playersInLobby == networkManager.MaxAmountOfPlayers)
         {
-            AllPlayersReady();
+            allPlayerNamesReady = true;
+            CheckIfAllPlayersAreReady();
+            //  AllPlayersReady();
         }
     }
     [Server]
@@ -144,23 +198,83 @@ public class GameManager : NetworkBehaviour
         lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
 
     }
+    [TargetRpc]
+    public void ChangeOpacity(NetworkConnection target, GameObject lobby)
+    {
+        lobby.GetComponent<CanvasGroup>().alpha = 1;
+    }
 
-
+    private void CheckIfAllPlayersAreReady()
+    {
+        if (playersFinishedResolvingAR && allPlayerNamesReady)
+        {
+            AllPlayersReady();
+        }
+    }
+    [Server]
     public void AllPlayersReady()
     {
-        RoleDivider();
-
         roundManagerObj = Instantiate(spawnableObjects.roundManager, gameObject.transform);
         roundManager = roundManagerObj.GetComponent<RoundManager>();
         NetworkServer.Spawn(roundManagerObj, syncedPlayerObjects[0]);
         roundManager.RoundSetUp(gameManager, uIManager.gameObject);
 
         victoryProgressObj = Instantiate(spawnableObjects.victoryProgress, gameLocationObject.transform);
+        victoryProgressObj.transform.localPosition = new Vector3(0, 0, 0);
         victoryProgress = victoryProgressObj.GetComponent<VictoryProgress>();
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager, roundManager);
 
-        SetPlayerUI();
+        DisableARPlanesOnClients(ARManagerObj);
+        RoleDivider();
+        StartIntroScreens();
+        //  SetPlayerUI();
+
+    }
+
+    [ClientRpc]
+    private void DisableARPlanesOnClients(GameObject aRManagerObj)
+    {
+        var planeManager = aRManagerObj.GetComponentInChildren<ARPlaneManager>();
+        var pointCloudManager = aRManagerObj.GetComponentInChildren<ARPointCloudManager>();
+        planeManager.enabled = false;
+        pointCloudManager.enabled = false;
+
+        foreach (var plane in planeManager.trackables)
+        {
+            plane.gameObject.SetActive(false);
+        }
+
+        foreach (var point in pointCloudManager.trackables)
+        {
+            point.gameObject.SetActive(false);
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void ARResolvedForClient(NetworkConnectionToClient sender = null)
+    {
+        playerAmountFinishedResolvingAR++;
+
+        foreach (var playerObj in syncedPlayerObjects)
+        {
+            if (playerObj.GetComponent<NetworkIdentity>().connectionToClient == sender)
+            {
+                foreach (var player in syncedPlayers)
+                {
+                    if (player == playerObj.GetComponent<PlayerManager>().GetPlayerClass())
+                    {
+                        EnableLobbyUI(player);
+                    }
+                }
+            }
+        }
+
+        if (playerAmountFinishedResolvingAR == networkManager.MaxAmountOfPlayers)
+        {
+            playersFinishedResolvingAR = true;
+            CheckIfAllPlayersAreReady();
+        }
     }
 
     public void StartAR()
@@ -195,13 +309,20 @@ public class GameManager : NetworkBehaviour
     public void SetGameLocationPosition(Vector3 gameLocationPosition, Quaternion rotation, NetworkConnectionToClient sender = null)
     {
         Debug.Log("SetGamePositionServer");
+
+        if (gameLocationObject != null)
+        {
+            Debug.Log("gameLocationObject != null");
+            NetworkServer.Destroy(gameLocationObject);
+        }
         //gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, gameLocationPosition, rotation);
-        gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, Vector3.zero, Quaternion.identity);
+        gameLocationObject = Instantiate(spawnableObjects.gameLocationObject, Vector3.zero, rotation);
         NetworkServer.Spawn(gameLocationObject);
         SetAnchor(sender, gameLocationObject);
         networkManager.GameLocationPicked();
-        SpawnNameGetUI(syncedPlayerObjects[0]);
     }
+
+
     [TargetRpc]
     public void SetAnchor(NetworkConnection target, GameObject anchorController)
     {
@@ -209,6 +330,50 @@ public class GameManager : NetworkBehaviour
         AREvents.OnReadyToSetAnchor.Invoke(anchorController);
 
         // gameLocationObject.GetComponent<AnchorController>().HostAnchor(anchor);
+    }
+
+    private void StartIntroScreens()
+    {
+        Player rebel = null;
+        Player sabboteur = null;
+        int colonistNumber = 0;
+        foreach (var player in syncedPlayers)
+        {
+            if (player.GetRole() == 0)
+            {
+                GameObject playerObject = null;
+
+                foreach (var playerObj in syncedPlayerObjects)
+                {
+                    if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+                    {
+                        playerObject = playerObj;
+                    }
+                }
+                uIManager.InstantiatePlayerIntro(playerObject.GetComponent<NetworkIdentity>().connectionToClient, player.GetName(), null, Enums.Role.colonist, colonistNumber);
+                colonistNumber++;
+            }
+            else if (player.GetRole() == 1)
+            {
+                rebel = player;
+            }
+            else
+            {
+                sabboteur = player;
+            }
+        }
+
+        foreach (var playerObj in syncedPlayerObjects)
+        {
+            if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == sabboteur)
+            {
+                uIManager.InstantiatePlayerIntro(playerObj.GetComponent<NetworkIdentity>().connectionToClient, sabboteur.GetName(), rebel.GetName(), Enums.Role.saboteur, 666);
+            }
+            else if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == rebel)
+            {
+                uIManager.InstantiatePlayerIntro(playerObj.GetComponent<NetworkIdentity>().connectionToClient, rebel.GetName(), sabboteur.GetName(), Enums.Role.rebel, 666);
+            }
+        }
     }
 
     private void SetPlayerUI()
@@ -258,10 +423,7 @@ public class GameManager : NetworkBehaviour
         {
             syncedPlayers[i] = players[i];
         }
-
-        //Testing Roles
-
-        TestRoleDivider();
+        // TestRoleDivider();
     }
 
     private void TestRoleDivider()

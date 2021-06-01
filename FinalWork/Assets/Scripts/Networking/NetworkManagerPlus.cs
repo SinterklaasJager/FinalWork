@@ -102,11 +102,15 @@ public class NetworkManagerPlus : NetworkManager
         }
     }
 
+    public void OpenGameToAllPlayers()
+    {
+        maxConnections = MaxAmountOfPlayers;
+    }
+
     public void GameLocationPicked()
     {
         Debug.Log("GameLocation Picked, Spawn Name UI");
         gameLocationPicked = true;
-        maxConnections = MaxAmountOfPlayers;
         //StartGame();
     }
     public override void OnServerDisconnect(NetworkConnection conn)
