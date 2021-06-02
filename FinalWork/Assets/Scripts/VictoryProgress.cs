@@ -17,6 +17,7 @@ public class VictoryProgress : NetworkBehaviour
     private RoundManager roundManager;
 
     private GameObject anchorController;
+    private Enums.GameEndReason reason;
     private bool hasKilledOnce, hasKilledTwice;
 
     //3 Badpoints
@@ -68,6 +69,7 @@ public class VictoryProgress : NetworkBehaviour
         {
             GoodGuysWin(Enums.GameEndReason.enoughGoodPoints);
         }
+        else
         if (badPoints == 3)
         {
             PolicyPeekEnabled();
@@ -103,19 +105,25 @@ public class VictoryProgress : NetworkBehaviour
     public void GoodGuysWin(Enums.GameEndReason reason)
     {
         Debug.Log("Good Guys Win because: " + reason);
-        VictoryAchieved(reason);
+        this.reason = reason;
+        roundManager.StopGame();
+        PlayEndingAnimation(Enums.CardType.good);
     }
 
     public void BadGuysWin(Enums.GameEndReason reason)
     {
         Debug.Log("Bad Guys Win because: " + reason);
-        VictoryAchieved(reason);
+        this.reason = reason;
+        roundManager.StopGame();
+        PlayEndingAnimation(Enums.CardType.bad);
     }
 
     public void SaboteurElectedAssistant()
     {
         Debug.Log("The Saboteur Placed the BOMB");
-        VictoryAchieved(Enums.GameEndReason.bombPlaced);
+        this.reason = Enums.GameEndReason.bombPlaced;
+        roundManager.StopGame();
+        PlayEndingAnimation(Enums.CardType.bad);
     }
     private void PolicyPeekEnabled()
     {
@@ -133,10 +141,10 @@ public class VictoryProgress : NetworkBehaviour
         roundManager.SetUpDeathPicker();
     }
     [Server]
-    private void VictoryAchieved(Enums.GameEndReason reason)
+    public void VictoryAchieved()
     {
         gameManager.uIManager.InstantiateVictoryScreen(reason, goodPoints, badPoints, gameManager);
-        roundManager.StopGame();
+
     }
 
     public int GetGoodPoints()
@@ -192,5 +200,10 @@ public class VictoryProgress : NetworkBehaviour
     {
         var ui = GameObject.Find("ExtraInfoUI").GetComponent<ShowMoreInfoManager>();
         ui.SetCurrentScore(goodP, badP);
+    }
+
+    private void PlayEndingAnimation(Enums.CardType type)
+    {
+        anchorController.GetComponent<AnchorController>().PlayEndingAnimation(type);
     }
 }

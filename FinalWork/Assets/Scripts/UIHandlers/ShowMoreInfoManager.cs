@@ -9,7 +9,7 @@ public class ShowMoreInfoManager : MonoBehaviour
     [SerializeField] private GameObject infoContainer, exitConfirmationScreen, moreInfoButton, lessInfoButton;
     [SerializeField] private Slider goodProgress;
     [SerializeField] private Slider badProgress;
-
+    private IntroScreenManager introScreenManager;
     private void Start()
     {
         gameObject.name = "ExtraInfoUI";
@@ -28,6 +28,21 @@ public class ShowMoreInfoManager : MonoBehaviour
         lessInfoButton.SetActive(false);
     }
 
+    public void ClickMorePlayerInfo()
+    {
+        if (introScreenManager == null)
+        {
+            // var gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            // gameManager.uIManager
+            introScreenManager = GameObject.Find("PlayerIntro").GetComponent<IntroScreenManager>();
+        }
+        introScreenManager.ShowBasicInfo();
+    }
+
+    public void ClickLessPlayerInfo()
+    {
+
+    }
     public void ClickExitButton()
     {
         exitConfirmationScreen.SetActive(true);

@@ -23,6 +23,7 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.XR.ARFoundation;
 using System.Collections.Generic;
+using UnityEngine.Playables;
 
 /// <summary>
 /// A Controller for the Anchor object that handles hosting and resolving the
@@ -35,6 +36,10 @@ public class AnchorController : NetworkBehaviour
     [SerializeField] private List<GameObject> rocketComponents = new List<GameObject>();
     [SerializeField] private Material progressMaterial, sabotageMaterial;
     [SyncVar] private int currentActiveRocketComponents = 0;
+    [SerializeField] private PlayableDirector director;
+    [SerializeField] private PlayableAsset succesLaunchAnimation, failLaunchAnimation;
+    private GameManager gameManager;
+
 
     /// <summary>
     /// The customized timeout duration for resolving request to prevent retrying to resolve
@@ -171,6 +176,40 @@ public class AnchorController : NetworkBehaviour
                 UpdateResolvedCloudAnchor();
             }
         }
+    }
+
+
+    public void PlayEndingAnimation(Enums.CardType type)
+    {
+        PlayEndingAnimationClientSide(type);
+        if (type == Enums.CardType.good)
+        {
+            director.Play(succesLaunchAnimation);
+        }
+        else
+        {
+            director.Play(failLaunchAnimation);
+        }
+    }
+
+    [ClientRpc]
+    private void PlayEndingAnimationClientSide(Enums.CardType type)
+    {
+        if (type == Enums.CardType.good)
+        {
+            director.Play(succesLaunchAnimation);
+        }
+        else
+        {
+            director.Play(failLaunchAnimation);
+        }
+    }
+
+    [Server]
+    public void FinishEndingAnimation()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager.victoryProgress.VictoryAchieved();
     }
 
     [Server]

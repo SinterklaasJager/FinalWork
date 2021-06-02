@@ -37,7 +37,7 @@ using UnityEngine.XR.ARSubsystems;
 public class CloudAnchorController : MonoBehaviour
 {
     [Header("Custom Variables")]
-    private GameObject spawnedObject;
+    private GameObject spawnedObject, ARClientUI;
     private GameManager gameManager;
     public GameObject ARUI;
     private bool allowPlacement;
@@ -414,10 +414,9 @@ public class CloudAnchorController : MonoBehaviour
         Debug.Log("GayManager: " + gm);
         Debug.Log("ARUI: " + arui);
         gameManager = gm;
-
-        if (arui != null)
+        ARUI = arui;
+        if (ARUI.GetComponent<ARHostUI>() != null)
         {
-            ARUI = arui;
             aRHostUI = ARUI.GetComponent<ARHostUI>();
             aRHostUI.networkManagerPlus = _networkManager;
         }
@@ -579,6 +578,8 @@ public class CloudAnchorController : MonoBehaviour
         Debug.Log("Anchor Resolved: " + success);
         if (success)
         {
+            Debug.Log("ARUI: " + ARUI);
+            Destroy(ARUI);
             gameManager.ARResolvedForClient();
         }
         // NetworkUIController.OnAnchorResolved(success, response);

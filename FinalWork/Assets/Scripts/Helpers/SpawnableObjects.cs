@@ -17,6 +17,7 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject GetPlayerNameUI;
     public GameObject LobbyUI;
     public GameObject victoryScreen;
+    public GameObject FailedElectionUI;
 
     [Header("UI Components")]
     public GameObject btnGood;

@@ -163,6 +163,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     public void HideIPPanel()
     {
+        Debug.Log("HideIpPanel");
         ipInputPanel.SetActive(false);
         StopCoroutine("ConnectionMessage");
         NetworkManager.singleton.StopClient();

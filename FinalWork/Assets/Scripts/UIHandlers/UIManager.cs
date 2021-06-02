@@ -16,9 +16,12 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject EnterPlayerNameUI;
     [SerializeField] private GameObject ArHostUIObj;
+    [SerializeField] private GameObject ArClientUIObj;
     [SerializeField] private GameObject ARCloudAnchorObj;
     [SerializeField] private GameObject playerIntroObj;
     [SerializeField] private GameObject moreInfoObj;
+    [SerializeField] private GameObject electionFailedObj;
+
 
     [Header("UI Instances")]
     public GameObject AssistantCardUI;
@@ -27,11 +30,12 @@ public class UIManager : NetworkBehaviour
     public GameObject RoundUI;
     public GameObject PickAnAssistantUI;
     public GameObject VoteTeamLeaderUI;
-    public GameObject ArHostUI;
+    public GameObject ArHostUI, ArClientUI;
     private PlayerUIComponent playerUIScript;
     private IntroScreenManager introScreenManager;
     private GameObject GetPlayerNameUI;
     private GameObject moreinfo;
+    public GameObject electionFailedUI;
 
 
     public void SetGameManager(GameObject gameManager, UniversalCanvasManager ucm)
@@ -67,14 +71,47 @@ public class UIManager : NetworkBehaviour
     [TargetRpc]
     public void SetARClient(NetworkConnection target, GameManager gm, GameObject ARObject)
     {
+        ArClientUI = Instantiate(ArClientUIObj, transform);
         var arc = GameObject.Find("CloudAnchorController");
-        arc.GetComponent<CloudAnchorController>().SetUp(gm, ArHostUI);
+        arc.GetComponent<CloudAnchorController>().SetUp(gm, ArClientUI);
         arc.GetComponent<CloudAnchorController>().OnEnterResolvingModeClick();
+    }
+
+    [Server]
+    public void InstantiateElectionFailedUI(int remainingFailures)
+    {
+        // electionFailedUI = Instantiate(electionFailedObj, transform);
+        // electionFailedUI.GetComponent<FailedElectionUI>().SetRemainingFailures(remainingFailures);
+        // NetworkServer.Spawn(electionFailedUI);
+        SetRemainingFailuresOnClient(remainingFailures, gameManager.GetComponent<GameManager>());
+    }
+
+    [Server]
+    public void DestroyElectionFailedUI()
+    {
+        DestroyElectionFailedUIOnClient();
+        //  NetworkServer.Destroy(electionFailedUI);
+    }
+
+    [ClientRpc]
+    private void SetRemainingFailuresOnClient(int remainingFailures, GameManager gm)
+    {
+        var electionFailUI = Instantiate(gm.spawnableObjects.FailedElectionUI, gm.uIManager.transform);
+        electionFailUI.name = "FailedElection";
+        electionFailUI.GetComponent<FailedElectionUI>().SetRemainingFailures(remainingFailures);
+    }
+
+    [ClientRpc]
+    private void DestroyElectionFailedUIOnClient()
+    {
+        var obj = GameObject.Find("FailedElection");
+        GameObject.Destroy(obj);
     }
 
     [TargetRpc]
     public void InstantiatePlayerIntro(NetworkConnection target, string playerName, string allyName, Enums.Role role, int playerNumber)
     {
+        //var personalCanvas = GameObject.Find("cvsMenu");
         var playerUI = Instantiate(playerIntroObj, transform);
         playerUI.name = "PlayerIntro";
         introScreenManager = playerUI.GetComponent<IntroScreenManager>();
@@ -87,6 +124,8 @@ public class UIManager : NetworkBehaviour
         }
 
     }
+
+    // [Command(requiresAuthority = false)]
 
 
     [TargetRpc]

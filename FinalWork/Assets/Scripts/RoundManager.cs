@@ -187,6 +187,8 @@ public class RoundManager : NetworkBehaviour
     public void cmdStartVotingRound()
     {
         Debug.Log("assistantCandidate: " + assistantCandidate.GetName());
+        uIManager.DestroyElectionFailedUI();
+
         var totalVoters = 0;
         foreach (var player in gameManager.syncedPlayers)
         {
@@ -229,16 +231,16 @@ public class RoundManager : NetworkBehaviour
                 {
                     Debug.Log("player assistant role: " + player.GetRole());
                     Debug.Log("gameManager.victoryProgress.GetBadPoints: " + gameManager.victoryProgress.GetBadPoints());
-                    // if (player.GetRole() == 2 && gameManager.victoryProgress.GetBadPoints() >= 3)
-                    // {
-                    //     Debug.Log("The Saboteur is in Place!");
-                    //     gameManager.victoryProgress.SaboteurElectedAssistant();
-                    // }
-                    // else
-                    // {
-                    Debug.Log("targetrpc player: " + player.GetName());
-                    StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager);
-                    // }
+                    if (player.GetRole() == 2 && gameManager.victoryProgress.GetBadPoints() >= 3)
+                    {
+                        Debug.Log("The Saboteur is in Place!");
+                        gameManager.victoryProgress.SaboteurElectedAssistant();
+                    }
+                    else
+                    {
+                        Debug.Log("targetrpc player: " + player.GetName());
+                        StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager);
+                    }
                 }
             }
         }
@@ -246,13 +248,17 @@ public class RoundManager : NetworkBehaviour
         {
             Debug.Log("Election Failed!");
             failedElections++;
+
+            uIManager.InstantiateElectionFailedUI(failedElections);
+
             if (failedElections > 2)
             {
                 ElectionFailed();
             }
             else
             {
-                StartTurn();
+                // StartTurn();
+                SetUpAssistantPicker();
             }
 
         }
@@ -260,6 +266,7 @@ public class RoundManager : NetworkBehaviour
     // [Command(requiresAuthority = false)]
     public void ElectionFailed()
     {
+        uIManager.DestroyElectionFailedUI();
         electionFailed = true;
         failedElections = 0;
         //play random card
@@ -411,8 +418,6 @@ public class RoundManager : NetworkBehaviour
 
         if (!CheckEndPrematurely(playerToKill))
         {
-            EndTurn();
-
             foreach (var playerObj in gameManager.syncedPlayerObjects)
             {
                 var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
@@ -421,6 +426,8 @@ public class RoundManager : NetworkBehaviour
                     TargetKillAPlayerVictim(playerObj.GetComponent<NetworkIdentity>().connectionToClient, player, gameManager, uIManager);
                 }
             }
+
+            EndTurn();
         }
         else
         {
@@ -476,6 +483,8 @@ public class RoundManager : NetworkBehaviour
     public void TargetKillAPlayerVictim(NetworkConnection conn, Player player, GameManager gm, UIManager um)
     {
         //do kill player visuals
+        Debug.Log("You Have Died");
+        Debug.Log(um);
         Instantiate(gm.spawnableObjects.YouAreDeadUI, um.gameObject.transform);
     }
 

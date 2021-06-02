@@ -21,8 +21,9 @@ public class PickAPlayerToKillBtnScript : MonoBehaviour
         this.playerKillerUIObj = playerKillerUIObj;
         button = gameObject.GetComponent<Button>();
 
-        button.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 20);
+        button.GetComponent<RectTransform>().sizeDelta = new Vector2(77, 20);
         txtPlayerName.text = playerName;
+        txtPlayerName.fontSize = 10;
     }
 
     public void OnButtonClick()

@@ -140,11 +140,14 @@ public class GameManager : NetworkBehaviour
     // [Command(requiresAuthority = false)]
     public void OnNameEntered(Player player)
     {
-        foreach (var playerObj in syncedPlayerObjects)
+        if (player != syncedPlayers[0])
         {
-            if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+            foreach (var playerObj in syncedPlayerObjects)
             {
-                InstantiateARClient(playerObj);
+                if (playerObj.GetComponent<PlayerManager>().GetPlayerClass() == player)
+                {
+                    InstantiateARClient(playerObj);
+                }
             }
         }
 
