@@ -8,21 +8,21 @@ namespace Mirror.Discovery
 {
     public class ServerButtonScript : MonoBehaviour
     {
-        private NetworkDiscoveryUI networkDiscoveryUI;
+        //  private NetworkDiscoveryUI networkDiscoveryUI;
+        private NewNetworkDiscoveryHUD newNetworkDiscoveryHUD;
         private ServerResponse info;
         [SerializeField] private TMP_Text txtButton;
-
-        public void SetServerResponseInfo(ServerResponse info, NetworkDiscoveryUI networkDiscoveryUI)
+        public void SetServerResponseInfo(ServerResponse info, NewNetworkDiscoveryHUD newNetworkDiscoveryHUD)
         {
             this.info = info;
-            this.networkDiscoveryUI = networkDiscoveryUI;
+            this.newNetworkDiscoveryHUD = newNetworkDiscoveryHUD;
 
             txtButton.text = info.EndPoint.Address.ToString();
         }
 
         public void OnServerButtonClick()
         {
-            networkDiscoveryUI.OnServerButtonClick(info);
+            newNetworkDiscoveryHUD.OnClientJoinServerClicked(info);
         }
     }
 }

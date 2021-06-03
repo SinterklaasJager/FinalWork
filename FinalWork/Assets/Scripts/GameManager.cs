@@ -175,10 +175,10 @@ public class GameManager : NetworkBehaviour
 
                 uIManager.InstantiateMoreInfo(sender);
 
-                Debug.Log("Change Opacity: " + player.GetName());
-                lobbyUIManager.ChangeOpacity(playerObj.GetComponent<NetworkIdentity>().connectionToClient, 1);
-                ChangeOpacity(sender, lobbyUIObj);
-                playersInLobby++;
+                // Debug.Log("Change Opacity: " + player.GetName());
+                // lobbyUIManager.ChangeOpacity(playerObj.GetComponent<NetworkIdentity>().connectionToClient, 1);
+                // ChangeOpacity(sender, lobbyUIObj);
+                // playersInLobby++;
             }
         }
         lobbyUIManager.AddNewPlayer(player.GetName());

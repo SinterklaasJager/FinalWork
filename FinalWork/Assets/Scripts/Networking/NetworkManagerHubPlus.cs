@@ -81,7 +81,7 @@ namespace Mirror.Discovery
             {
                 Debug.Log("add Adress");
                 Instantiate(btnServer, list.transform);
-                btnServer.GetComponent<ServerButtonScript>().SetServerResponseInfo(info, netdisui);
+                //btnServer.GetComponent<ServerButtonScript>().SetServerResponseInfo(info, netdisui);
             }
             // if (GUILayout.Button(info.EndPoint.Address.ToString()))
             //     Connect(info);
@@ -98,6 +98,7 @@ namespace Mirror.Discovery
         public void OnDiscoveredServer(ServerResponse info)
         {
             // Note that you can check the versioning to decide if you can connect to the server or not using this method
+            Debug.Log("discoveredServer: " + info.serverId);
             discoveredServers[info.serverId] = info;
         }
     }

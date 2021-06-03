@@ -14,7 +14,7 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private TMP_Text serverText, clientText, attemptingToConnectText, connectionErrorText;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private GameObject ipInputPanel, mainMenu;
+    [SerializeField] private GameObject ipInputPanel, mainMenu, serverListObj;
     [SerializeField] private AudioManager globalAudio;
     [SerializeField] private MainMenuManager mainMenuManager;
 
@@ -175,6 +175,18 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     {
         ipInputPanel.SetActive(true);
     }
+
+
+    public void ShowServerList()
+    {
+        serverListObj.SetActive(true);
+    }
+
+    public void HideServerList()
+    {
+        serverListObj.SetActive(false);
+    }
+
 
     public void SetupCanvas()
     {
