@@ -179,38 +179,6 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     public void SetupCanvas()
     {
         mainMenu.SetActive(false);
-        /*
-        // Here we will dump majority of the canvas UI that may be changed.
-
-        if (!NetworkClient.isConnected && !NetworkServer.active)
-        {
-            if (NetworkClient.active)
-            {
-                // PanelStart.SetActive(false);
-                // PanelStop.SetActive(true);
-                clientText.text = "Connecting to " + NetworkManager.singleton.networkAddress + "..";
-            }
-            else
-            {
-                // PanelStart.SetActive(true);
-                // PanelStop.SetActive(false);
-            }
-        }
-        else
-        {
-            // PanelStart.SetActive(false);
-            // PanelStop.SetActive(true);
-
-            // server / client status message
-            if (NetworkServer.active)
-            {
-                serverText.text = "Server: active. Transport: " + Transport.activeTransport;
-            }
-            if (NetworkClient.isConnected)
-            {
-                clientText.text = "Client: address=" + NetworkManager.singleton.networkAddress;
-            }
-        }*/
     }
 }
 
