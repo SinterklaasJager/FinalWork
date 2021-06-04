@@ -138,8 +138,8 @@ public class UIManager : NetworkBehaviour
 
     }
 
-    [TargetRpc]
-    public void InstantiateMoreInfo(NetworkConnection target)
+    [ClientRpc]
+    public void InstantiateMoreInfo()
     {
         if (moreinfo == null)
         {

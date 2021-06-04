@@ -159,7 +159,7 @@ public class GameManager : NetworkBehaviour
             lobbyUIObj.SetActive(true);
             NetworkServer.Spawn(lobbyUIObj);
             lobbyUIManager.SetMaxAmountOfPlayers(networkManager.MaxAmountOfPlayers);
-            EnableLobbyUI(player);
+            //EnableLobbyUI(player);
         }
     }
 
@@ -173,12 +173,10 @@ public class GameManager : NetworkBehaviour
             {
                 var sender = playerObj.GetComponent<NetworkIdentity>().connectionToClient;
 
-                uIManager.InstantiateMoreInfo(sender);
-
                 // Debug.Log("Change Opacity: " + player.GetName());
                 // lobbyUIManager.ChangeOpacity(playerObj.GetComponent<NetworkIdentity>().connectionToClient, 1);
                 // ChangeOpacity(sender, lobbyUIObj);
-                // playersInLobby++;
+                playersInLobby++;
             }
         }
         lobbyUIManager.AddNewPlayer(player.GetName());
@@ -228,6 +226,7 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(victoryProgressObj);
         victoryProgress.SetGameManager(gameManager, roundManager);
 
+        uIManager.InstantiateMoreInfo();
         DisableARPlanesOnClients(ARManagerObj);
         RoleDivider();
         StartIntroScreens();
