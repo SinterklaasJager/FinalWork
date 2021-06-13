@@ -2,21 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Helper
+public class Helper : MonoBehaviour
 {
-    public List<int> GenerateRandomNumbers(List<int> numbers)
+    public List<int> GenerateRandomNumbers(int count)
     {
-        List<int> randomNumbers = new List<int>();
+        List<int> numbers = new List<int>();
 
-        while (randomNumbers.Count < numbers.Count)
+        for (int i = 0; i < count; i++)
         {
-            int randomIndex = Random.Range(0, numbers.Count);
-            if (!randomNumbers.Contains(randomIndex))
-            {
-                randomNumbers.Add(randomIndex);
-            }
+            numbers.Add(i);
         }
 
-        return randomNumbers;
+        for (int i = 0; i < count; i++)
+        {
+            var temp = numbers[i];
+            int randomIndex = Random.Range(i, numbers.Count);
+            numbers[i] = numbers[randomIndex];
+            numbers[randomIndex] = temp;
+
+        }
+
+        return numbers;
     }
 }

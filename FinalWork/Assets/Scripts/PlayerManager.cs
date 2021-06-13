@@ -4,18 +4,15 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    Player playerClass = new Player();
+    Player playerClass;
 
-    void Start()
+    public void SetPlayerClass(Player player)
     {
-
-    }
-    void Update()
-    {
-
+        playerClass = player;
     }
     public Player GetPlayerClass()
     {
         return playerClass;
     }
+
 }

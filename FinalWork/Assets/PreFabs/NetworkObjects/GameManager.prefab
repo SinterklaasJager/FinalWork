@@ -1,0 +1,192 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5596158979758662823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5596158979758662821}
+  - component: {fileID: 5596158979758662822}
+  - component: {fileID: 5596158979758662817}
+  - component: {fileID: 5596158979758662818}
+  - component: {fileID: 5596158979758662819}
+  - component: {fileID: 5596158979758662831}
+  - component: {fileID: 5775626558656115474}
+  - component: {fileID: 5596158979758662828}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5596158979758662821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5596158979758662822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0804a10e28bf2e444a9be66cf15244cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  helpers: {fileID: 5596158979758662819}
+  enums: {fileID: 5596158979758662818}
+  universalCanvas: {fileID: 0}
+  roundManager: {fileID: 0}
+  uIManager: {fileID: 0}
+  networkManager: {fileID: 0}
+  voteForOrganisers: {fileID: 0}
+  victoryProgress: {fileID: 0}
+  cardGeneration: {fileID: 0}
+  addName: {fileID: 0}
+  spawnableObjects: {fileID: 0}
+  lobbyUIManager: {fileID: 0}
+  gameLocationObject: {fileID: 0}
+  anchorTransform: {fileID: 0}
+  anchorPosition: {x: 0, y: 0, z: 0}
+  anchorRotation: {x: 0, y: 0, z: 0, w: 0}
+  cloudAnchorId: 
+  playersInLobby: 0
+--- !u!114 &5596158979758662817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54fab5ca09de992438039d102dfb3c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roundManager: {fileID: 8497392128214883745, guid: 5c4544609717c65408bece5738151b97,
+    type: 3}
+  PickAnAssistantUI: {fileID: 3930102801564467992, guid: 182c3e460c89f2a4489c4a2705930613,
+    type: 3}
+  cardGeneration: {fileID: 3086840156843739262, guid: a6e0e381169248343b6e903c1df979bf,
+    type: 3}
+  universalCanvas: {fileID: 1253394823135432907, guid: 62676d246d5568b47bba6aad1287110d,
+    type: 3}
+  roundUI: {fileID: 8576524945781686576, guid: 629468e7e8f6e2d448ff1181e6878392, type: 3}
+  UIManager: {fileID: 5541376448005240503, guid: 13c8cff3ba769114381e1113c8e2c5e9,
+    type: 3}
+  VoteTeamLeader: {fileID: 8321652496754943259, guid: a40f95494dccc254982832bc661d97a6,
+    type: 3}
+  KillAPlayerUI: {fileID: 2436576697189588876, guid: 8f70ad87c7c40694f96bb7d2c1b84279,
+    type: 3}
+  YouAreDeadUI: {fileID: 1152148402777255152, guid: ddc81d2bd109800489922c9a8e164caf,
+    type: 3}
+  GetPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
+    type: 3}
+  LobbyUI: {fileID: 1744369479649317213, guid: 4ca01966215e00946816bbb26b3eb36c, type: 3}
+  victoryScreen: {fileID: 3369040150918288639, guid: 24027a139db9ce148ba27208406da362,
+    type: 3}
+  FailedElectionUI: {fileID: 8561911536147485060, guid: 04ed20be7545a9548919b2bf70b5fef1,
+    type: 3}
+  btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
+  btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}
+  btnPickAnAssistant: {fileID: 8266082363992277940, guid: f69861bff452f77498a0cacd760db90f,
+    type: 3}
+  btnPickAPlayerToKill: {fileID: 6061669302801342681, guid: 216fdf6dd30a51a419c62a4510836371,
+    type: 3}
+  ARManagerObject: {fileID: 4937185117869343173, guid: d71dc4a2cbaf9144faa71233e876b518,
+    type: 3}
+  gameLocationObject: {fileID: 6264570194549671905, guid: d70afd94f65642942887bfb50773452d,
+    type: 3}
+  victoryProgress: {fileID: 1491164111008820582, guid: 20dd418f5ec847a4a943e07de720563e,
+    type: 3}
+  goodRocketComponent: {fileID: 326493776960952649, guid: 467fcb5e86844774bb1b25eeea5c5a6d,
+    type: 3}
+  badRocketComponent: {fileID: 1147168996491417611, guid: 132368540a33b6a42811ea0578ff88ac,
+    type: 3}
+--- !u!114 &5596158979758662818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2a0507758f4a1747b09dbde74619221, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5596158979758662819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56319719dea19f04bb8e794aa62522f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5596158979758662831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0cc3e3b5e2dcbf409aca6e445da4ef7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &5775626558656115474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138763c677c0f9a40a608ddcf2f7ca96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &5596158979758662828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596158979758662823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 
+  hasSpawned: 0
