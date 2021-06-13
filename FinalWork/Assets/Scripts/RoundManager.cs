@@ -42,27 +42,29 @@ public class RoundManager : NetworkBehaviour
          */
     }
 
-    [Command]
+    // [Command]
+    [Server]
     public void RoundSetUp(GameManager gm, GameObject um)
     {
         Debug.Log("Round Setup");
         gameManager = gm;
         uIManagerObj = um;
+        uIManager = uIManagerObj.GetComponent<UIManager>();
         turn = 0;
         round = 0;
         //  ClientSideRoundSetUp();
         voteForOrganisers = gameManager.voteForOrganisers;
         // InstantiateRoundUI();
 
-        foreach (var player in gameManager.syncedPlayers)
-        {
-            if (player == NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass())
-            {
-                connectedClientObj = NetworkClient.localPlayer.gameObject;
-                connectedClient = player;
-                Debug.Log("connected client: " + connectedClient);
-            }
-        }
+        // foreach (var player in gameManager.syncedPlayers)
+        // {
+        //     if (player == NetworkClient.localPlayer.gameObject.GetComponent<PlayerManager>().GetPlayerClass())
+        //     {
+        //         connectedClientObj = NetworkClient.localPlayer.gameObject;
+        //         connectedClient = player;
+        //         Debug.Log("connected client: " + connectedClient);
+        //     }
+        // }
         StartTurn();
     }
     private void CheckIfDead()
@@ -83,7 +85,7 @@ public class RoundManager : NetworkBehaviour
         }
     }
 
-    [Command]
+    //[Command]
     public void StartTurn()
     {
         Debug.Log("Start Turn");
@@ -98,7 +100,7 @@ public class RoundManager : NetworkBehaviour
         SetUpAssistantPicker();
     }
 
-    [Command]
+    // [Command]
     private void SetUpAssistantPicker()
     {
         List<string> playerNames = new List<string>();
@@ -135,17 +137,20 @@ public class RoundManager : NetworkBehaviour
             {
                 Debug.Log("targetrpc player: " + player.GetName());
                 Debug.Log(uIManager);
-
-                StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager, currentPlayer, gameManager, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID, deathPlayerIDs);
+                StartAssistantPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, gameManager.spawnableObjects.PickAnAssistantUI, uIManager, currentPlayer, gameManager, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID, deathPlayerIDs);
             }
         }
     }
 
     [TargetRpc]
-    private void StartAssistantPicker(NetworkConnection target, UIManager um, Player currentPlayer, GameManager gm, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID, List<int> deathPlayerIDs)
+    private void StartAssistantPicker(NetworkConnection target, GameObject pickAnAssistantUIObj, UIManager um, Player currentPlayer, GameManager gm, List<string> playerNames, List<int> playerIDs, int currentPlayerID, int prevPlayerID, int prevAssistantID, List<int> deathPlayerIDs)
     {
         //PickAnAssistant = um.StartPickAnAssistantUI(currentPlayer);
+        Debug.Log("UM:" + um);
+        Debug.Log(um.PickAnAssistantUIObj);
+        Debug.Log(pickAnAssistantUIObj);
         PickAnAssistant = Instantiate(um.PickAnAssistantUIObj, um.gameObject.transform);
+        Debug.Log("pickanassitantuiObj" + PickAnAssistant);
         //  PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPicked = (assistantCandidate) => OnAssistantPicked(assistantCandidate);
         PickAnAssistant.GetComponent<PickAnAssistantUI>().Events.onAssistantPickedInt = (assistantCandidate) => OnAssistantPickedID(assistantCandidate);
         PickAnAssistant.GetComponent<PickAnAssistantUI>().SpawnButtons(gm, playerNames, playerIDs, currentPlayerID, prevPlayerID, prevAssistantID, deathPlayerIDs);
@@ -182,6 +187,8 @@ public class RoundManager : NetworkBehaviour
     public void cmdStartVotingRound()
     {
         Debug.Log("assistantCandidate: " + assistantCandidate.GetName());
+        uIManager.DestroyElectionFailedUI();
+
         var totalVoters = 0;
         foreach (var player in gameManager.syncedPlayers)
         {
@@ -203,11 +210,11 @@ public class RoundManager : NetworkBehaviour
         voteForOrganisers.EventHandlers.OnVoteEnd = (succes) => OnVoteEnd(succes);
         voteForOrganisers.StartNewVotingRound(uIManager, gameManager.syncedPlayers, assistantCandidate, currentPlayer, totalVoters, deathPlayerIDs);
     }
-
-    [Command(requiresAuthority = false)]
+    [Server]
     public void OnVoteEnd(bool passed)
     {
         Debug.Log("On Vote End");
+
         assistantCandidate.SetIsAssistantCandidate(false);
 
         if (passed)
@@ -216,19 +223,24 @@ public class RoundManager : NetworkBehaviour
             failedElections = 0;
             currentAssistant = assistantCandidate;
 
-            Debug.Log("currentAssistant: " + currentAssistant.GetPlayerID());
-            Debug.Log("currentAssistant: " + currentAssistant.GetName());
-            Debug.Log("currentPlayer: " + currentPlayer.GetPlayerID());
-            Debug.Log("currentPlayer: " + currentPlayer.GetName());
-
             foreach (var playerObj in gameManager.syncedPlayerObjects)
             {
                 Debug.Log("on vote end player obj list: " + gameManager.syncedPlayerObjects);
                 var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
                 if (player == currentAssistant)
                 {
-                    Debug.Log("targetrpc player: " + player.GetName());
-                    StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager);
+                    Debug.Log("player assistant role: " + player.GetRole());
+                    Debug.Log("gameManager.victoryProgress.GetBadPoints: " + gameManager.victoryProgress.GetBadPoints());
+                    if (player.GetRole() == 2 && gameManager.victoryProgress.GetBadPoints() >= 3)
+                    {
+                        Debug.Log("The Saboteur is in Place!");
+                        gameManager.victoryProgress.SaboteurElectedAssistant();
+                    }
+                    else
+                    {
+                        Debug.Log("targetrpc player: " + player.GetName());
+                        StartAssistantCardPicker(playerObj.GetComponent<NetworkIdentity>().connectionToClient, uIManager);
+                    }
                 }
             }
         }
@@ -236,20 +248,25 @@ public class RoundManager : NetworkBehaviour
         {
             Debug.Log("Election Failed!");
             failedElections++;
+
+            uIManager.InstantiateElectionFailedUI(failedElections);
+
             if (failedElections > 2)
             {
                 ElectionFailed();
             }
             else
             {
-                StartTurn();
+                // StartTurn();
+                SetUpAssistantPicker();
             }
 
         }
     }
-    [Command(requiresAuthority = false)]
+    // [Command(requiresAuthority = false)]
     public void ElectionFailed()
     {
+        uIManager.DestroyElectionFailedUI();
         electionFailed = true;
         failedElections = 0;
         //play random card
@@ -291,22 +308,28 @@ public class RoundManager : NetworkBehaviour
         Debug.Log("Give Cards To TeamLeader");
         cardDealer = um.StartTeamLeaderCardDrawUI(pickedCards);
         //cardDealer.ShowProjectManagerCards(pickedCards);
-        cardDealer.eventHandlers.OnCardSelected = (selectedCard) => CardPicked(selectedCard);
+        cardDealer.eventHandlers.OnCardSelected = (selectedCard) => cmdCardPicked(selectedCard);
     }
 
 
     [Command(requiresAuthority = false)]
-    public void CardPicked(Enums.CardType selectedCard)
+    public void cmdCardPicked(Enums.CardType selectedCard)
     {
         gameManager.victoryProgress.SetPoints(selectedCard);
-        //Trigger card choice animation
-        //
-        //  EndTurn();
+    }
+
+    public void CardPicked(Enums.CardType selectedCard)
+    {
+        Debug.Log("Selected Card: " + selectedCard);
+        gameManager.victoryProgress.SetPoints(selectedCard);
     }
     //[ClientRpc]
-    [Command(requiresAuthority = false)]
+    // [Command(requiresAuthority = false)]
     public void EndTurn()
     {
+        Debug.Log("Good boi Points: " + gameManager.victoryProgress.GetGoodPoints());
+        Debug.Log("Bad boi Points: " + gameManager.victoryProgress.GetBadPoints());
+
         turn++;
         if (turn >= gameManager.syncedPlayers.Count)
         {
@@ -334,7 +357,7 @@ public class RoundManager : NetworkBehaviour
         StartTurn();
     }
 
-    [Command(requiresAuthority = false)]
+    // [Command(requiresAuthority = false)]
     public void SetUpDeathPicker()
     {
         List<string> playerNames = new List<string>();
@@ -395,8 +418,6 @@ public class RoundManager : NetworkBehaviour
 
         if (!CheckEndPrematurely(playerToKill))
         {
-            EndTurn();
-
             foreach (var playerObj in gameManager.syncedPlayerObjects)
             {
                 var player = playerObj.GetComponent<PlayerManager>().GetPlayerClass();
@@ -405,6 +426,8 @@ public class RoundManager : NetworkBehaviour
                     TargetKillAPlayerVictim(playerObj.GetComponent<NetworkIdentity>().connectionToClient, player, gameManager, uIManager);
                 }
             }
+
+            EndTurn();
         }
         else
         {
@@ -460,7 +483,15 @@ public class RoundManager : NetworkBehaviour
     public void TargetKillAPlayerVictim(NetworkConnection conn, Player player, GameManager gm, UIManager um)
     {
         //do kill player visuals
+        Debug.Log("You Have Died");
+        Debug.Log(um);
         Instantiate(gm.spawnableObjects.YouAreDeadUI, um.gameObject.transform);
+    }
+
+    [Server]
+    public void StopGame()
+    {
+        NetworkServer.Destroy(gameObject);
     }
 
     [Command(requiresAuthority = false)]

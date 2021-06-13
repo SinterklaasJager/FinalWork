@@ -1,9 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 
 public class Enums : MonoBehaviour
 {
+    public enum Role
+    {
+        rebel,
+        colonist,
+        saboteur
+    }
     public enum CardType
     {
         good,
@@ -22,7 +29,8 @@ public class Enums : MonoBehaviour
         rebelsDead,
         goodGuysDead,
         enoughGoodPoints,
-        enoughBadPoints
+        enoughBadPoints,
+        bombPlaced
     }
 
     public struct EventHandlers
@@ -33,12 +41,13 @@ public class Enums : MonoBehaviour
         public System.Action<bool> OnVoteEnd;
         public System.Action<List<Enums.CardType>> OnAssistantCardsPicked;
         public System.Action<Enums.CardType> OnCardSelected;
-        public System.Action<string> OnNameEntered;
+        public System.Action<Player> OnNameEntered;
 
     }
 
     public struct AREvents
     {
         public System.Action<Vector3, Quaternion> OnHostGameLocation;
+        public System.Action<GameObject> OnReadyToSetAnchor;
     }
 }

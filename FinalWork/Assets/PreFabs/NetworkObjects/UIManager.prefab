@@ -144,7 +144,15 @@ MonoBehaviour:
     type: 3}
   ArHostUIObj: {fileID: 2475188845531797869, guid: f750fc77c38e26843a4f55476edfcbb9,
     type: 3}
+  ArClientUIObj: {fileID: 3840807888656084520, guid: acb8358de58ec4e4cb24819e30cff124,
+    type: 3}
   ARCloudAnchorObj: {fileID: 730263186811177259, guid: ee28009cdb6500148a51fb21b61b932a,
+    type: 3}
+  playerIntroObj: {fileID: 2184157048296880168, guid: a57a7b44441f704479ef2e670aeaffd6,
+    type: 3}
+  moreInfoObj: {fileID: 1390058224383659212, guid: 9183911eab5bb7441a36f5acb1446329,
+    type: 3}
+  electionFailedObj: {fileID: 8561911536147485060, guid: 04ed20be7545a9548919b2bf70b5fef1,
     type: 3}
   AssistantCardUI: {fileID: 5644212612963016198, guid: 4a4ad9261339be04a9090771bd3b4c77,
     type: 3}
@@ -155,6 +163,8 @@ MonoBehaviour:
   PickAnAssistantUI: {fileID: 0}
   VoteTeamLeaderUI: {fileID: 0}
   ArHostUI: {fileID: 0}
+  ArClientUI: {fileID: 0}
+  electionFailedUI: {fileID: 0}
 --- !u!114 &7304176298806975430
 MonoBehaviour:
   m_ObjectHideFlags: 0

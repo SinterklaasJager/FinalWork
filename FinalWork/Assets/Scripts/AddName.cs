@@ -7,12 +7,10 @@ using TMPro;
 
 public class AddName : NetworkBehaviour
 {
-    Enums.EventHandlers events;
-
     private GameManager gameManager;
 
     private string userName;
-    [SyncVar] private int amountOfNamesAdded = 0;
+    //[SyncVar] private int amountOfNamesAdded = 0;
 
     private void Start()
     {
@@ -31,23 +29,19 @@ public class AddName : NetworkBehaviour
                     if (player == playerConn.GetComponent<PlayerManager>().GetPlayerClass())
                     {
                         player.SetName(name);
-                        amountOfNamesAdded++;
+                        //amountOfNamesAdded++;
+                        gameManager.events.OnNameEntered?.Invoke(player);
                     }
                 }
 
             }
         }
 
-        if (amountOfNamesAdded == gameManager.GetPlayerCount())
-        {
-            //names ready
-            gameManager.AllPlayersReady();
-        }
+        // if (amountOfNamesAdded == gameManager.GetPlayerCount())
+        // {
+        //     //names ready
+        //     gameManager.AllPlayersReady();
+        // }
     }
-    public void OnNameReady()
-    {
 
-        events.OnNameEntered?.Invoke(userName);
-
-    }
 }

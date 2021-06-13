@@ -6,6 +6,7 @@ public class SpawnableObjects : MonoBehaviour
 {
     [Header("UI Objects")]
     public GameObject roundManager;
+    public GameObject PickAnAssistantUI;
     public GameObject cardGeneration;
     public GameObject universalCanvas;
     public GameObject roundUI;
@@ -14,6 +15,9 @@ public class SpawnableObjects : MonoBehaviour
     public GameObject KillAPlayerUI;
     public GameObject YouAreDeadUI;
     public GameObject GetPlayerNameUI;
+    public GameObject LobbyUI;
+    public GameObject victoryScreen;
+    public GameObject FailedElectionUI;
 
     [Header("UI Components")]
     public GameObject btnGood;

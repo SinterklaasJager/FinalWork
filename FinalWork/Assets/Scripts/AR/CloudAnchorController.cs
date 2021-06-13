@@ -37,10 +37,11 @@ using UnityEngine.XR.ARSubsystems;
 public class CloudAnchorController : MonoBehaviour
 {
     [Header("Custom Variables")]
-    private GameObject spawnedObject;
+    private GameObject spawnedObject, ARClientUI;
     private GameManager gameManager;
     public GameObject ARUI;
     private bool allowPlacement;
+    private ARHostUI aRHostUI;
 
     [Header("AR Foundation")]
 
@@ -178,7 +179,7 @@ public class CloudAnchorController : MonoBehaviour
     /// <summary>
     /// The current cloud anchor mode.
     /// </summary>
-    private ApplicationMode _currentMode = ApplicationMode.Hosting;
+    private ApplicationMode _currentMode = ApplicationMode.Ready;
 
     /// <summary>
     /// The current active UI screen.
@@ -249,6 +250,8 @@ public class CloudAnchorController : MonoBehaviour
     /// Gets or sets the world origin which will be used as the transform parent for network
     /// spawned objects.
     /// </summary>
+
+
     public Transform WorldOrigin
     {
         get
@@ -268,6 +271,8 @@ public class CloudAnchorController : MonoBehaviour
         }
     }
 
+    private ARAnchor anchor;
+
     /// <summary>
     /// Callback handling Start Now button click event.
     /// </summary>
@@ -285,6 +290,11 @@ public class CloudAnchorController : MonoBehaviour
             "https://developers.google.com/ar/cloud-anchors-privacy");
     }
 
+    public void Awake()
+    {
+        gameObject.name = "CloudAnchorController";
+    }
+
     /// <summary>
     /// The Unity Start() method.
     /// </summary>
@@ -298,7 +308,7 @@ public class CloudAnchorController : MonoBehaviour
 
         // A Name is provided to the Game Object so it can be found by other Scripts
         // instantiated as prefabs in the scene.
-        gameObject.name = "CloudAnchorController";
+
         // ResetStatus();
     }
 
@@ -311,7 +321,7 @@ public class CloudAnchorController : MonoBehaviour
     {
 
         // Debug.Log("_currentMode: " + _currentMode);
-        // UpdateApplicationLifecycle();
+        UpdateApplicationLifecycle();
 
         // if (_currentActiveScreen != ActiveScreen.ARScreen)
         // {
@@ -377,41 +387,26 @@ public class CloudAnchorController : MonoBehaviour
             if (allowPlacement)
             {
                 var hitPose = hits[0].pose;
-
-                ARAnchor anchor = AnchorManager.AddAnchor(hitPose);
+                anchor = AnchorManager.AddAnchor(hitPose);
                 WorldOrigin = anchor.transform;
-                InstantiateAnchor(anchor);
+                aRHostUI.anchor = anchor;
+                // InstantiateAnchor(anchor);
                 OnAnchorInstantiated(true);
 
                 if (spawnedObject == null)
                 {
-                    gameManager.AREvents.OnHostGameLocation = (gameLocationPos, rotation) => GameLocationSet(gameLocationPos, rotation);
+                    gameManager.AREvents.OnReadyToSetAnchor = (GO) => GameLocationSet();
                     spawnedObject = Instantiate(gameManager.spawnableObjects.gameLocationObject, hitPose.position, hitPose.rotation);
-
                     ARUI.SetActive(true);
-                    ARUI.GetComponent<ARHostUI>().spawnedObject = spawnedObject;
-                    ARUI.GetComponent<ARHostUI>().networkManagerPlus = _networkManager;
-                    ARUI.GetComponent<ARHostUI>().EnableConfirmationButton();
+
+                    aRHostUI.spawnedObject = spawnedObject;
+                    aRHostUI.EnableConfirmationButton();
                 }
                 else
                 {
                     spawnedObject.transform.position = hitPose.position;
                 }
             }
-
-            // // The first touch on the Hosting mode will instantiate the origin anchor. Any
-            // // subsequent touch will instantiate a star, both in Hosting and Resolving modes.
-            // if (CanPlaceStars())
-            // {
-            //     InstantiateStar(ToWorldOriginPose(hitResults[0].pose));
-            // }
-            // else if (!IsOriginPlaced && _currentMode == ApplicationMode.Hosting)
-            // {
-            //     ARAnchor anchor = AnchorManager.AddAnchor(hitResults[0].pose);
-            //     WorldOrigin = anchor.transform;
-            //     InstantiateAnchor(anchor);
-            //     OnAnchorInstantiated(true);
-            // }
         }
     }
     public void SetUp(GameManager gm, GameObject arui)
@@ -420,8 +415,11 @@ public class CloudAnchorController : MonoBehaviour
         Debug.Log("ARUI: " + arui);
         gameManager = gm;
         ARUI = arui;
-        allowPlacement = true;
-        _currentMode = ApplicationMode.Hosting;
+        if (ARUI.GetComponent<ARHostUI>() != null)
+        {
+            aRHostUI = ARUI.GetComponent<ARHostUI>();
+            aRHostUI.networkManagerPlus = _networkManager;
+        }
 
         var ARManager = gameObject.GetComponentInParent<ARManager>();
         SessionOrigin = ARManager.SessionOrigin;
@@ -431,7 +429,7 @@ public class CloudAnchorController : MonoBehaviour
         RaycastManager = ARManager.RaycastManager;
     }
 
-    private void GameLocationSet(Vector3 x, Quaternion rot)
+    private void GameLocationSet()
     {
         allowPlacement = false;
     }
@@ -446,6 +444,11 @@ public class CloudAnchorController : MonoBehaviour
     {
         return _currentMode != ApplicationMode.Ready &&
             _timeSinceStart > _resolvingPrepareTime;
+    }
+
+    private IEnumerator ResolvingprepareTime()
+    {
+        yield return null;
     }
 
     /// <summary>
@@ -491,13 +494,14 @@ public class CloudAnchorController : MonoBehaviour
     /// </summary>
     public void OnEnterHostingModeClick()
     {
+        Debug.Log(_currentMode);
         if (_currentMode == ApplicationMode.Hosting)
         {
             _currentMode = ApplicationMode.Ready;
             ResetStatus();
             Debug.Log("Reset ApplicationMode from Hosting to Ready.");
         }
-
+        allowPlacement = true;
         _currentMode = ApplicationMode.Hosting;
     }
 
@@ -507,6 +511,7 @@ public class CloudAnchorController : MonoBehaviour
     /// </summary>
     public void OnEnterResolvingModeClick()
     {
+        Debug.Log("Resolving Mode: " + _currentMode);
         if (_currentMode == ApplicationMode.Resolving)
         {
             _currentMode = ApplicationMode.Ready;
@@ -515,6 +520,7 @@ public class CloudAnchorController : MonoBehaviour
         }
 
         _currentMode = ApplicationMode.Resolving;
+        Debug.Log("Resolving Mode: " + _currentMode);
     }
 
     /// <summary>
@@ -542,6 +548,22 @@ public class CloudAnchorController : MonoBehaviour
     public void OnAnchorHosted(bool success, string response)
     {
         _anchorFinishedHosting = success;
+
+        if (!success)
+        {
+            Debug.Log("hosting failed");
+            ARUI.GetComponent<ARHostUI>().FailedToHostAnchor();
+        }
+        else
+        {
+            // Debug.Log("anchor.transform " + anchor.transform);
+            Debug.Log(anchor.transform.gameObject.name);
+            Debug.Log(anchor.transform.gameObject);
+            anchor.transform.gameObject.AddComponent<NetworkIdentity>();
+            gameManager.SpawnNameGetUIForHost();
+            allowPlacement = false;
+            Destroy(ARUI);
+        }
         // NetworkUIController.OnAnchorHosted(success, response);
     }
 
@@ -553,6 +575,13 @@ public class CloudAnchorController : MonoBehaviour
     /// <param name="response">The response string received.</param>
     public void OnAnchorResolved(bool success, string response)
     {
+        Debug.Log("Anchor Resolved: " + success);
+        if (success)
+        {
+            Debug.Log("ARUI: " + ARUI);
+            Destroy(ARUI);
+            gameManager.ARResolvedForClient();
+        }
         // NetworkUIController.OnAnchorResolved(success, response);
     }
 
@@ -568,6 +597,7 @@ public class CloudAnchorController : MonoBehaviour
         }
         else if (_currentMode == ApplicationMode.Resolving)
         {
+            Debug.Log("_worldOrigin: " + _worldOrigin);
             // NetworkUIController.ShowDebugMessage(
             //     "Look at the same scene as the hosting phone.");
         }

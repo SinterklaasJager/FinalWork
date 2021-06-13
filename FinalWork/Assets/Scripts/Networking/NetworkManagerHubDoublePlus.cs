@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
@@ -10,9 +11,14 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
     [SerializeField] private Button buttonHost, buttonServer, buttonClient, buttonStop, buttonConfirm;
     // [SerializeField] private GameObject PanelStart, PanelStop;
     [SerializeField] private TMP_InputField inputFieldAddress;
-    [SerializeField] private TMP_Text serverText, clientText;
+    [SerializeField] private TMP_Text serverText, clientText, attemptingToConnectText, connectionErrorText;
     [SerializeField] private NetworkManagerPlus networkManagerPlus;
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject ipInputPanel, mainMenu, serverListObj;
+    [SerializeField] private AudioManager globalAudio;
+    [SerializeField] private MainMenuManager mainMenuManager;
+
+    private bool clientConnected, clientConnectionFailed;
 
     [Header("AR Components")]
 
@@ -76,18 +82,62 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
 
     public void ButtonClient()
     {
+        clientConnectionFailed = false;
         buttonClient.interactable = false;
+        connectionErrorText.gameObject.SetActive(false);
         // ARObject.SetActive(true);
         NetworkManager.singleton.StartClient();
+        StartCoroutine("ConnectionMessage");
+    }
+
+    private IEnumerator ConnectionMessage()
+    {
+        while (!clientConnected && !clientConnectionFailed)
+        {
+            attemptingToConnectText.gameObject.SetActive(true);
+            attemptingToConnectText.text = "Attempting to connect";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect.";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect..";
+            yield return new WaitForSeconds(.5f);
+            attemptingToConnectText.text = "Attempting to connect...";
+            yield return new WaitForSeconds(.5f);
+        }
+        // if (clientConnectionFailed)
+        // {
+        //     attemptingToConnectText.gameObject.SetActive(false);
+        //     connectionErrorText.gameObject.SetActive(true);
+        //     yield return null;
+        // }
+
     }
 
     private void HandleClientConnected()
     {
-        gameObject.SetActive(false);
+        mainMenuManager.PlayMainMenuSong(false);
+        mainMenu.SetActive(false);
+        clientConnected = true;
+        globalAudio.PlayIntroTune(true);
     }
     private void HandleClientDisconnected()
     {
+        mainMenu.SetActive(true);
         buttonClient.interactable = true;
+        clientConnected = false;
+        clientConnectionFailed = true;
+        attemptingToConnectText.gameObject.SetActive(false);
+        connectionErrorText.gameObject.SetActive(true);
+        StopCoroutine("ConnectionMessage");
+    }
+
+    public void LeaveGame()
+    {
+        mainMenu.SetActive(true);
+        buttonClient.interactable = true;
+        clientConnected = false;
+        ipInputPanel.SetActive(false);
+        SceneManager.LoadScene("MainScene");
     }
 
     public void ButtonStop()
@@ -111,41 +161,36 @@ public class NetworkManagerHubDoublePlus : MonoBehaviour
         SetupCanvas();
     }
 
+    public void HideIPPanel()
+    {
+        Debug.Log("HideIpPanel");
+        ipInputPanel.SetActive(false);
+        StopCoroutine("ConnectionMessage");
+        NetworkManager.singleton.StopClient();
+        attemptingToConnectText.gameObject.SetActive(false);
+        connectionErrorText.gameObject.SetActive(false);
+    }
+
+    public void ShowIPPanel()
+    {
+        ipInputPanel.SetActive(true);
+    }
+
+
+    public void ShowServerList()
+    {
+        serverListObj.SetActive(true);
+    }
+
+    public void HideServerList()
+    {
+        serverListObj.SetActive(false);
+    }
+
+
     public void SetupCanvas()
     {
-        gameObject.SetActive(false);
-        /*
-        // Here we will dump majority of the canvas UI that may be changed.
-
-        if (!NetworkClient.isConnected && !NetworkServer.active)
-        {
-            if (NetworkClient.active)
-            {
-                // PanelStart.SetActive(false);
-                // PanelStop.SetActive(true);
-                clientText.text = "Connecting to " + NetworkManager.singleton.networkAddress + "..";
-            }
-            else
-            {
-                // PanelStart.SetActive(true);
-                // PanelStop.SetActive(false);
-            }
-        }
-        else
-        {
-            // PanelStart.SetActive(false);
-            // PanelStop.SetActive(true);
-
-            // server / client status message
-            if (NetworkServer.active)
-            {
-                serverText.text = "Server: active. Transport: " + Transport.activeTransport;
-            }
-            if (NetworkClient.isConnected)
-            {
-                clientText.text = "Client: address=" + NetworkManager.singleton.networkAddress;
-            }
-        }*/
+        mainMenu.SetActive(false);
     }
 }
 

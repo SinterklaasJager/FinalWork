@@ -56,12 +56,19 @@ MonoBehaviour:
   universalCanvas: {fileID: 0}
   roundManager: {fileID: 0}
   uIManager: {fileID: 0}
+  networkManager: {fileID: 0}
   voteForOrganisers: {fileID: 0}
   victoryProgress: {fileID: 0}
   cardGeneration: {fileID: 0}
   addName: {fileID: 0}
   spawnableObjects: {fileID: 0}
+  lobbyUIManager: {fileID: 0}
   gameLocationObject: {fileID: 0}
+  anchorTransform: {fileID: 0}
+  anchorPosition: {x: 0, y: 0, z: 0}
+  anchorRotation: {x: 0, y: 0, z: 0, w: 0}
+  cloudAnchorId: 
+  playersInLobby: 0
 --- !u!114 &5596158979758662817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,6 +82,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roundManager: {fileID: 8497392128214883745, guid: 5c4544609717c65408bece5738151b97,
+    type: 3}
+  PickAnAssistantUI: {fileID: 3930102801564467992, guid: 182c3e460c89f2a4489c4a2705930613,
     type: 3}
   cardGeneration: {fileID: 3086840156843739262, guid: a6e0e381169248343b6e903c1df979bf,
     type: 3}
@@ -90,6 +99,11 @@ MonoBehaviour:
   YouAreDeadUI: {fileID: 1152148402777255152, guid: ddc81d2bd109800489922c9a8e164caf,
     type: 3}
   GetPlayerNameUI: {fileID: 2412625480389464918, guid: f0375cb2129915a4cbb6d4facc31c577,
+    type: 3}
+  LobbyUI: {fileID: 1744369479649317213, guid: 4ca01966215e00946816bbb26b3eb36c, type: 3}
+  victoryScreen: {fileID: 3369040150918288639, guid: 24027a139db9ce148ba27208406da362,
+    type: 3}
+  FailedElectionUI: {fileID: 8561911536147485060, guid: 04ed20be7545a9548919b2bf70b5fef1,
     type: 3}
   btnGood: {fileID: 3361867914662299095, guid: 7044c0e4ce69fdd48b0836f3a86ab1b7, type: 3}
   btnBad: {fileID: 4944200928750611039, guid: c7c42ba3be818d24da200c31f38fd143, type: 3}

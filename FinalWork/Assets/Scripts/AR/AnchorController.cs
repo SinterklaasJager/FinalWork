@@ -22,6 +22,8 @@ using Google.XR.ARCoreExtensions;
 using UnityEngine;
 using Mirror;
 using UnityEngine.XR.ARFoundation;
+using System.Collections.Generic;
+using UnityEngine.Playables;
 
 /// <summary>
 /// A Controller for the Anchor object that handles hosting and resolving the
@@ -31,6 +33,14 @@ using UnityEngine.XR.ARFoundation;
 public class AnchorController : NetworkBehaviour
 #pragma warning restore 618
 {
+    [SerializeField] private List<GameObject> rocketComponents = new List<GameObject>();
+    [SerializeField] private Material progressMaterial, sabotageMaterial;
+    [SyncVar] private int currentActiveRocketComponents = 0;
+    [SerializeField] private PlayableDirector director;
+    [SerializeField] private PlayableAsset succesLaunchAnimation, failLaunchAnimation;
+    private GameManager gameManager;
+
+
     /// <summary>
     /// The customized timeout duration for resolving request to prevent retrying to resolve
     /// indefinitely.
@@ -44,7 +54,7 @@ public class AnchorController : NetworkBehaviour
 #pragma warning disable 618
     [SyncVar(hook = "OnChangeId")]
 #pragma warning restore 618
-    private string _clouAnchorId = string.Empty;
+    private string _cloudAnchorId = string.Empty;
 
     /// <summary>
     /// Indicates whether this script is running in the Host.
@@ -101,12 +111,14 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     public void Awake()
     {
+        Debug.Log("Anchor Controller Awake");
+        gameObject.name = "AnchorController";
         _cloudAnchorController =
             GameObject.Find("CloudAnchorController")
             .GetComponent<CloudAnchorController>();
         _anchorManager = _cloudAnchorController.AnchorManager;
-        _anchorMesh = transform.Find("AnchorMesh").gameObject;
-        _anchorMesh.SetActive(false);
+        // _anchorMesh = transform.Find("AnchorMesh").gameObject;
+        // _anchorMesh.SetActive(false);
     }
 
     /// <summary>
@@ -114,7 +126,8 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     public override void OnStartClient()
     {
-        if (_clouAnchorId != string.Empty)
+        Debug.Log("OnStartClient id: " + _cloudAnchorId);
+        if (_cloudAnchorId != string.Empty)
         {
             _shouldResolve = true;
         }
@@ -140,7 +153,6 @@ public class AnchorController : NetworkBehaviour
                 {
                     return;
                 }
-
                 if (!_passedResolvingTimeout)
                 {
                     _timeSinceStartResolving += Time.deltaTime;
@@ -152,9 +164,10 @@ public class AnchorController : NetworkBehaviour
                     }
                 }
 
-                if (!string.IsNullOrEmpty(_clouAnchorId) && _cloudAnchor == null)
+                if (!string.IsNullOrEmpty(_cloudAnchorId) && _cloudAnchor == null)
                 {
-                    ResolveCloudAnchorId(_clouAnchorId);
+                    Debug.Log("ResolveAnchor");
+                    ResolveCloudAnchorId(_cloudAnchorId);
                 }
             }
 
@@ -165,17 +178,89 @@ public class AnchorController : NetworkBehaviour
         }
     }
 
+
+    public void PlayEndingAnimation(Enums.CardType type)
+    {
+        PlayEndingAnimationClientSide(type);
+        if (type == Enums.CardType.good)
+        {
+            director.Play(succesLaunchAnimation);
+        }
+        else
+        {
+            director.Play(failLaunchAnimation);
+        }
+    }
+
+    [ClientRpc]
+    private void PlayEndingAnimationClientSide(Enums.CardType type)
+    {
+        if (type == Enums.CardType.good)
+        {
+            director.Play(succesLaunchAnimation);
+        }
+        else
+        {
+            director.Play(failLaunchAnimation);
+        }
+    }
+
+    [Server]
+    public void FinishEndingAnimation()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager.victoryProgress.VictoryAchieved();
+    }
+
+    [Server]
+    public void ActivateRocketComponent(Enums.CardType type)
+    {
+        rocketComponents[currentActiveRocketComponents].SetActive(true);
+        var mr = rocketComponents[currentActiveRocketComponents].GetComponent<MeshRenderer>();
+
+        if (type == Enums.CardType.good)
+        {
+            mr.material = progressMaterial;
+        }
+        else
+        {
+            mr.material = sabotageMaterial;
+        }
+
+        UpdateRocketForClients(type, currentActiveRocketComponents);
+        currentActiveRocketComponents++;
+    }
+
+    [ClientRpc]
+    private void UpdateRocketForClients(Enums.CardType type, int currentComponentInt)
+    {
+        var currentComponent = rocketComponents[currentComponentInt];
+        currentComponent.SetActive(true);
+        var mr = currentComponent.GetComponent<MeshRenderer>();
+
+        if (type == Enums.CardType.good)
+        {
+            mr.material = progressMaterial;
+        }
+        else
+        {
+            mr.material = sabotageMaterial;
+        }
+
+    }
+
+
     /// <summary>
     /// Command run on the server to set the Cloud Anchor Id.
     /// </summary>
     /// <param name="cloudAnchorId">The new Cloud Anchor Id.</param>
 #pragma warning disable 618
-    [Command]
+    [Command(requiresAuthority = false)]
 #pragma warning restore 618
     public void CmdSetCloudAnchorId(string cloudAnchorId)
     {
         Debug.Log("Update Cloud Anchor Id with: " + cloudAnchorId);
-        _clouAnchorId = cloudAnchorId;
+        _cloudAnchorId = cloudAnchorId;
     }
 
     /// <summary>
@@ -184,12 +269,14 @@ public class AnchorController : NetworkBehaviour
     /// <param name="anchor">The last placed anchor.</param>
     public void HostAnchor(ARAnchor anchor)
     {
+        Debug.Log("HostAnchor");
         _isHost = true;
         _shouldResolve = false;
         transform.SetParent(anchor.transform);
-        _anchorMesh.SetActive(true);
-
+        //  _anchorMesh.SetActive(true);
         _cloudAnchor = _anchorManager.HostCloudAnchor(anchor);
+        GameObject.Find("GameManager").GetComponent<GameManager>().SetWorldPosition(_cloudAnchor.pose.position, _cloudAnchor.pose.rotation, _cloudAnchor.transform);
+        Debug.Log("_cloudAnchor(anchor controller): " + _cloudAnchor);
         if (_cloudAnchor == null)
         {
             Debug.LogError("Failed to add Cloud Anchor.");
@@ -209,6 +296,8 @@ public class AnchorController : NetworkBehaviour
     /// <param name="cloudAnchorId">The Cloud Anchor Id to be resolved.</param>
     private void ResolveCloudAnchorId(string cloudAnchorId)
     {
+        Debug.Log("ResolveAnchor with id: " + cloudAnchorId);
+        Debug.Log("ResolveAnchor with anchor: " + _cloudAnchor);
         _cloudAnchorController.OnAnchorInstantiated(false);
         _cloudAnchor = _anchorManager.ResolveCloudAnchorId(cloudAnchorId);
         if (_cloudAnchor == null)
@@ -221,6 +310,8 @@ public class AnchorController : NetworkBehaviour
         }
         else
         {
+            _cloudAnchorController.OnAnchorResolved(
+             true, "Client could resolve Cloud Anchor.");
             _shouldResolve = false;
             _shouldUpdatePoint = true;
         }
@@ -231,6 +322,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     private void UpdateHostedCloudAnchor()
     {
+        Debug.Log("Update Hosted Anchor");
         if (_cloudAnchor == null)
         {
             Debug.LogError("No Cloud Anchor.");
@@ -240,6 +332,7 @@ public class AnchorController : NetworkBehaviour
         CloudAnchorState cloudAnchorState = _cloudAnchor.cloudAnchorState;
         if (cloudAnchorState == CloudAnchorState.Success)
         {
+            Debug.Log("Hosted Anchor succes");
             CmdSetCloudAnchorId(_cloudAnchor.cloudAnchorId);
             _cloudAnchorController.OnAnchorHosted(
                 true, "Successfully hosted Cloud Anchor.");
@@ -247,6 +340,7 @@ public class AnchorController : NetworkBehaviour
         }
         else if (cloudAnchorState != CloudAnchorState.TaskInProgress)
         {
+            Debug.Log("Hosted Anchor fail: " + cloudAnchorState);
             _cloudAnchorController.OnAnchorHosted(false,
                 "Fail to host Cloud Anchor with state: " + cloudAnchorState);
             _shouldUpdatePoint = false;
@@ -258,6 +352,7 @@ public class AnchorController : NetworkBehaviour
     /// </summary>
     private void UpdateResolvedCloudAnchor()
     {
+        Debug.Log("Update Resolved Anchor");
         if (_cloudAnchor == null)
         {
             Debug.LogError("No Cloud Anchor.");
@@ -267,12 +362,15 @@ public class AnchorController : NetworkBehaviour
         CloudAnchorState cloudAnchorState = _cloudAnchor.cloudAnchorState;
         if (cloudAnchorState == CloudAnchorState.Success)
         {
+            Debug.Log(" Resolved Anchor succes");
             transform.SetParent(_cloudAnchor.transform, false);
             _cloudAnchorController.OnAnchorResolved(
                 true,
                 "Successfully resolved Cloud Anchor.");
             _cloudAnchorController.WorldOrigin = transform;
-            _anchorMesh.SetActive(true);
+
+
+            // _anchorMesh.SetActive(true);
 
             // Mark resolving timeout passed so it won't fire OnResolvingTimeoutPassed event.
             _passedResolvingTimeout = true;
@@ -280,6 +378,7 @@ public class AnchorController : NetworkBehaviour
         }
         else if (cloudAnchorState != CloudAnchorState.TaskInProgress)
         {
+            Debug.Log(" Resolved Anchor fail: " + cloudAnchorState);
             _cloudAnchorController.OnAnchorResolved(
                 false, "Fail to resolve Cloud Anchor with state: " + cloudAnchorState);
             _shouldUpdatePoint = false;
@@ -294,7 +393,7 @@ public class AnchorController : NetworkBehaviour
     {
         if (!_isHost && newId != string.Empty)
         {
-            _clouAnchorId = newId;
+            _cloudAnchorId = newId;
             _shouldResolve = true;
             _cloudAnchor = null;
         }
